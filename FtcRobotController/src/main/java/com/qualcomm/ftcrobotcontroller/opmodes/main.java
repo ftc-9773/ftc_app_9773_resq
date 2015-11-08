@@ -1,6 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.ftcrobotcontroller.opmodes.DriveTrain.MecanumWheel;
+import com.qualcomm.ftcrobotcontroller.opmodes.DriveSystem.Wheel.MecanumWheel;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class main extends LinearOpMode {
     MecanumWheel mecanumWheel;
+    DriveSystem mecanumDriveSystem;
     ColorSensor colSensor;
     DeviceInterfaceModule dim;
     static final int LED_CHANNEL = 0;
@@ -49,7 +50,7 @@ public class main extends LinearOpMode {
             gamepadTurnThrottle = Range.clip(gamepadTurnThrottle, -1, 1);
             gamepadTurnDirection = Range.clip(gamepadTurnDirection, -1, 1);
 
-            mecanumWheel.mecanumDrive(gamepadStrafeDirection, gamepadStrafeThrottle, gamepadTurnDirection, gamepadTurnThrottle);
+            mecanumDriveSystem.mecanumWheelDrive(gamepadStrafeDirection, gamepadStrafeThrottle, gamepadTurnDirection, gamepadTurnThrottle);
 
 
             double rValue = colSensor.red();
