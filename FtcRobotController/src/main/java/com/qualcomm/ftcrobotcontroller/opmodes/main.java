@@ -3,6 +3,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.ftcrobotcontroller.opmodes.DriveSystem.Wheel.MecanumWheel;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.util.Range;
@@ -12,7 +13,6 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class main extends LinearOpMode {
     MecanumWheel mecanumWheel;
-    DriveSystem mecanumDriveSystem;
     ColorSensor colSensor;
     DeviceInterfaceModule dim;
     static final int LED_CHANNEL = 0;
@@ -28,6 +28,16 @@ public class main extends LinearOpMode {
     }*/
     @Override
     public void runOpMode() throws InterruptedException {
+        DcMotor frontLeft = hardwareMap.dcMotor.get("fMotorL");
+        DcMotor frontRight = hardwareMap.dcMotor.get("fMotorR");
+        DcMotor rearLeft = hardwareMap.dcMotor.get("rMotorL");
+        DcMotor rearRight = hardwareMap.dcMotor.get("rMotorR");
+        rearLeft.setDirection(DcMotor.Direction.REVERSE);
+        rearRight.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        DriveSystem mecanumDriveSystem = new DriveSystem(frontLeft, frontRight, rearLeft, rearRight);
+
         dim = hardwareMap.deviceInterfaceModule.get("dim");
         dim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
         colSensor = hardwareMap.colorSensor.get("colorSensor");
@@ -41,12 +51,12 @@ public class main extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            float gamepadStrafeDirection = -gamepad1.left_stick_x;
-            float gamepadStrafeThrottle = -gamepad1.left_stick_y;
-            float gamepadTurnThrottle = gamepad1.right_stick_y;
-            float gamepadTurnDirection = -gamepad1.right_stick_x;
+            float gamepadStrafeDirection = gamepad1.left_stick_x;
+            float gamepadStrafeThrottle = gamepad1.left_stick_y;
+            float gamepadTurnThrottle = -gamepad1.right_stick_y;
+            float gamepadTurnDirection = gamepad1.right_stick_x;
             gamepadStrafeThrottle = Range.clip(gamepadStrafeThrottle, -1, 1);
-            gamepadStrafeDirection = Range.clip(gamepadStrafeThrottle, -1, 1);
+            gamepadStrafeDirection = Range.clip(gamepadStrafeDirection, -1, 1);
             gamepadTurnThrottle = Range.clip(gamepadTurnThrottle, -1, 1);
             gamepadTurnDirection = Range.clip(gamepadTurnDirection, -1, 1);
 
