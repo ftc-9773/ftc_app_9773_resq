@@ -1,6 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -8,11 +9,15 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class DriveSystem {
     DcMotor frontLeft, frontRight, rearLeft, rearRight;
+    final static int ENCODER_CPR = 1120;
+    final static double GEAR_RATIO = 1;
+    final static double diameter = 4.0;
+
+
 
 
     public class Wheel {
         public class MecanumWheel{
-            final double diameter = 4;
             final double frictionCoefficientMat = 1;
             final double frictionCoefficientMountain = 1;
         }
@@ -40,5 +45,38 @@ public class DriveSystem {
         rearRight.setPower(Range.clip(rearRightPwr, -1, 1));
         frontRight.setPower(Range.clip(frontRightPwr, -1, 1));
         rearLeft.setPower(Range.clip(rearLeftPwr, -1, 1));
+    }
+
+    public double mecanumWheelAutoDrive(double dist, double pwr){
+        frontLeft.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        frontRight.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        rearLeft.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        rearRight.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+
+        frontLeft.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        frontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        rearRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        rearLeft.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+
+        double circumference = Math.PI * diameter;
+        double rotations = dist / circumference;
+        double counts = rotations * ENCODER_CPR * GEAR_RATIO;
+
+        frontRight.setTargetPosition((int) counts);
+        frontLeft.setTargetPosition((int) counts);
+        rearLeft.setTargetPosition((int) counts);
+        rearRight.setTargetPosition((int) counts);
+
+        frontLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        frontRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        rearLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        rearRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
+        frontLeft.setPower(pwr);
+        frontRight.setPower(pwr);
+        rearLeft.setPower(pwr);
+        rearRight.setPower(pwr);
+
+        return counts;
     }
 }
