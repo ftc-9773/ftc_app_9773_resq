@@ -77,6 +77,11 @@ public class DriveSystem {
         rearLeft.setPower(pwr);
         rearRight.setPower(pwr);
 
+        frontLeft.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        frontRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        rearLeft.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        rearRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+
         return counts;
     }
 }
