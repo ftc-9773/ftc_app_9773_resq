@@ -62,10 +62,10 @@ public class DriveSystem {
         double rotations = dist / circumference;
         double counts = rotations * ENCODER_CPR * GEAR_RATIO;
 
-        frontRight.setTargetPosition((int) counts);
+        frontRight.setTargetPosition((int) -counts);
         frontLeft.setTargetPosition((int) counts);
         rearLeft.setTargetPosition((int) counts);
-        rearRight.setTargetPosition((int) counts);
+        rearRight.setTargetPosition((int) -counts);
 
         frontLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
         frontRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
