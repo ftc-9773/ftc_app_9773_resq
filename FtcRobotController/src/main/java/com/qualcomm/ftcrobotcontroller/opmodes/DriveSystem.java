@@ -48,12 +48,13 @@ public class DriveSystem {
     }
 
     public double mecanumWheelAutoDrive(double dist, double pwr){
-        /*frontLeft.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        /*
+        frontLeft.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         frontRight.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         rearLeft.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        rearRight.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        rearRight.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);*/
 
-        frontLeft.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        /*frontLeft.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
         frontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
         rearRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
         rearLeft.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);*/
@@ -65,17 +66,14 @@ public class DriveSystem {
         /*frontRight.setTargetPosition((int) -counts);
         frontLeft.setTargetPosition((int) counts);
         rearLeft.setTargetPosition((int) counts);
-        rearRight.setTargetPosition((int) -counts);
+        rearRight.setTargetPosition((int) -counts);*/
 
-        frontLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        frontRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        rearLeft.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        rearRight.setChannelMode(DcMotorController.RunMode.RUN_TO_POSITION);*/
 
-        frontLeft.setTargetPosition(frontLeft.getCurrentPosition() - (int) counts);
+
+        frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + (int) counts);
         frontRight.setTargetPosition(frontRight.getCurrentPosition() + (int) counts);
         rearLeft.setTargetPosition(rearLeft.getCurrentPosition() + (int) counts);
-        rearRight.setTargetPosition(rearRight.getCurrentPosition() - (int) counts);
+        rearRight.setTargetPosition(rearRight.getCurrentPosition() + (int) counts);
 
         frontLeft.setPower(pwr);
         frontRight.setPower(pwr);
