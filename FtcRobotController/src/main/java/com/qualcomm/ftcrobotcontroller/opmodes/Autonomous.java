@@ -16,8 +16,8 @@ public class Autonomous extends LinearOpMode {
         DcMotor frontRight = hardwareMap.dcMotor.get("fMotorR");
         DcMotor rearLeft = hardwareMap.dcMotor.get("rMotorL");
         DcMotor rearRight = hardwareMap.dcMotor.get("rMotorR");
-        rearRight.setDirection(DcMotor.Direction.REVERSE);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        /*rearRight.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);*/
         DriveSystem mecanumDriveSystem = new DriveSystem(frontLeft, frontRight, rearLeft, rearRight);
 
         waitOneFullHardwareCycle();
