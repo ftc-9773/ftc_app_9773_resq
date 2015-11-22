@@ -1,5 +1,8 @@
 package org.robocracy.ftcrobot.DriveSystem;
 
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+
 /**
  * Created by pranavb on 11/8/15.
  */
@@ -12,6 +15,8 @@ public abstract interface DriveSystemInterface {
     final static double diameter = 4.0;
 
     public abstract void autoMove(RobotDirection direction, double distance, double speed)  throws InterruptedException;
+
+    public abstract void autoMove(RobotDirection direction, int intensity, double speed, OpticalDistanceSensor ods) throws InterruptedException;
 
     public abstract void autoTurn(RobotDirection direction, double degrees, double speed)  throws InterruptedException;
 

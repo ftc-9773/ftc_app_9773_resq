@@ -15,7 +15,7 @@ public class PowerTrain {
     double motorOutputPower; // = 14 Watts for AndyMark Neverest 40
     double efficiency; // = 0.95 for sprocket-chain and 100% for direct connected motors
     double wheelSpeedMax; // in inches/sec
-    static final double inchesPerFoot = 12.0;
+    public static final double inchesPerFoot = 12.0;
 
     public PowerTrain(Wheel wheel, double gearRatio, DcMotor motor, double CPR,
                       double maxSpeed, double stallTorque, double outputPower,
@@ -25,7 +25,8 @@ public class PowerTrain {
         this.motor = motor;
         this.motorEncoderCPR = CPR;
         this.motorSpeedMax = maxSpeed;
-        this.wheelSpeedMax = this.motorSpeedMax * this.gearRatio * this.wheel.circumference;
+        //wheelSpeedMax should be in inches/sec
+        this.wheelSpeedMax = (this.motorSpeedMax * this.gearRatio * this.wheel.circumference) / 60;
         this.motorStallTorque = stallTorque;
         this.motorOutputPower = outputPower;
         this.efficiency = efficiency;
