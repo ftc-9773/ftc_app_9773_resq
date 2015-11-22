@@ -29,7 +29,8 @@ public class FTCRobot {
     public void runRobotAutonomous()  throws InterruptedException {
 
 
-        this.driveSys.autoMove(DriveSystemInterface.RobotDirection.FORWARD, 60.0, 3);
+        this.driveSys.autoMove(DriveSystemInterface.RobotDirection.LEFT, 60.0, 12);
+        //this.driveSys.autoMove(DriveSystemInterface.RobotDirection.BACKWARD, 60.0, 12);
 //        curOpmode.waitOneFullHardwareCycle();
 
 //        double counts = mecanumDriveSystem.mecanumWheelAutoDrive(60, 0.5);
