@@ -3,6 +3,8 @@ package org.robocracy.ftcrobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 import org.robocracy.ftcrobot.DriveSystem.AWDMecanumDS;
 import org.robocracy.ftcrobot.DriveSystem.DriveSystemInterface;
@@ -14,10 +16,14 @@ import org.robocracy.ftcrobot.DriveSystem.DriveSystemInterface;
 public class FTCRobot {
     LinearOpMode curOpmode;
     AWDMecanumDS driveSys;
+    OpticalDistanceSensor opd;
+    DeviceInterfaceModule dim;
 
     public FTCRobot(LinearOpMode curOpmode) {
         this.driveSys = new AWDMecanumDS(curOpmode);
         this.curOpmode = curOpmode;
+        this.dim = curOpmode.hardwareMap.deviceInterfaceModule.get("dim");
+        this.opd = curOpmode.hardwareMap.opticalDistanceSensor.get("opd");
     }
 
     public void runRobotAutonomous()  throws InterruptedException {
@@ -47,6 +53,6 @@ public class FTCRobot {
     }
 
     public  void  runRobotTeleop() throws InterruptedException {
-        this.driveSys.mecanumWheelDriveTeleop();
+        this.driveSys.driverMove(DriveSystemInterface.RobotDirection.FORWARD, 1);
     }
 }

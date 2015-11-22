@@ -5,10 +5,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.robocracy.ftcrobot.util.PIDController;
 
+import java.util.InputMismatchException;
 import java.util.Timer;
 
 /**
@@ -77,7 +80,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
                     motorSpeedMax, motorStallTorque, motorOutputPower, efficiency[i]);
         }
 
-        // Determine the maxSpeed for this robot
+        // Determine the maxSpeed for this robot in inches/sec
         this.robotMaxSpeed = 100.0;
         for (int i=0; i<4; i++) {
             this.robotMaxSpeed = Math.min(this.robotMaxSpeed, this.powerTrain[i].wheelSpeedMax);
@@ -90,11 +93,13 @@ public class AWDMecanumDS implements DriveSystemInterface {
         }
     }
 
-    // Speed should be specified in ft/sec.
+    // Speed should be specified in in/sec.
     // Phase 1: No PID Controller
+    //Distance should be specified in inches.
     @Override
     public void autoMove(DriveSystemInterface.RobotDirection dir, double distance, double speed)  throws InterruptedException {
-        double[] countsPerFt = new double[4];
+        double[] distanceTravelledByWheel = new double[4];
+        double[] countsPerIn = new double[4];
         int[] cpsNeeded = new int[4];
         double[] motorPower = new double[4];
         double[] correction = new double[4];
@@ -104,7 +109,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
 
 
         // Check that the parameters are not our of bounds
-        if ((distance < 0.0) || (distance > (12 * Math.sqrt(2)))) {
+        if ((distance < 0.0) || (distance > (144 * Math.sqrt(2)))) {
             DbgLog.error(String.format("distance %.04f specified is invalid\n", distance));
         }
 
@@ -115,7 +120,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
         // Convert the 'speed' into Counts per second required
         // speed is specified in feet per second.
         for (int i=0; i<4; i++) {
-            countsPerFt[i] = ((this.powerTrain[i].motorEncoderCPR * PowerTrain.inchesPerFoot)
+            countsPerIn[i] = ((this.powerTrain[i].motorEncoderCPR)
                     / this.powerTrain[i].wheel.circumference) * this.powerTrain[i].gearRatio;
         }
 /*
@@ -129,7 +134,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
                 / this.RRpowerTrain.wheel.circumference) * this.RRpowerTrain.gearRatio;
 */
         for (int i=0; i<4; i++) {
-            cpsNeeded[i] = (int) (speed * countsPerFt[i]);
+            cpsNeeded[i] = (int) (speed * countsPerIn[i]);
             this.motorController[i].setSetPoint(cpsNeeded[i]);
         }
         for (int i=0; i<4; i++) {
@@ -164,8 +169,10 @@ public class AWDMecanumDS implements DriveSystemInterface {
             // Read the current encoder values
             for (int i=0; i<4; i++) {
                 motorPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
+                distanceTravelledByWheel[i] = ((motorPosition[i] - prevPosition[i]) / this.powerTrain[i].motorEncoderCPR) * this.powerTrain[i].wheel.circumference;
                 cpsInOneIteration[i] = (motorPosition[i] - prevPosition[i]) / elapsedTime;
                 correction[i] = this.motorController[i].getNextOutputValue(cpsInOneIteration[i]);
+                prevPosition[i] = motorPosition[i];
             }
 
             // Calculate error in counts per second.
@@ -176,7 +183,17 @@ public class AWDMecanumDS implements DriveSystemInterface {
                 this.powerTrain[i].motor.setPower(motorPower[i] - correction[i]);
             }
             System.arraycopy(motorPosition, 0, prevPosition, 0, 4);
+
+            distanceTravelled += (distanceTravelledByWheel[0] + distanceTravelledByWheel[1] + distanceTravelledByWheel[2] + distanceTravelledByWheel[3]) / 4;
         }
+        for(int i = 0; i < 4; i++){
+            this.powerTrain[i].motor.setPower(0);
+        }
+    }
+
+    @Override
+    public void autoMove(RobotDirection direction, int intensity, double speed, OpticalDistanceSensor ods) throws InterruptedException{
+
     }
 
     @Override
