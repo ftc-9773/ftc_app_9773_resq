@@ -9,6 +9,20 @@ public class DriverStation {
     public static  DriverCommand drvrCmd = new DriverCommand();
 
     public DriverCommand getNextCommand(){
+
+
         return (drvrCmd);
     }
+
+    public int getMoveAngle(double x, double y){
+        x = (int) x;
+        y = (int) y;
+        int moveAngle = 0;
+
+        
+
+        return(moveAngle);
+    }
+
+
 }
