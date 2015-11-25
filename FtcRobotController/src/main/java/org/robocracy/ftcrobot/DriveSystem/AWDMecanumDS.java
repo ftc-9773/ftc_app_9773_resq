@@ -33,6 +33,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
     PIDController[] motorController;
     LinearOpMode curOpmode;
     double robotMaxSpeed;
+    double robotLength, robotWidth;
 
     public AWDMecanumDS(LinearOpMode myOpmode) {
         double wheelDiameter, forwardFrictionCoeff, sidewaysFrictionCoeff;
@@ -93,6 +94,8 @@ public class AWDMecanumDS implements DriveSystemInterface {
             // ToDo:  Determine the corect values for Kp, Ki, and Kd and pass them in the constructor below.
             this.motorController[i] = new PIDController(0, 0, 0, 0, 0, 0);
         }
+        this.robotLength = 12; // in  inches
+        this.robotWidth  = 10; // in  inches
     }
 
     // Speed should be specified in in/sec.
@@ -101,19 +104,10 @@ public class AWDMecanumDS implements DriveSystemInterface {
     @Override
     public void autoMove(DriveSystemInterface.RobotDirection dir, double distance, double speed)  throws InterruptedException {
         double[] distanceTravelledByWheel = new double[4];
-        double[] countsPerIn = new double[4];
-        int[] cpsNeeded = new int[4];
         double[] motorPower = new double[4];
         double[] correction = new double[4];
         int[] motorPosition = new int[4];
         int[] prevPosition = new int[4];
-        double[] cpsInOneIteration = new double[4];
-
-        if(dir == RobotDirection.LEFT){
-            this.powerTrain[0].motor.setDirection(DcMotor.Direction.REVERSE);
-            this.powerTrain[3].motor.setDirection(DcMotor.Direction.REVERSE);
-        }
-
 
         // Check that the parameters are not our of bounds
         if ((distance < 0.0) || (distance > (144 * Math.sqrt(2)))) {
@@ -124,33 +118,12 @@ public class AWDMecanumDS implements DriveSystemInterface {
             DbgLog.error(String.format("speed %.04f specified is invalid\n", speed));
 
         }
-        DbgLog.msg("reached here : 1");
-        // Convert the 'speed' into Counts per second required
-        // speed is specified in feet per second.
         for (int i=0; i<4; i++) {
-            countsPerIn[i] = ((this.powerTrain[i].motorEncoderCPR)
-                    / this.powerTrain[i].wheel.circumference) * this.powerTrain[i].gearRatio;
+            this.motorController[i].setSetPoint(speed);
         }
-        DbgLog.msg("reached here : 2");
-/*
-        double FLcountsPerFoot = ((this.FLpowerTrain.motorEncoderCPR * PowerTrain.inchesPerFoot)
-                 / this.FLpowerTrain.wheel.circumference) * this.FLpowerTrain.gearRatio;
-        double FRcountsPerFoot = ((this.FRpowerTrain.motorEncoderCPR * PowerTrain.inchesPerFoot)
-                / this.FRpowerTrain.wheel.circumference) * this.FRpowerTrain.gearRatio;
-        double RLcountsPerFoot = ((this.RLpowerTrain.motorEncoderCPR * PowerTrain.inchesPerFoot)
-                / this.RLpowerTrain.wheel.circumference) * this.RLpowerTrain.gearRatio;
-        double RRcountsPerFoot = ((this.RRpowerTrain.motorEncoderCPR * PowerTrain.inchesPerFoot)
-                / this.RRpowerTrain.wheel.circumference) * this.RRpowerTrain.gearRatio;
-*/
-        for (int i=0; i<4; i++) {
-            cpsNeeded[i] = (int) (speed * countsPerIn[i]);
-            this.motorController[i].setSetPoint(cpsNeeded[i]);
-        }
-        DbgLog.msg("reached here : 3");
         for (int i=0; i<4; i++) {
             prevPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
         }
-        DbgLog.msg("reached here : 4");
 
 
         // It is assumed that all the motors are already set to USE_ENCODER mode
@@ -162,7 +135,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
 
         // Determine the Power for each Motor/PowerTrain
         for (int i=0; i<4; i++) {
-            motorPower[i] = speed / this.powerTrain[i].wheelSpeedMax;
+            motorPower[i] = speed * this.powerTrain[i].motorPowerMultiplier;
             this.powerTrain[i].motor.setPower(motorPower[i]);
         }
 
@@ -180,10 +153,8 @@ public class AWDMecanumDS implements DriveSystemInterface {
             // Read the current encoder values
             for (int i=0; i<4; i++) {
                 motorPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
-                distanceTravelledByWheel[i] = ((motorPosition[i] - prevPosition[i]) / this.powerTrain[i].motorEncoderCPR) * this.powerTrain[i].wheel.circumference;
-                cpsInOneIteration[i] = (motorPosition[i] - prevPosition[i]) / elapsedTime;
-                correction[i] = this.motorController[i].getNextOutputValue(cpsInOneIteration[i]);
-                prevPosition[i] = motorPosition[i];
+                distanceTravelledByWheel[i] = this.powerTrain[i].countsToDistance((motorPosition[i] - prevPosition[i]));
+                correction[i] = this.motorController[i].getNextOutputValue(distanceTravelledByWheel[i] / elapsedTime);
             }
 
             // Calculate error in counts per second.
@@ -206,19 +177,38 @@ public class AWDMecanumDS implements DriveSystemInterface {
                     }
                     DbgLog.msg(String.format("motor power %.04f", motorPower[i] - correction[i]));
                 }
+                else if(dir == RobotDirection.RIGHT){
+                    if(i == 1 || i == 2) {
+                        this.powerTrain[i].motor.setPower((motorPower[i] - correction[i]) * -1);
+                    }
+                    else{
+                        this.powerTrain[i].motor.setPower(motorPower[i] - correction[i]);
+                    }
+                    DbgLog.msg(String.format("motor power %.04f", motorPower[i] - correction[i]));
+                }
             }
             System.arraycopy(motorPosition, 0, prevPosition, 0, 4);
-            if(dir == RobotDirection.LEFT) {
+            distanceTravelled += (Math.abs(distanceTravelledByWheel[0]) +
+                                  Math.abs(distanceTravelledByWheel[1]) +
+                                  Math.abs(distanceTravelledByWheel[2]) +
+                                  Math.abs(distanceTravelledByWheel[3])) / 4;
+
+/*
+            if(dir == RobotDirection.LEFT || dir == RobotDirection.RIGHT) {
                 distanceTravelled += (-distanceTravelledByWheel[0] + distanceTravelledByWheel[1] + distanceTravelledByWheel[2] - distanceTravelledByWheel[3]) / 4;
             }
             else if(dir == RobotDirection.BACKWARD || dir == RobotDirection.FORWARD) {
                 distanceTravelled += (distanceTravelledByWheel[0] + distanceTravelledByWheel[1] + distanceTravelledByWheel[2] + distanceTravelledByWheel[3]) / 4;
             }
+*/
             DbgLog.msg(String.format("Distance travelled: %f", distanceTravelled));
         }
+
         for(int i = 0; i < 4; i++){
             this.powerTrain[i].motor.setPower(0);
         }
+        // Wait for one hardware cycle for the setPower(0) to take effect.
+        this.curOpmode.waitForNextHardwareCycle();
     }
 
     @Override
@@ -237,6 +227,168 @@ public class AWDMecanumDS implements DriveSystemInterface {
             this.curOpmode.sleep(1000);
             this.powerTrain[i].motor.setPower(0);
         }
+    }
+
+    // angle is specified in degres:  -360 < angle < 360
+    @Override
+    public void autoMecanum(int angle, int distance, double speed, int robotSpinDegrees) throws InterruptedException {
+        double[] distanceTravelledByWheel = new double[4];
+        double[] motorPower = new double[4];
+        int[] motorPosition = new int[4];
+        int[] prevPosition = new int[4];
+        double Vx, Vy, Omega;
+        double[] speedOfWheel = new double[4];
+        double  correction = 0.0;
+
+        if ((angle <= -360) || (angle >= 360)) {
+            DbgLog.error(String.format("Invalid angle %d\n", angle));
+            return;
+        }
+
+        if (distance < 0 || distance > 144) {
+            DbgLog.error(String.format("Invalid distance %d\n", distance));
+            return;
+        }
+
+        if (speed <= 0 || speed >= this.robotMaxSpeed) {
+            DbgLog.error(String.format("Invalid speed %f\n", speed));
+            return;
+        }
+
+        if (robotSpinDegrees <= -360 || robotSpinDegrees >= 360) {
+            DbgLog.error(String.format("Invalid robotSpinDegrees %f\n", robotSpinDegrees));
+            return;
+        }
+
+        // Find the quadrant corresponding to the angle
+        if (angle < 0) {
+            angle = 360 + angle;
+        }
+        int quadrant = angle / 90;
+        int angleInQuadrant = angle % 90;
+        // If the angle is in 1st or 3rd quadrants
+        if (quadrant == 0 || quadrant == 2) {
+            Vx = Math.cos(Math.toRadians((double)angleInQuadrant)) * speed;
+            Vy = Math.sin(Math.toRadians((double)angleInQuadrant)) * speed;
+        }
+        else {
+            Vy = Math.cos(Math.toRadians((double)angleInQuadrant)) * speed;
+            Vx = Math.sin(Math.toRadians((double)angleInQuadrant)) * speed;
+        }
+
+        // Convert robotSpinDegrees into angular velocity
+        Omega = Math.toRadians(robotSpinDegrees) / (speed / distance);
+
+        //Calculate the speed of each wheel
+        // Reference: Omni Drive system presentation by Andy Baker and Ian Mackenzie
+        speedOfWheel[0] = Vy + Vx - (Omega * (this.robotWidth + this.robotLength) / 2);
+        speedOfWheel[1] = Vy - Vx + (Omega * (this.robotWidth + this.robotLength) / 2);
+        speedOfWheel[2] = Vy - Vx - (Omega * (this.robotWidth + this.robotLength) / 2);
+        speedOfWheel[3] = Vy + Vx + (Omega * (this.robotWidth + this.robotLength) / 2);
+
+        for (int i=0; i<4; i++) {
+            this.motorController[i].setSetPoint(speedOfWheel[i]);
+        }
+        for (int i=0; i<4; i++) {
+            prevPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
+        }
+        // It is assumed that all the motors are already set to USE_ENCODER mode
+        // during initialization
+        long startTime = System.nanoTime();
+        long endTime = 0;
+        double elapsedTime = 0;
+        double distanceTravelled = 0.0;
+
+        // Determine the Power for each Motor/PowerTrain
+        for (int i=0; i<4; i++) {
+            motorPower[i] = speedOfWheel[i] * this.powerTrain[i].motorPowerMultiplier;
+            this.powerTrain[i].motor.setPower(motorPower[i]);
+        }
+
+        //Set the power for each motor
+        while (curOpmode.opModeIsActive() && (Math.abs(distanceTravelled) < distance)) {
+
+            // Wait for one hardware cycle
+            this.curOpmode.waitForNextHardwareCycle();
+
+            // Calculate elapsed time
+            endTime = System.nanoTime();
+            elapsedTime = (double) (endTime - startTime) / (10 ^ 9);
+            startTime = endTime;
+
+            // Read the current encoder values
+            for (int i = 0; i < 4; i++) {
+                motorPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
+                distanceTravelledByWheel[i] = this.powerTrain[i].countsToDistance((motorPosition[i] - prevPosition[i]));
+                correction = this.motorController[i].getNextOutputValue(distanceTravelledByWheel[i] / elapsedTime);
+                this.powerTrain[i].motor.setPower(motorPower[i] - correction);
+            }
+            System.arraycopy(motorPosition, 0, prevPosition, 0, 4);
+            distanceTravelled += (Math.abs(distanceTravelledByWheel[0]) +
+                    Math.abs(distanceTravelledByWheel[1]) +
+                    Math.abs(distanceTravelledByWheel[2]) +
+                    Math.abs(distanceTravelledByWheel[3])) / 4;
+
+            DbgLog.msg(String.format("Distance travelled: %f", distanceTravelled));
+        }
+
+        for(int i = 0; i < 4; i++){
+            this.powerTrain[i].motor.setPower(0);
+        }
+
+        // Wait for one hardware cycle for the setPower(0) to take effect.
+        this.curOpmode.waitForNextHardwareCycle();
+    }
+
+    @Override
+    public void driveMecanum(int angle, double speedMultiplier, double Omega) throws  InterruptedException{
+        double[] speedOfWheel = new double[4];
+        double[] motorPower = new double[4];
+        double Vx, Vy;
+
+        if ((angle <= -360) || (angle >= 360)) {
+            DbgLog.error(String.format("Invalid angle %d\n", angle));
+            return;
+        }
+
+        if (speedMultiplier < 0 || speedMultiplier > 1) {
+            DbgLog.error(String.format("Invalid speedMultiplier %f\n", speedMultiplier));
+            return;
+        }
+
+        // Find the quadrant corresponding to the angle
+        if (angle < 0) {
+            angle = 360 + angle;
+        }
+        int quadrant = angle / 90;
+        int angleInQuadrant = angle % 90;
+        double speed = speedMultiplier * this.robotMaxSpeed;
+
+        // If the angle is in 1st or 3rd quadrants
+        if (quadrant == 0 || quadrant == 2) {
+            Vx = Math.cos(Math.toRadians((double)angleInQuadrant)) * speed;
+            Vy = Math.sin(Math.toRadians((double)angleInQuadrant)) * speed;
+        }
+        else {
+            Vy = Math.cos(Math.toRadians((double)angleInQuadrant)) * speed;
+            Vx = Math.sin(Math.toRadians((double)angleInQuadrant)) * speed;
+        }
+
+        //Calculate the speed of each wheel
+        // Reference: Omni Drive system presentation by Andy Baker and Ian Mackenzie
+        speedOfWheel[0] = Vy + Vx - (Omega * (this.robotWidth + this.robotLength) / 2);
+        speedOfWheel[1] = Vy - Vx + (Omega * (this.robotWidth + this.robotLength) / 2);
+        speedOfWheel[2] = Vy - Vx - (Omega * (this.robotWidth + this.robotLength) / 2);
+        speedOfWheel[3] = Vy + Vx + (Omega * (this.robotWidth + this.robotLength) / 2);
+
+        // Determine the Power for each Motor/PowerTrain
+        for (int i=0; i<4; i++) {
+            motorPower[i] = speedOfWheel[i] * this.powerTrain[i].motorPowerMultiplier;
+            this.powerTrain[i].motor.setPower(motorPower[i]);
+        }
+
+        // Wait for one hardware cycle for the setPower(0) to take effect.
+        this.curOpmode.waitForNextHardwareCycle();
     }
 
     @Override

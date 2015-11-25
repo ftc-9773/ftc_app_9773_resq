@@ -18,6 +18,10 @@ public class FTCRobot {
     AWDMecanumDS driveSys;
     OpticalDistanceSensor opd;
     DeviceInterfaceModule dim;
+    // RobotLength = Distance in inches from the center of front left to the center of rear left wheel
+    double RobotLength;
+    // RobotWidth = Distance in inches from the center of front left to the center of front right wheel
+    double RobotWidth;
 
     public FTCRobot(LinearOpMode curOpmode) {
         this.driveSys = new AWDMecanumDS(curOpmode);

@@ -9,7 +9,6 @@ public class DriverStation {
     public static  DriverCommand drvrCmd = new DriverCommand();
 
     public DriverCommand getNextCommand(){
-        drvrCmd.mvCmd = DriverCommand.MoveCommands.MOVE_FWD;
         return (drvrCmd);
     }
 }
