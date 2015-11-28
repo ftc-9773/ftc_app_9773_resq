@@ -15,10 +15,10 @@ public class DriverCommand {
         // Omega = Desired angular velocity of the Robot
         // -1 <= Vx, Vy, Omega <= +1
         //  These values will be scaled to fit them into one of the 8 zones of the drive area
-        double angle, speedMultiplier, Omega;
+        public double angle, speedMultiplier, Omega;
     }
 
-    DriveSystemCommand drvsyscmd = new DriveSystemCommand();
+    public DriveSystemCommand drvsyscmd = new DriveSystemCommand();
     public class LinearLiftCommand {
         // Decide which button(s) on the gamepad(s) will be used for the lift.
         double power;

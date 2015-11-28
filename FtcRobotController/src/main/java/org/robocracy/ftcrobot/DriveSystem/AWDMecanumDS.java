@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.robocracy.ftcrobot.FTCRobot;
 import org.robocracy.ftcrobot.util.PIDController;
 
 import java.util.InputMismatchException;
@@ -34,13 +35,16 @@ public class AWDMecanumDS implements DriveSystemInterface {
     LinearOpMode curOpmode;
     double robotMaxSpeed;
     double robotLength, robotWidth;
+    FTCRobot robot;
 
-    public AWDMecanumDS(LinearOpMode myOpmode) {
+    public AWDMecanumDS(LinearOpMode myOpmode, FTCRobot robot) {
         double wheelDiameter, forwardFrictionCoeff, sidewaysFrictionCoeff;
         double[] gearRatio = new double[4];
         double[] efficiency = new double[4];
 
         this.curOpmode = myOpmode;
+
+        this.robot = robot;
 
         DcMotor[] motors = new DcMotor[4];
         motors[0] = myOpmode.hardwareMap.dcMotor.get("fMotorL");
@@ -145,6 +149,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
             // Wait for one hardware cycle
             this.curOpmode.waitForNextHardwareCycle();
 
+
             // Calculate elapsed time
             endTime = System.nanoTime();
             elapsedTime = (double) (endTime - startTime) / (10^9);
@@ -201,7 +206,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
                 distanceTravelled += (distanceTravelledByWheel[0] + distanceTravelledByWheel[1] + distanceTravelledByWheel[2] + distanceTravelledByWheel[3]) / 4;
             }
 */
-            DbgLog.msg(String.format("Distance travelled: %f", distanceTravelled));
+            //DbgLog.msg(String.format("Distance travelled: %f", distanceTravelled));
         }
 
         for(int i = 0; i < 4; i++){
@@ -276,6 +281,16 @@ public class AWDMecanumDS implements DriveSystemInterface {
             Vx = Math.sin(Math.toRadians((double)angleInQuadrant)) * speed;
         }
 
+        if(quadrant == 1){
+            Vx = -Vx;
+        }
+        else if(quadrant == 2){
+            Vx = -Vx;
+            Vy = -Vy;
+        }
+        else if(quadrant == 3){
+            Vy = -Vy;
+        }
         // Convert robotSpinDegrees into angular velocity
         Omega = Math.toRadians(robotSpinDegrees) / (speed / distance);
 
@@ -310,6 +325,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
 
             // Wait for one hardware cycle
             this.curOpmode.waitForNextHardwareCycle();
+            DbgLog.msg(String.format("rli: %f", this.robot.opd.getLightDetected()));
 
             // Calculate elapsed time
             endTime = System.nanoTime();
@@ -321,7 +337,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
                 motorPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
                 distanceTravelledByWheel[i] = this.powerTrain[i].countsToDistance((motorPosition[i] - prevPosition[i]));
                 correction = this.motorController[i].getNextOutputValue(distanceTravelledByWheel[i] / elapsedTime);
-                this.powerTrain[i].motor.setPower(motorPower[i] - correction);
+                this.powerTrain[i].motor.setPower(Range.clip((motorPower[i] - correction), -1, 1));
             }
             System.arraycopy(motorPosition, 0, prevPosition, 0, 4);
             distanceTravelled += (Math.abs(distanceTravelledByWheel[0]) +
@@ -329,7 +345,7 @@ public class AWDMecanumDS implements DriveSystemInterface {
                     Math.abs(distanceTravelledByWheel[2]) +
                     Math.abs(distanceTravelledByWheel[3])) / 4;
 
-            DbgLog.msg(String.format("Distance travelled: %f", distanceTravelled));
+            //DbgLog.msg(String.format("Distance travelled: %f", distanceTravelled));
         }
 
         for(int i = 0; i < 4; i++){
@@ -364,6 +380,9 @@ public class AWDMecanumDS implements DriveSystemInterface {
         int angleInQuadrant = angle % 90;
         double speed = speedMultiplier * this.robotMaxSpeed;
 
+        DbgLog.msg(String.format("angle: %d, speedMultiplier: %f, omega %f, speed: %f, quadrant: %d",
+                angle, speedMultiplier, Omega, speed, quadrant));
+
         // If the angle is in 1st or 3rd quadrants
         if (quadrant == 0 || quadrant == 2) {
             Vx = Math.cos(Math.toRadians((double)angleInQuadrant)) * speed;
@@ -372,6 +391,17 @@ public class AWDMecanumDS implements DriveSystemInterface {
         else {
             Vy = Math.cos(Math.toRadians((double)angleInQuadrant)) * speed;
             Vx = Math.sin(Math.toRadians((double)angleInQuadrant)) * speed;
+        }
+
+        if(quadrant == 1){
+            Vx = -Vx;
+        }
+        else if(quadrant == 2){
+            Vx = -Vx;
+            Vy = -Vy;
+        }
+        else if(quadrant == 3){
+            Vy = -Vy;
         }
 
         //Calculate the speed of each wheel
@@ -384,11 +414,11 @@ public class AWDMecanumDS implements DriveSystemInterface {
         // Determine the Power for each Motor/PowerTrain
         for (int i=0; i<4; i++) {
             motorPower[i] = speedOfWheel[i] * this.powerTrain[i].motorPowerMultiplier;
+            motorPower[i] = Range.clip(motorPower[i], -1, 1);
             this.powerTrain[i].motor.setPower(motorPower[i]);
         }
 
-        // Wait for one hardware cycle for the setPower(0) to take effect.
-        this.curOpmode.waitForNextHardwareCycle();
+
     }
 
     @Override

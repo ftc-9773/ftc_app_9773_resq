@@ -1,5 +1,6 @@
 package org.robocracy.ftcrobot;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorController;
@@ -8,6 +9,8 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 import org.robocracy.ftcrobot.DriveSystem.AWDMecanumDS;
 import org.robocracy.ftcrobot.DriveSystem.DriveSystemInterface;
+import org.robocracy.ftcrobot.DriverStation.DriverCommand;
+import org.robocracy.ftcrobot.DriverStation.DriverStation;
 
 
 /**
@@ -16,24 +19,27 @@ import org.robocracy.ftcrobot.DriveSystem.DriveSystemInterface;
 public class FTCRobot {
     LinearOpMode curOpmode;
     AWDMecanumDS driveSys;
-    OpticalDistanceSensor opd;
+    public OpticalDistanceSensor opd;
     DeviceInterfaceModule dim;
     // RobotLength = Distance in inches from the center of front left to the center of rear left wheel
     double RobotLength;
     // RobotWidth = Distance in inches from the center of front left to the center of front right wheel
     double RobotWidth;
 
+    DriverStation drvrStation;
+
     public FTCRobot(LinearOpMode curOpmode) {
-        this.driveSys = new AWDMecanumDS(curOpmode);
+        this.driveSys = new AWDMecanumDS(curOpmode, this);
         this.curOpmode = curOpmode;
         this.dim = curOpmode.hardwareMap.deviceInterfaceModule.get("dim");
         this.opd = curOpmode.hardwareMap.opticalDistanceSensor.get("opd");
+        this.drvrStation = new DriverStation(curOpmode, this);
     }
 
     public void runRobotAutonomous()  throws InterruptedException {
 
 
-        this.driveSys.autoMove(DriveSystemInterface.RobotDirection.LEFT, 60.0, 12);
+        this.driveSys.autoMecanum(230, 82, 12, 0);
         //this.driveSys.autoMove(DriveSystemInterface.RobotDirection.BACKWARD, 60.0, 12);
 //        curOpmode.waitOneFullHardwareCycle();
 
@@ -58,6 +64,14 @@ public class FTCRobot {
     }
 
     public  void  runRobotTeleop() throws InterruptedException {
-        this.driveSys.driverMove(DriveSystemInterface.RobotDirection.FORWARD, 1);
+        DriverCommand driverCommand;
+        while(curOpmode.opModeIsActive()){
+            driverCommand = drvrStation.getNextCommand();
+            //DbgLog.msg(String.format("angle = %f, speedMult= %f, Omega = %f",
+            //        driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega));
+            this.driveSys.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega);
+            // Wait for one hardware cycle for the setPower(0) to take effect.
+            this.curOpmode.waitForNextHardwareCycle();
+        }
     }
 }
