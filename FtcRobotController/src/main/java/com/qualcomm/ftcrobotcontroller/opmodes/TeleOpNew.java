@@ -18,6 +18,6 @@ public class TeleOpNew extends LinearOpMode {
 
         waitForStart();
 
-        myRobot.runRobotAutonomous();
+        myRobot.runRobotTeleop();
     }
 }
