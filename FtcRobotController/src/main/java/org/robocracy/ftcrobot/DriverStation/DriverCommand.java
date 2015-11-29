@@ -7,8 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Created by Robocracy on 11/19/2015.
  */
 public class DriverCommand {
-    public enum WinchDirection {PULL, PUSH}
-    public enum LiftDirection {EXPAND, COLLAPSE}
+    public enum HarvesterDirection {PULL, PUSH, NONE}
     public class DriveSystemCommand {
         // Vx = X-axis component of the desired Robot velocity.
         // Vy = Y-axis component of the desired Robot velocity
@@ -21,13 +20,13 @@ public class DriverCommand {
     public DriveSystemCommand drvsyscmd = new DriveSystemCommand();
     public class LinearLiftCommand {
         // Decide which button(s) on the gamepad(s) will be used for the lift.
-        double power;
-        LiftDirection direction;
+        public float angle, direction;
     }
+    public LinearLiftCommand linliftcmd = new LinearLiftCommand();
 
-    public class WinchCommand {
-        double power;
-        WinchDirection direction;
+    public class HarvesterCommand {
+        public HarvesterDirection direction;
     }
+    public HarvesterCommand harvestercmd = new HarvesterCommand();
 
 }
