@@ -431,6 +431,10 @@ public class AWDMecanumDS implements DriveSystemInterface {
 
     }
 
+    public void PIDLineFollow(PIDController pidController, double maxError){
+
+    }
+
     @Override
     public void mecanumWheelDrive(float strafeDirection, float strafeThrottle, float turnDirection, float turnThrottle) {
         strafeDirection = Range.clip(strafeDirection, -1, 1);
