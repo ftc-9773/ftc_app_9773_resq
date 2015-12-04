@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.robocracy.ftcrobot.DriveSystem.AWDMecanumDS;
 import org.robocracy.ftcrobot.util.PIDController;
@@ -17,6 +18,7 @@ public class AutonomousScorer {
     public Servo colorServo;
     public ColorSensor colorSensor;
     public OpticalDistanceSensor ods;
+    public TouchSensor touchSensor;
     boolean  allianceIsBlue;
 
     public AutonomousScorer(FTCRobot robot, LinearOpMode curOpMode, boolean allianceIsBlue) {
@@ -26,6 +28,7 @@ public class AutonomousScorer {
         this.colorSensor = curOpMode.hardwareMap.colorSensor.get("color_sensor1");
         this.colorServo = curOpMode.hardwareMap.servo.get("colorServo");
         this.ods = curOpMode.hardwareMap.opticalDistanceSensor.get("ods_sensor1");
+        this.touchSensor = curOpMode.hardwareMap.touchSensor.get("touch_sensor");
     }
 
     public void step1_driveToRepairZone(AWDMecanumDS drivesys) throws InterruptedException{
@@ -87,7 +90,7 @@ public class AutonomousScorer {
         // Follow the white line slowly until the touch sensor is pressed.
         PIDController lfPID = new PIDController(0.1, 0, 0.1, 4, 0.2, 0.3);
 
-        drivesys.PIDLineFollow(lfPID, 12, 12, this.ods);
+        drivesys.PIDLineFollow(lfPID, 24, 12, this.ods, this.touchSensor);
     }
 
     public void step4_moveBackToMountainBase(AWDMecanumDS drivesys) throws InterruptedException {

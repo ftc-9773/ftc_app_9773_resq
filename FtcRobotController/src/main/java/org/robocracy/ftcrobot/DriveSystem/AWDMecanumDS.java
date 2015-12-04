@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.robocracy.ftcrobot.AutonomousScorer;
@@ -330,9 +331,8 @@ public class AWDMecanumDS {
     }
 
     public void PIDLineFollow(PIDController pidController, double distance, double speed,
-                              OpticalDistanceSensor opd) throws InterruptedException{
+                              OpticalDistanceSensor opd, TouchSensor touchSensor) throws InterruptedException{
 
-        double[] distanceTravelledByWheel = new double[4];
         int[] motorPosition = new int[4];
         int[] prevPosition = new int[4];
         double distanceTravelled = 0;
@@ -340,12 +340,15 @@ public class AWDMecanumDS {
         int angle;
         double[] speedOfWheel = new double[4];
         double motorPower;
+        boolean exitLoop = false;
 
         for (int i = 0; i < 4; i++) {
             prevPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
         }
+
+        exitLoop = (distanceTravelled >= distance) || touchSensor.isPressed();
         //Set the power for each motor
-        while (curOpmode.opModeIsActive() && (Math.abs(distanceTravelled) < distance)) {
+        while (curOpmode.opModeIsActive() && !exitLoop) {
 
             // Wait for one hardware cycle
             this.curOpmode.waitForNextHardwareCycle();
@@ -364,15 +367,14 @@ public class AWDMecanumDS {
             }
 
             // Read the current encoder values
+            distanceTravelled = 0.0;
             for (int i = 0; i < 4; i++) {
                 motorPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
-                distanceTravelledByWheel[i] = this.powerTrain[i].countsToDistance((motorPosition[i] - prevPosition[i]));
+                distanceTravelled += Math.abs(this.powerTrain[i].countsToDistance((motorPosition[i] - prevPosition[i])));
             }
             System.arraycopy(motorPosition, 0, prevPosition, 0, 4);
-            distanceTravelled += (Math.abs(distanceTravelledByWheel[0]) +
-                    Math.abs(distanceTravelledByWheel[1]) +
-                    Math.abs(distanceTravelledByWheel[2]) +
-                    Math.abs(distanceTravelledByWheel[3])) / 4;
+
+            exitLoop = (distanceTravelled >= distance) || touchSensor.isPressed();
         }
         for (int i = 0; i < 4; i++) {
             this.powerTrain[i].motor.setPower(0);
