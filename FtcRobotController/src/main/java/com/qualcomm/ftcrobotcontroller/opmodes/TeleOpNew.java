@@ -11,7 +11,10 @@ public class TeleOpNew extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        this.myRobot = new FTCRobot(this);
+        // The 2nd parameter indicates whether the robot is part of the blue alliance or not.
+        // This is used in the autonomous mode; it does not matter for the teleop mode,
+        // but some value has to be passed, so pass the value "true".
+        this.myRobot = new FTCRobot(this, true);
 
 
         waitOneFullHardwareCycle();

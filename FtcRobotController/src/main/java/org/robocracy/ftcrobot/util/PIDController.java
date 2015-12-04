@@ -6,7 +6,7 @@ package org.robocracy.ftcrobot.util;
  */
 public class PIDController {
     double Kp, Ki,Kd;
-    int ArrayLenForIntegral;
+    CircularQueue cirQ;
     double setPoint, errorMax;
 
     public PIDController(double Kp, double Ki, double Kd, int ArrayLen,
@@ -14,19 +14,20 @@ public class PIDController {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;
-        this.ArrayLenForIntegral = ArrayLen;
+        this.cirQ = new CircularQueue(ArrayLen);
         this.setPoint = setPoint;
         this.errorMax = errorMax;
     }
 
-    public double getNextOutputValue(double curValue) {
+    public double getCorrection(double curValue) {
         double correction = 0.0;
         // Calculate error
         double error = setPoint - curValue;
         // Save error to queue
+        this.cirQ.add(error);
         // Calculate Correction
+        correction = (Kp * error) + (Ki * this.cirQ.average()) + (Kd * (error - this.cirQ.getLatestValue()));
         // Return the correction
-
         return (correction);
     }
 
@@ -40,5 +41,6 @@ public class PIDController {
         this.Kd = 0.0;
         this.setPoint = 0.0;
         this.errorMax = 0.0;
+        this.cirQ.reset();
     }
 }

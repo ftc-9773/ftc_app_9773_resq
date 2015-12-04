@@ -13,11 +13,11 @@ public class LinearLift {
     DcMotor liftAngleMotor;
     DcMotor liftDirectionMotor;
 
-    public LinearLift(FTCRobot robot, LinearOpMode curOpMode, DcMotor liftAngleMotor, DcMotor liftDirectionMotor){
-        this.curOpMode = curOpMode;
-        this.liftAngleMotor = liftAngleMotor;
-        this.liftDirectionMotor = liftDirectionMotor;
+    public LinearLift(FTCRobot robot, LinearOpMode curOpMode){
         this.robot = robot;
+        this.curOpMode = curOpMode;
+        this.liftAngleMotor = curOpMode.hardwareMap.dcMotor.get("liftAngleMotor");
+        this.liftDirectionMotor = curOpMode.hardwareMap.dcMotor.get("liftDirectionMotor");
     }
 
     public void applyCmd(DriverCommand driverCommand){

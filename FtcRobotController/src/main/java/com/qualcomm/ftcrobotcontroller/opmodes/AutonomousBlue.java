@@ -11,12 +11,12 @@ import org.robocracy.ftcrobot.FTCRobot;
 /**
  * Created by pranavb on 11/11/15.
  */
-public class Autonomous extends LinearOpMode {
+public class AutonomousBlue extends LinearOpMode {
     FTCRobot myRobot;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        this.myRobot = new FTCRobot(this);
+        this.myRobot = new FTCRobot(this, true);
 
 
         waitOneFullHardwareCycle();
