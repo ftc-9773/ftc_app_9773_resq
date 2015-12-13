@@ -39,28 +39,37 @@ public class AutonomousScorer {
 
         // First, bring down the arm holding the sensors.
         // The arm was in folded position to fit the robot into 18" cube.
-        colorServo.setDirection(Servo.Direction.FORWARD);
-        colorServo.setPosition(0.5); // Need to test multiple values to find the correct one.
+        //colorServo.setDirection(Servo.Direction.FORWARD);
+        //colorServo.setPosition(0.5); // Need to test multiple values to find the correct one.
 
         // Now move towards the rescue beacon repair zone.
         if (this.allianceIsBlue) {
-            colorIDs[0] = 1;
-            colorIDs[1] = 5;  // To be modified with the IDs corresponding to White and blue
-            rli = 0.05;
-            distance = 53; // inches
-            angle = 230;
+            //colorIDs[0] = 1;
+            //colorIDs[1] = 5;  // To be modified with the IDs corresponding to White and blue
+            //rli = 0.05;
+            //distance = 77; // inches
+            //angle = 15;
+            //double omega = 50;
+            drivesys.autoMecanum(90, 12, 12, -40);
+            //drivesys.autoMecanum(0, , 12, -40);
+            drivesys.autoMecanum(90, 72, 12, 0);
+
         }
         else
         {
             colorIDs[0] = 1;
             colorIDs[1] = 5;  // To be modified with the IDs corresponding to White and red
-            rli = 0.05;
-            distance = 53; // inches
-            angle = 230;
+            //rli = 0.05;
+            //distance = 77; // inches
+            //angle = 165;
+            drivesys.autoMecanum(90, 12, 12, 40);
+            drivesys.autoMecanum(90, 72, 12, 0);
         }
 
         double speed = 12; // inches per second
-        drivesys.autoMecanumUntil(angle, speed, distance,colorIDs, rli, this);
+        //drivesys.autoMecanumUntil(angle, speed, distance,colorIDs, rli, this);
+        //drivesys.autoMecanum(angle, distance, speed, );
+        //drivesys.autoMecanum(270, 4, 6, 0);
     }
 
     public void step2_alignWithWhiteLine(AWDMecanumDS drivesys) throws InterruptedException {

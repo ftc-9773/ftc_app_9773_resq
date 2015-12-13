@@ -3,11 +3,14 @@ package org.robocracy.ftcrobot.DriverStation;
 import com.qualcomm.ftcrobotcontroller.opmodes.DriveSystem;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.robocracy.ftcrobot.Latch;
+
 /**
  * Created by Robocracy on 11/19/2015.
  */
 public class DriverCommand {
     public enum HarvesterDirection {PULL, PUSH, NONE}
+    public enum LatchDirection {DOWN, UP, NONE}
     public class DriveSystemCommand {
         // Vx = X-axis component of the desired Robot velocity.
         // Vy = Y-axis component of the desired Robot velocity
@@ -24,9 +27,14 @@ public class DriverCommand {
     }
     public LinearLiftCommand linliftcmd = new LinearLiftCommand();
 
-    public class HarvesterCommand {
+    /*public class HarvesterCommand {
         public HarvesterDirection direction;
     }
-    public HarvesterCommand harvestercmd = new HarvesterCommand();
+    public HarvesterCommand harvestercmd = new HarvesterCommand();*/
+
+    public class LatchCommand{
+        public LatchDirection direction;
+    }
+    public LatchCommand latchCmd = new LatchCommand();
 
 }

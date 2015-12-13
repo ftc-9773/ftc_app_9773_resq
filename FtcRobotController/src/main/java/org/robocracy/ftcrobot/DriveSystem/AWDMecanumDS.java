@@ -50,7 +50,8 @@ public class AWDMecanumDS {
         motors[1] = myOpmode.hardwareMap.dcMotor.get("fMotorR");
         motors[2] = myOpmode.hardwareMap.dcMotor.get("rMotorL");
         motors[3] = myOpmode.hardwareMap.dcMotor.get("rMotorR");
-        motors[0].setDirection(DcMotor.Direction.REVERSE); // Front Left
+        //motors[0].setDirection(DcMotor.Direction.REVERSE); // Front Left
+        motors[1].setDirection(DcMotor.Direction.REVERSE); //Front Right
         motors[3].setDirection(DcMotor.Direction.REVERSE); // Rear Right
         for (int i = 0; i < 4; i++) {
             motors[i].setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);

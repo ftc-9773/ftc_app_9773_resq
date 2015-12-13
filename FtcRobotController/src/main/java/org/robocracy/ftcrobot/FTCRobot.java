@@ -3,6 +3,7 @@ package org.robocracy.ftcrobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.robocracy.ftcrobot.DriveSystem.AWDMecanumDS;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
@@ -16,10 +17,13 @@ public class FTCRobot {
     LinearOpMode curOpmode;
     AWDMecanumDS driveSys;
     DeviceInterfaceModule dim;
-    Harvester harvester;
+    //Harvester harvester;
     LinearLift linearLift;
     DcMotor harvesterMotor;
     AutonomousScorer autoScorer;
+    //Servo rightLatch;
+    //Servo leftLatch;
+    //Latch latch;
     // RobotLength = Distance in inches from the center of front left to the center of rear left wheel
     double RobotLength;
     // RobotWidth = Distance in inches from the center of front left to the center of front right wheel
@@ -32,18 +36,21 @@ public class FTCRobot {
         this.curOpmode = curOpmode;
         this.dim = curOpmode.hardwareMap.deviceInterfaceModule.get("dim");
         this.drvrStation = new DriverStation(curOpmode, this);
-        this.harvesterMotor = curOpmode.hardwareMap.dcMotor.get("harvesterMotor");
-        this.harvester = new Harvester(this, curOpmode, harvesterMotor);
+        //this.harvesterMotor = curOpmode.hardwareMap.dcMotor.get("harvesterMotor");
+        //this.harvester = new Harvester(this, curOpmode, harvesterMotor);
         this.linearLift = new LinearLift(this, curOpmode);
         this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
+        //this.leftLatch = curOpmode.hardwareMap.servo.get("leftLatch");
+        //this.rightLatch = curOpmode.hardwareMap.servo.get("rightLatch");
+        //this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
     }
 
     public void runRobotAutonomous()  throws InterruptedException {
 
         this.autoScorer.step1_driveToRepairZone(this.driveSys);
-        this.autoScorer.step2_alignWithWhiteLine(this.driveSys);
-        this.autoScorer.step3_moveToTheRescueBeacon(this.driveSys);
-        this.autoScorer.step4_moveBackToMountainBase(this.driveSys);
+        //this.autoScorer.step2_alignWithWhiteLine(this.driveSys);
+        //this.autoScorer.step3_moveToTheRescueBeacon(this.driveSys);
+        //this.autoScorer.step4_moveBackToMountainBase(this.driveSys);
 /*
         this.driveSys.autoMecanum(250, 82, 12, 0);
         this.driveSys.autoMecanum(0, 0, 12, 70);
@@ -59,8 +66,10 @@ public class FTCRobot {
             this.driveSys.applyCmd(driverCommand);
 //            this.driveSys.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega);
 
-            this.harvester.applyDSCmd(driverCommand);
+            //this.harvester.applyDSCmd(driverCommand);
             this.linearLift.applyCmd(driverCommand);
+
+            //this.latch.applyDSCmd(driverCommand);
             // Wait for one hardware cycle for the setPower(0) to take effect.
             this.curOpmode.waitForNextHardwareCycle();
         }

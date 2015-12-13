@@ -65,7 +65,7 @@ public class DriverStation {
 
     }
 
-    private void getNextHarvesterCmd(){
+    /*private void getNextHarvesterCmd(){
         boolean harvesterPull = curOpMode.gamepad2.right_bumper;
         float harvesterPushSlow = curOpMode.gamepad2.right_trigger;
         boolean harvesterPush = false;
@@ -80,7 +80,7 @@ public class DriverStation {
             drvrCmd.harvestercmd.direction = DriverCommand.HarvesterDirection.NONE;
         }
 
-    }
+    }*/
 
     private void getNextLinearLiftCmd(){
         float angle = -curOpMode.gamepad2.left_stick_y;
@@ -90,11 +90,27 @@ public class DriverStation {
         drvrCmd.linliftcmd.angle = Range.clip(angle, -1, 1);
     }
 
+    private void getNextLatchCmd(){
+        boolean latchDown = curOpMode.gamepad1.a;
+        boolean latchUp = curOpMode.gamepad1.y;
+
+        if(latchDown == true){
+            drvrCmd.latchCmd.direction = DriverCommand.LatchDirection.DOWN;
+        }
+        else if(latchUp == true){
+            drvrCmd.latchCmd.direction = DriverCommand.LatchDirection.UP;
+        }
+        else{
+            drvrCmd.latchCmd.direction = DriverCommand.LatchDirection.NONE;
+        }
+    }
+
     public DriverCommand getNextCommand() {
 
         getNextDrivesysCmd();
-        getNextHarvesterCmd();
+        //getNextHarvesterCmd();
         getNextLinearLiftCmd();
+        //getNextLatchCmd();
 
         return (drvrCmd);
     }
