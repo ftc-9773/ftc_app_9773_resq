@@ -1,5 +1,6 @@
 package org.robocracy.ftcrobot;
 
+import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -31,6 +32,9 @@ public class FTCRobot {
 
     DriverStation drvrStation;
 
+    public final int NAVX_DIM_I2C_PORT = 0;
+    public AHRS navx_device;
+
     public FTCRobot(LinearOpMode curOpmode, boolean allianceIsBlue) {
         this.driveSys = new AWDMecanumDS(curOpmode, this);
         this.curOpmode = curOpmode;
@@ -40,6 +44,8 @@ public class FTCRobot {
         //this.harvester = new Harvester(this, curOpmode, harvesterMotor);
         this.linearLift = new LinearLift(this, curOpmode);
         this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
+        this.navx_device = AHRS.getInstance(curOpmode.hardwareMap.deviceInterfaceModule.get("dim"),
+                NAVX_DIM_I2C_PORT, AHRS.DeviceDataType.kProcessedData);
         //this.leftLatch = curOpmode.hardwareMap.servo.get("leftLatch");
         //this.rightLatch = curOpmode.hardwareMap.servo.get("rightLatch");
         //this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);

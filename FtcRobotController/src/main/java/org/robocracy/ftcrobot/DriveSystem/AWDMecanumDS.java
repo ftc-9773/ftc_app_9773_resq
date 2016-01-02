@@ -12,7 +12,9 @@ import org.robocracy.ftcrobot.AutonomousScorer;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import org.robocracy.ftcrobot.FTCRobot;
 import org.robocracy.ftcrobot.util.CircularQueue;
+import org.robocracy.ftcrobot.util.FileRW;
 import org.robocracy.ftcrobot.util.PIDController;
+import org.robocracy.ftcrobot.util.NavX;
 
 /**
  * Created by burugula on 11/16/2015.
@@ -35,6 +37,9 @@ public class AWDMecanumDS {
     double robotMaxSpeed;
     double robotLength, robotWidth;
     FTCRobot robot;
+    String filePath = "/sdcard/FIRST/autonomousLog/navxLog." + System.nanoTime() + ".csv";
+    FileRW fileRW = new FileRW(filePath);
+    NavX navx_device;
 
     public AWDMecanumDS(LinearOpMode myOpmode, FTCRobot robot) {
         double wheelDiameter, forwardFrictionCoeff, sidewaysFrictionCoeff;
@@ -44,6 +49,8 @@ public class AWDMecanumDS {
         this.curOpmode = myOpmode;
 
         this.robot = robot;
+
+        this.navx_device = new NavX(robot, curOpmode, robot.navx_device);
 
         DcMotor[] motors = new DcMotor[4];
         motors[0] = myOpmode.hardwareMap.dcMotor.get("fMotorL");
@@ -322,6 +329,9 @@ public class AWDMecanumDS {
 
         double speed = speedMultiplier * this.robotMaxSpeed;
         this.angleToSpeedOfWheel(angle, speed, Omega, speedOfWheel);
+        double[] navx_data = navx_device.getNavxData();
+        String line = angle + "," + speedMultiplier + "," + Omega + "," + navx_data[0];
+        fileRW.fileWrite(line);
 
         // Determine the Power for each Motor/PowerTrain
         for (int i=0; i<4; i++) {
