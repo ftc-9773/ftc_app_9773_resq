@@ -16,7 +16,7 @@ public class AutonomousScorer {
     FTCRobot robot;
     LinearOpMode curOpMode;
     public Servo colorServo;
-    public ColorSensor colorSensor;
+    //public ColorSensor colorSensor;
     public OpticalDistanceSensor ods;
     public TouchSensor touchSensor;
     boolean  allianceIsBlue;
@@ -25,7 +25,7 @@ public class AutonomousScorer {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.allianceIsBlue = allianceIsBlue;
-        this.colorSensor = curOpMode.hardwareMap.colorSensor.get("color_sensor1");
+        //this.colorSensor = curOpMode.hardwareMap.colorSensor.get("color_sensor1");
         this.colorServo = curOpMode.hardwareMap.servo.get("colorServo");
         this.ods = curOpMode.hardwareMap.opticalDistanceSensor.get("ods_sensor1");
         this.touchSensor = curOpMode.hardwareMap.touchSensor.get("touch_sensor");

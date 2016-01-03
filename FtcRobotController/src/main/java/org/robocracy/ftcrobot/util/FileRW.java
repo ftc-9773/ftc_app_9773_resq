@@ -8,6 +8,7 @@ import java.io.*;
  */
 public class FileRW {
     String filePath;
+    File file;
     FileReader fileReader;
     FileWriter fileWriter;
     BufferedReader bufferedReader;
@@ -15,6 +16,8 @@ public class FileRW {
     public FileRW(String filePath){
         this.filePath = filePath;
         try {
+            this.file = new File(filePath);
+            file.createNewFile();
             this.fileReader = new FileReader(filePath);
             this.fileWriter = new FileWriter(filePath);
         }
