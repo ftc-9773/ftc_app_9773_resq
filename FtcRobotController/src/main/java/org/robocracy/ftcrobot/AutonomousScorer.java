@@ -7,10 +7,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.robocracy.ftcrobot.DriveSystem.AWDMecanumDS;
+import org.robocracy.ftcrobot.util.FileRW;
 import org.robocracy.ftcrobot.util.PIDController;
 
 /**
- * Created by Robocracy on 12/2/2015.
+ * @author Team Robocracy
+ *
+ * Runs robot during Autonomous mode.
  */
 public class AutonomousScorer {
     FTCRobot robot;
@@ -114,5 +117,19 @@ public class AutonomousScorer {
 
         // Move forward ~ 36 inches
         drivesys.autoMecanum(90, 36, 12, 0);
+    }
+
+    /**
+     * Drives robot during Autonomous based on values recorded in .csv file at {@code filepath}.
+     * @param filepath file path to recorded values.
+     * @throws InterruptedException
+     */
+    public void driveUsingReplay(String filepath) throws InterruptedException {
+        FileRW fileRW = new FileRW(filepath);
+        String line = fileRW.getNextLine();
+        while (line != null){
+            robot.driveSys.applyCmd(robot.drvrStation.getNextCommand(line));
+            line = fileRW.getNextLine();
+        }
     }
 }

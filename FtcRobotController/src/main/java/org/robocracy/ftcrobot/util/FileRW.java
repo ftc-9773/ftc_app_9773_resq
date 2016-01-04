@@ -4,7 +4,8 @@ import com.qualcomm.ftccommon.DbgLog;
 import java.io.*;
 
 /**
- * Created by pranavb on 12/13/15.
+ * @author Team Robocracy
+ * Enables file read/write capabilities throughout all classes and methods.
  */
 public class FileRW {
     String filePath;
@@ -27,6 +28,11 @@ public class FileRW {
         this.bufferedReader = new BufferedReader(fileReader);
         this.bufferedWriter = new BufferedWriter(fileWriter);
     }
+
+    /**
+     * Writes {@code String} of data to the object's {@code filePath}.
+     * @param data data to be written
+     */
     public void fileWrite(String data){
         try{
             bufferedWriter.write(data);
@@ -36,6 +42,12 @@ public class FileRW {
             DbgLog.error(String.format("An IOException was caught : %s", e.getMessage()));
         }
     }
+
+    /**
+     * Reads file at line specified in object's {@code filePath}
+     * @param lineNum line to be read
+     * @return data at line
+     */
     public String fileRead(int lineNum){
         String data = new String();
         try{
@@ -57,6 +69,11 @@ public class FileRW {
 
         return data;
     }
+
+    /**
+     * Gets next line of file.
+     * @return next line of data
+     */
     public String getNextLine(){
         String data = new String();
         try{

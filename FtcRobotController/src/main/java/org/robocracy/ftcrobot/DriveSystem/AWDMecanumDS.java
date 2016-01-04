@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.robocracy.ftcrobot.AutonomousScorer;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
+import org.robocracy.ftcrobot.DriverStation.DriverStation;
 import org.robocracy.ftcrobot.FTCRobot;
 import org.robocracy.ftcrobot.util.CircularQueue;
 import org.robocracy.ftcrobot.util.FileRW;
@@ -17,7 +18,8 @@ import org.robocracy.ftcrobot.util.PIDController;
 import org.robocracy.ftcrobot.util.NavX;
 
 /**
- * Created by burugula on 11/16/2015.
+ * @author Team Robocracy
+ *
  * This class implements the drive system with the following characteristics:
  * 1) The drive system has of 4 wheels.
  * 2) All the 4 wheels are mecanum wheels
@@ -57,7 +59,6 @@ public class AWDMecanumDS {
         motors[1] = myOpmode.hardwareMap.dcMotor.get("fMotorR");
         motors[2] = myOpmode.hardwareMap.dcMotor.get("rMotorL");
         motors[3] = myOpmode.hardwareMap.dcMotor.get("rMotorR");
-        //motors[0].setDirection(DcMotor.Direction.REVERSE); // Front Left
         motors[1].setDirection(DcMotor.Direction.REVERSE); //Front Right
         motors[3].setDirection(DcMotor.Direction.REVERSE); // Rear Right
         for (int i = 0; i < 4; i++) {
@@ -88,11 +89,6 @@ public class AWDMecanumDS {
 
 
         this.powerTrain = new PowerTrain[4];
-        for (int i = 0; i < 4; i++) {
-            DbgLog.error(String.format("reached here : i = %d", i));
-            this.powerTrain[i] = new PowerTrain(wheels[i], gearRatio[i], motors[i], motorEncoderCPR,
-                    motorSpeedMax, motorStallTorque, motorOutputPower, efficiency[i]);
-        }
 
         // Determine the maxSpeed for this robot in inches/sec
         this.robotMaxSpeed = 100.0;
@@ -109,6 +105,13 @@ public class AWDMecanumDS {
         this.robotWidth = 10; // in  inches
     }
 
+    /**
+     * Calculates speed of each wheel based on relative angle required to move in.
+     * @param angle angle to move in relative to direction robot is facing
+     * @param speed overall speed robot should move in
+     * @param Omega angle to turn relative to 2 dimensional center of robot
+     * @param speedOfWheel wheel speed array
+     */
     private void angleToSpeedOfWheel(int angle, double speed, double Omega, double[] speedOfWheel) {
         double Vx, Vy;
 
@@ -145,6 +148,16 @@ public class AWDMecanumDS {
     }
 
     // angle is specified in degres:  -360 < angle < 360
+
+    /**
+     * Moves robot at specified angle, spinning the robot at the specified degrees, for a specified distance at a specified speed
+     * @param angle angle robot should move in relative to direction robot is facing
+     * @param distance distance in inches of the vector robot should move in
+     * @param speed overall speed of robot
+     * @param robotSpinDegrees degrees robot should spin while moving
+     * @throws InterruptedException
+     * @see AWDMecanumDS#driveMecanum(int, double, double, boolean)
+     */
     public void autoMecanum(int angle, int distance, double speed, int robotSpinDegrees) throws InterruptedException {
         double[] distanceTravelledByWheel = new double[4];
         double[] motorPower = new double[4];
@@ -154,6 +167,7 @@ public class AWDMecanumDS {
         double[] speedOfWheel = new double[4];
         double correction = 0.0;
 
+        //Various error checks
         if ((angle <= -360) || (angle >= 360)) {
             DbgLog.error(String.format("Invalid angle %d\n", angle));
             return;
@@ -221,8 +235,6 @@ public class AWDMecanumDS {
                     Math.abs(distanceTravelledByWheel[1]) +
                     Math.abs(distanceTravelledByWheel[2]) +
                     Math.abs(distanceTravelledByWheel[3])) / 4;
-
-            //DbgLog.msg(String.format("Distance travelled: %f", distanceTravelled));
         }
 
         for (int i = 0; i < 4; i++) {
@@ -232,6 +244,8 @@ public class AWDMecanumDS {
         // Wait for one hardware cycle for the setPower(0) to take effect.
         this.curOpmode.waitForNextHardwareCycle();
     }
+
+
 
     public void autoMecanumUntil(int angle, double speed, int distance, int[] colorIDs,
                                  double rli, AutonomousScorer autoScorer) throws InterruptedException {
@@ -308,15 +322,31 @@ public class AWDMecanumDS {
     }
 
 
+    /**
+     * Applies {@link DriverCommand#drvsyscmd} values initialized in {@link DriverStation#getNextDrivesysCmd()} to {@link AWDMecanumDS#driveMecanum(int, double, double, boolean)}
+     * @param driverCommand {@link DriverCommand} object with values
+     * @throws InterruptedException
+     */
     public void applyCmd(DriverCommand driverCommand) throws InterruptedException {
-        this.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega);
+        this.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega, true);
 
     }
 
-    private void driveMecanum(int angle, double speedMultiplier, double Omega) throws  InterruptedException{
+    /**
+     * Calculates and applies power to each motor to move robot in specified angle, at specified speed
+     * @param angle angle robot should move in relative to direction robot is facing
+     * @param speedMultiplier overall speed robot should move in
+     * @param Omega degrees robot should turn relative to 2 dimensional center of robot
+     * @param logValues if true, logs values into timestamped .csv file
+     * @throws InterruptedException
+     * @see AWDMecanumDS#autoMecanum(int, int, double, int)
+     * @see  FileRW
+     */
+    private void driveMecanum(int angle, double speedMultiplier, double Omega, boolean logValues) throws  InterruptedException{
         double[] speedOfWheel = new double[4];
         double[] motorPower = new double[4];
 
+        //Error checks
         if ((angle <= -360) || (angle >= 360)) {
             DbgLog.error(String.format("Invalid angle %d\n", angle));
             return;
@@ -329,9 +359,14 @@ public class AWDMecanumDS {
 
         double speed = speedMultiplier * this.robotMaxSpeed;
         this.angleToSpeedOfWheel(angle, speed, Omega, speedOfWheel);
-        double[] navx_data = navx_device.getNavxData();
-        String line = angle + "," + speedMultiplier + "," + Omega + "," + navx_data[0];
-        fileRW.fileWrite(line);
+        //Logs values into file
+        if(logValues == true) {
+            if((angle != 0) || (speedMultiplier != 0.0) || (Omega != 0.0)){
+                float[] navx_data = navx_device.getNavxData();
+                String line = (System.nanoTime() - robot.timestamp) + "," + angle + "," + speedMultiplier + "," + Omega + "," + navx_data[0];
+                fileRW.fileWrite(line);
+            }
+        }
 
         // Determine the Power for each Motor/PowerTrain
         for (int i=0; i<4; i++) {

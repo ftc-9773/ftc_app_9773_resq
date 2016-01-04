@@ -7,7 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * Created by Robocracy on 11/19/2015.
+ * @author Team Robocracy
+ *
+ * Contains methods that create {@link DriverCommand}s based on various inputs.
  */
 public class DriverStation {
     public static DriverCommand drvrCmd = new DriverCommand();
@@ -20,11 +22,15 @@ public class DriverStation {
         this.robot = robot;
     }
 
+    /**
+     * Gets x and y coordinates from gamepad1 (driving gamepad) and calculates values to write to {@link DriverCommand#drvsyscmd} object.
+     */
     private void getNextDrivesysCmd() {
         int moveAngle = 0;
         double x = curOpMode.gamepad1.left_stick_x;
         double y = -curOpMode.gamepad1.left_stick_y;
 
+        //Calculate what angle robot must move in based on 8 zones of joystick
         if (x == 0 && y == 0) {
             moveAngle = 0;
         } else if (x == 0) {
@@ -57,8 +63,7 @@ public class DriverStation {
         }
         double speed = Math.sqrt((x * x) + (y * y)) / Math.sqrt(2);
 
-//        DbgLog.msg(String.format("x = %f, y= %f, moveAngle = %d",
-//                x, y, moveAngle));
+        //Write values to drvrCmd
         drvrCmd.drvsyscmd.angle = moveAngle;
         drvrCmd.drvsyscmd.speedMultiplier = speed;
         drvrCmd.drvsyscmd.Omega = -curOpMode.gamepad1.right_stick_x;
@@ -82,6 +87,9 @@ public class DriverStation {
 
     }*/
 
+    /**
+     * Gets Y values of gamepad 2 (attachment gamepad) and writes values into {@link DriverCommand#linliftcmd} object.
+     */
     private void getNextLinearLiftCmd(){
         float angle = -curOpMode.gamepad2.left_stick_y;
         float direction = -curOpMode.gamepad2.right_stick_y;
@@ -90,6 +98,9 @@ public class DriverStation {
         drvrCmd.linliftcmd.angle = Range.clip(angle, -1, 1);
     }
 
+    /**
+     * Gets button values of gamepad 1 (driving gamepad) and writes {@code enum} into {@link DriverCommand#latchCmd} object.
+     */
     private void getNextLatchCmd(){
         boolean latchDown = curOpMode.gamepad1.a;
         boolean latchUp = curOpMode.gamepad1.y;
@@ -105,6 +116,11 @@ public class DriverStation {
         }
     }
 
+    /**
+     * Calls {@link DriverStation#getNextDrivesysCmd()}, {@link DriverStation#getNextLinearLiftCmd()}, and {@link DriverStation#getNextLatchCmd()}.
+     *
+     * @return {@link DriverCommand} object with all values
+     */
     public DriverCommand getNextCommand() {
 
         getNextDrivesysCmd();
@@ -112,6 +128,26 @@ public class DriverStation {
         getNextLinearLiftCmd();
         //getNextLatchCmd();
 
+        return (drvrCmd);
+    }
+
+    /**
+     * Overrides {@link DriverStation#getNextCommand()}.
+     *
+     * @see org.robocracy.ftcrobot.AutonomousScorer#driveUsingReplay(String filePath)
+     * @param line Line of comma-seperated values in csv file read in {@link org.robocracy.ftcrobot.AutonomousScorer#driveUsingReplay(String filePath)}
+     * @return {@link DriverCommand#drvsyscmd} object with values.
+     */
+    public DriverCommand getNextCommand(String line){
+        String[] lineArray = line.split(",");
+
+        double angle = Double.parseDouble(lineArray[1]);
+        double speedMultiplier = Double.parseDouble(lineArray[2]);
+        double Omega = Double.parseDouble(lineArray[3]);
+
+        drvrCmd.drvsyscmd.angle = angle;
+        drvrCmd.drvsyscmd.Omega = Omega;
+        drvrCmd.drvsyscmd.speedMultiplier = speedMultiplier;
         return (drvrCmd);
     }
 

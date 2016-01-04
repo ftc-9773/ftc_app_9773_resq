@@ -5,24 +5,31 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.robocracy.ftcrobot.FTCRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 /**
- * Created by pranavb on 12/24/15.
+ * @author Team Robocracy
+ *
+ * Enables NavX Micro functionality.
  */
 public class NavX {
     private String startDate;
-    private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime;
     FTCRobot robot;
     LinearOpMode curOpMode;
     AHRS navx;
+    float[] navx_data;
 
     public NavX(FTCRobot robot, LinearOpMode curOpMode, AHRS navx){
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.navx = navx;
+        this.navx_data = new float[5];
+        this.runtime = new ElapsedTime();
     }
 
-    public double[] getNavxData(){
-        double[] navx_data = new double[4];
-
+    /**
+     * Gets processed data of NavX Micro device.
+     * @return array of NavX Micro processed data
+     */
+    public float[] getNavxData(){
         navx_data[0] = navx.getYaw();
         navx_data[1] = navx.getPitch();
         navx_data[2] = navx.getRoll();

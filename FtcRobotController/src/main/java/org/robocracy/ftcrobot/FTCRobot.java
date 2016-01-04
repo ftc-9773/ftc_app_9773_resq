@@ -12,7 +12,10 @@ import org.robocracy.ftcrobot.DriverStation.DriverStation;
 
 
 /**
- * Created by Robocracy on 11/17/2015.
+ * @author Team Robocracy
+ * {@docRoot}
+ *
+ * Top level class in hierarchy. Represents an {@code FTCRobot} with main {@link FTCRobot#runRobotAutonomous(String)} and {@link FTCRobot#runRobotTeleop()} methods, which are used in {@link com.qualcomm.ftcrobotcontroller.opmodes.AutonomousRedNew}, {@link com.qualcomm.ftcrobotcontroller.opmodes.AutonomousBlueNew}, and {@link com.qualcomm.ftcrobotcontroller.opmodes.TeleOpNew} opmodes.
  */
 public class FTCRobot {
     LinearOpMode curOpmode;
@@ -29,6 +32,7 @@ public class FTCRobot {
     double RobotLength;
     // RobotWidth = Distance in inches from the center of front left to the center of front right wheel
     double RobotWidth;
+    public long timestamp;
 
     DriverStation drvrStation;
 
@@ -36,7 +40,6 @@ public class FTCRobot {
     public AHRS navx_device;
 
     public FTCRobot(LinearOpMode curOpmode, boolean allianceIsBlue) {
-        this.driveSys = new AWDMecanumDS(curOpmode, this);
         this.curOpmode = curOpmode;
         this.dim = curOpmode.hardwareMap.deviceInterfaceModule.get("dim");
         this.drvrStation = new DriverStation(curOpmode, this);
@@ -46,6 +49,8 @@ public class FTCRobot {
         this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
         this.navx_device = AHRS.getInstance(curOpmode.hardwareMap.deviceInterfaceModule.get("dim"),
                 NAVX_DIM_I2C_PORT, AHRS.DeviceDataType.kProcessedData);
+        this.driveSys = new AWDMecanumDS(curOpmode, this);
+        this.timestamp = System.nanoTime();
         //this.leftLatch = curOpmode.hardwareMap.servo.get("leftLatch");
         //this.rightLatch = curOpmode.hardwareMap.servo.get("rightLatch");
         //this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
@@ -63,6 +68,19 @@ public class FTCRobot {
 */
     }
 
+    /**
+     * Runs Autonomous mode with values from file in {@code filePath}.
+     * @param filePath file path of file with values to be read for robot to move
+     * @throws InterruptedException
+     */
+    public void runRobotAutonomous(String filePath) throws InterruptedException {
+        autoScorer.driveUsingReplay(filePath);
+    }
+
+    /**
+     * Runs TeleOp mode by {@link DriverStation#getNextCommand()} for getting gamepad values.
+     * @throws InterruptedException
+     */
     public  void  runRobotTeleop() throws InterruptedException {
         DriverCommand driverCommand;
         while(curOpmode.opModeIsActive()){

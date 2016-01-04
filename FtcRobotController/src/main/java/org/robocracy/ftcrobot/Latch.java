@@ -1,13 +1,17 @@
 package org.robocracy.ftcrobot;
 
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.robocracy.ftcrobot.DriverStation.DriverStation;
 import org.robocracy.ftcrobot.FTCRobot;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * Created by pranavb on 12/5/15.
+ * @author Team Robocracy
+ *
+ * Operates latches on robot that hold on to churros
  */
 public class Latch {
     FTCRobot robot;
@@ -22,6 +26,10 @@ public class Latch {
         this.robot = robot;
     }
 
+    /**
+     * Moves latch servos based on {@code enum direction} value set in {@link DriverStation#getNextLatchCmd()}
+     * @param drvrcmd {@link DriverCommand} object with values.
+     */
     public void applyDSCmd(DriverCommand drvrcmd){
         double leftPosition = leftLatch.getPosition();
         double rightPosition = rightLatch.getPosition();

@@ -2,11 +2,14 @@ package org.robocracy.ftcrobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
+import org.robocracy.ftcrobot.DriverStation.DriverStation;
 import org.robocracy.ftcrobot.FTCRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
- * Created by pranavb on 11/29/15.
+ * @author Team Robocracy
+ *
+ * Operates harvester.
  */
 public class Harvester {
     FTCRobot robot;
@@ -21,6 +24,10 @@ public class Harvester {
     }
 
 
+    /**
+     * Applies power to harvester motor based on {@code enum direction} value set in {@link DriverStation#getNextCommand()}
+     * @param drvrcmd {@link DriverCommand} object with values.
+     */
     public void applyDSCmd(DriverCommand drvrcmd){
         /*switch (drvrcmd.harvestercmd.direction){
             case PULL:

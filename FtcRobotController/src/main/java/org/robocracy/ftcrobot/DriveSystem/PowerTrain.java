@@ -3,7 +3,9 @@ package org.robocracy.ftcrobot.DriveSystem;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * Created by Robocracy on 11/17/2015.
+ * @author Team Robocracy
+ *
+ * Contains various powertrain variables.
  */
 public class PowerTrain {
     Wheel wheel;
@@ -49,6 +51,11 @@ public class PowerTrain {
         this.motorPowerMultiplier = this.cpsMultiplier / (motorEncoderCPR * motorSpeedMax / 60);
     }
 
+    /**
+     * Converts motor encoder counts to inches
+     * @param counts counts to convert
+     * @return inches
+     */
     public double countsToDistance(long counts) {
         return ((counts / this.motorEncoderCPR) * this.wheel.circumference);
     }

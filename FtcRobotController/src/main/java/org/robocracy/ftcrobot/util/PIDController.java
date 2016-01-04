@@ -2,7 +2,9 @@ package org.robocracy.ftcrobot.util;
 
 
 /**
- * Created by Robocracy on 11/17/2015.
+ * @author Team Robocracy
+ *
+ * PID Controller that can be used for any purpose.
  */
 public class PIDController {
     double Kp, Ki,Kd;

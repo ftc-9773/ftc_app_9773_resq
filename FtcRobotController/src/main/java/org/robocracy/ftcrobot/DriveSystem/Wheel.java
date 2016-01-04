@@ -1,10 +1,10 @@
 package org.robocracy.ftcrobot.DriveSystem;
 
-/**
- * Created by burugula on 11/16/2015.
- */
 enum WheelType  {Mecanum, Omni, Tetrix};
 
+/**
+ * @author Team Robocracy
+ */
 public abstract class Wheel {
     double frictionCoeffMatStraight;
     double frictionCoeffMatStrafe;

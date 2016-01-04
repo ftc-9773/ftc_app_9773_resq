@@ -1,7 +1,7 @@
 package org.robocracy.ftcrobot.DriveSystem;
 
 /**
- * Created by burugula on 11/16/2015.
+ * @author Team Robocracy
  */
 public class MecanumWheel extends Wheel {
     public MecanumWheel(double diameter, double frictionCoeffMatStraight, double frictionCoeffMatStrafe){
