@@ -25,14 +25,15 @@ public class FTCRobot {
     LinearLift linearLift;
     DcMotor harvesterMotor;
     AutonomousScorer autoScorer;
-    //Servo rightLatch;
-    //Servo leftLatch;
-    //Latch latch;
+    Servo rightLatch;
+    Servo leftLatch;
+    Latch latch;
     // RobotLength = Distance in inches from the center of front left to the center of rear left wheel
     double RobotLength;
     // RobotWidth = Distance in inches from the center of front left to the center of front right wheel
     double RobotWidth;
     public long timestamp;
+    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
 
     DriverStation drvrStation;
 
@@ -48,12 +49,12 @@ public class FTCRobot {
         this.linearLift = new LinearLift(this, curOpmode);
         this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
         this.navx_device = AHRS.getInstance(curOpmode.hardwareMap.deviceInterfaceModule.get("dim"),
-                NAVX_DIM_I2C_PORT, AHRS.DeviceDataType.kProcessedData);
+                NAVX_DIM_I2C_PORT, AHRS.DeviceDataType.kProcessedData, NAVX_DEVICE_UPDATE_RATE_HZ);
         this.driveSys = new AWDMecanumDS(curOpmode, this);
         this.timestamp = System.nanoTime();
-        //this.leftLatch = curOpmode.hardwareMap.servo.get("leftLatch");
-        //this.rightLatch = curOpmode.hardwareMap.servo.get("rightLatch");
-        //this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
+        this.leftLatch = curOpmode.hardwareMap.servo.get("leftLatch");
+        this.rightLatch = curOpmode.hardwareMap.servo.get("rightLatch");
+        this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
     }
 
     public void runRobotAutonomous()  throws InterruptedException {
@@ -93,7 +94,7 @@ public class FTCRobot {
             //this.harvester.applyDSCmd(driverCommand);
             this.linearLift.applyCmd(driverCommand);
 
-            //this.latch.applyDSCmd(driverCommand);
+            this.latch.applyDSCmd(driverCommand);
             // Wait for one hardware cycle for the setPower(0) to take effect.
             this.curOpmode.waitForNextHardwareCycle();
         }

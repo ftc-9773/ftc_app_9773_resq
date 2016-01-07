@@ -126,7 +126,7 @@ public class DriverStation {
         getNextDrivesysCmd();
         //getNextHarvesterCmd();
         getNextLinearLiftCmd();
-        //getNextLatchCmd();
+        getNextLatchCmd();
 
         return (drvrCmd);
     }
