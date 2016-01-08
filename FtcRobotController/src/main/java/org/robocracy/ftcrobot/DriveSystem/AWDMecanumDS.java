@@ -90,9 +90,11 @@ public class AWDMecanumDS {
 
         this.powerTrain = new PowerTrain[4];
 
+
         // Determine the maxSpeed for this robot in inches/sec
         this.robotMaxSpeed = 100.0;
         for (int i = 0; i < 4; i++) {
+            this.powerTrain[i] = new PowerTrain(wheels[i], 1, motors[i], motorEncoderCPR, motorSpeedMax, 350, motorOutputPower, efficiency[i]);
             this.robotMaxSpeed = Math.min(this.robotMaxSpeed, this.powerTrain[i].wheelSpeedMax);
         }
 

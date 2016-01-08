@@ -37,7 +37,7 @@ public class FTCRobot {
 
     DriverStation drvrStation;
 
-    public final int NAVX_DIM_I2C_PORT = 0;
+    public final int NAVX_DIM_I2C_PORT = 5;
     public AHRS navx_device;
 
     public FTCRobot(LinearOpMode curOpmode, boolean allianceIsBlue) {
