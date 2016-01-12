@@ -70,7 +70,10 @@ public class DriverStation {
 
     }
 
-    /*private void getNextHarvesterCmd(){
+    /**
+     * Gets right bumper and trigger values of gamepad 2 (attachment gamepad) and writes values into {@link DriverCommand#harvestercmd} object.
+     */
+    private void getNextHarvesterCmd(){
         boolean harvesterPull = curOpMode.gamepad2.right_bumper;
         float harvesterPushSlow = curOpMode.gamepad2.right_trigger;
         boolean harvesterPush = false;
@@ -85,21 +88,38 @@ public class DriverStation {
             drvrCmd.harvestercmd.direction = DriverCommand.HarvesterDirection.NONE;
         }
 
-    }*/
+    }
 
     /**
      * Gets Y values of gamepad 2 (attachment gamepad) and writes values into {@link DriverCommand#linliftcmd} object.
      */
     private void getNextLinearLiftCmd(){
         float angle = -curOpMode.gamepad2.left_stick_y;
-        float direction = -curOpMode.gamepad2.right_stick_y;
+        float direction = curOpMode.gamepad2.right_stick_y;
 
         drvrCmd.linliftcmd.direction = Range.clip(direction, -1,1);
         drvrCmd.linliftcmd.angle = Range.clip(angle, -1, 1);
     }
 
     /**
-     * Gets button values of gamepad 1 (driving gamepad) and writes {@code enum} into {@link DriverCommand#latchCmd} object.
+     * Gets dpad values for gamepad 2 (attachment gamepad) and writes {@code enum DriverCommand.BucketCommand.BucketDirection} into {@link DriverCommand#bucketCmd} object.
+     */
+    private void getNextBucketCmd(){
+        boolean bucketRight = curOpMode.gamepad2.dpad_right;
+        boolean bucketLeft = curOpMode.gamepad2.dpad_left;
+
+        if (bucketRight){
+            drvrCmd.bucketCmd.direction = DriverCommand.BucketDirection.RIGHT;
+        }
+        else if (bucketLeft){
+            drvrCmd.bucketCmd.direction = DriverCommand.BucketDirection.LEFT;
+        }
+        else{
+            drvrCmd.bucketCmd.direction = DriverCommand.BucketDirection.NONE;
+        }
+    }
+    /**
+     * Gets button values of gamepad 1 (driving gamepad) and writes {@code enum DriverCommand.LatchDirection} into {@link DriverCommand#latchCmd} object.
      */
     private void getNextLatchCmd(){
         boolean latchDown = curOpMode.gamepad1.a;
@@ -117,6 +137,36 @@ public class DriverStation {
     }
 
     /**
+     * Gets button values of gamepad 2 (attachment gamepad) and writes {@code enum DriverCommand.LeftClimberDirection} and {@code enum DriverCommand.RightClimberDirection} into {@link DriverCommand#leftClimberCmd} and {@link DriverCommand#rightClimberCmd} objects respectively.
+     */
+    private void getNextClimberCmd(){
+        boolean rightClimberDown = curOpMode.gamepad2.a;
+        boolean rightClimberUp = curOpMode.gamepad2.y;
+        boolean leftClimberDown = curOpMode.gamepad2.x;
+        boolean leftClimberUp = curOpMode.gamepad2.b;
+
+        if(rightClimberDown){
+            drvrCmd.rightClimberCmd.rightClimberDirection = DriverCommand.RightClimberDirection.DOWN;
+        }
+        else if(rightClimberUp){
+            drvrCmd.rightClimberCmd.rightClimberDirection = DriverCommand.RightClimberDirection.UP;
+        }
+        else{
+            drvrCmd.rightClimberCmd.rightClimberDirection = DriverCommand.RightClimberDirection.NONE;
+        }
+
+        if (leftClimberDown){
+            drvrCmd.leftClimberCmd.leftClimberDirection = DriverCommand.LeftClimberDirection.DOWN;
+        }
+        else if(leftClimberUp){
+            drvrCmd.leftClimberCmd.leftClimberDirection = DriverCommand.LeftClimberDirection.UP;
+        }
+        else {
+            drvrCmd.leftClimberCmd.leftClimberDirection = DriverCommand.LeftClimberDirection.NONE;
+        }
+    }
+
+    /**
      * Calls {@link DriverStation#getNextDrivesysCmd()}, {@link DriverStation#getNextLinearLiftCmd()}, and {@link DriverStation#getNextLatchCmd()}.
      *
      * @return {@link DriverCommand} object with all values
@@ -124,9 +174,11 @@ public class DriverStation {
     public DriverCommand getNextCommand() {
 
         getNextDrivesysCmd();
-        //getNextHarvesterCmd();
+        getNextHarvesterCmd();
         getNextLinearLiftCmd();
         getNextLatchCmd();
+        //getNextBucketCmd();
+        getNextClimberCmd();
 
         return (drvrCmd);
     }
@@ -140,10 +192,17 @@ public class DriverStation {
      */
     public DriverCommand getNextCommand(String line){
         String[] lineArray = line.split(",");
-
-        double angle = Double.parseDouble(lineArray[1]);
-        double speedMultiplier = Double.parseDouble(lineArray[2]);
-        double Omega = Double.parseDouble(lineArray[3]);
+        double angle, speedMultiplier, Omega;
+        if (lineArray.length >= 4) {
+            angle = Double.parseDouble(lineArray[1]);
+            speedMultiplier = Double.parseDouble(lineArray[2]);
+            Omega = Double.parseDouble(lineArray[3]);
+        }
+        else {
+            angle = 0.0;
+            speedMultiplier = 0.0;
+            Omega = 0.0;
+        }
 
         drvrCmd.drvsyscmd.angle = angle;
         drvrCmd.drvsyscmd.Omega = Omega;

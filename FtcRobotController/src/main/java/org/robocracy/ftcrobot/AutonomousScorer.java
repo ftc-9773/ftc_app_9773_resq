@@ -1,5 +1,6 @@
 package org.robocracy.ftcrobot;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
@@ -18,20 +19,16 @@ import org.robocracy.ftcrobot.util.PIDController;
 public class AutonomousScorer {
     FTCRobot robot;
     LinearOpMode curOpMode;
-    public Servo colorServo;
-    //public ColorSensor colorSensor;
+    public ColorSensor colorSensor;
     public OpticalDistanceSensor ods;
-    public TouchSensor touchSensor;
     boolean  allianceIsBlue;
 
     public AutonomousScorer(FTCRobot robot, LinearOpMode curOpMode, boolean allianceIsBlue) {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.allianceIsBlue = allianceIsBlue;
-        //this.colorSensor = curOpMode.hardwareMap.colorSensor.get("color_sensor1");
-        this.colorServo = curOpMode.hardwareMap.servo.get("colorServo");
+        this.colorSensor = curOpMode.hardwareMap.colorSensor.get("color_sensor1");
         this.ods = curOpMode.hardwareMap.opticalDistanceSensor.get("ods_sensor1");
-        this.touchSensor = curOpMode.hardwareMap.touchSensor.get("touch_sensor");
     }
 
     public void step1_driveToRepairZone(AWDMecanumDS drivesys) throws InterruptedException{
@@ -102,7 +99,6 @@ public class AutonomousScorer {
         // Follow the white line slowly until the touch sensor is pressed.
         PIDController lfPID = new PIDController(0.1, 0, 0.1, 4, 0.2, 0.3);
 
-        drivesys.PIDLineFollow(lfPID, 24, 12, this.ods, this.touchSensor);
     }
 
     public void step4_moveBackToMountainBase(AWDMecanumDS drivesys) throws InterruptedException {
@@ -113,7 +109,7 @@ public class AutonomousScorer {
         // Else, spin left 90 degrees
 
         // Fold the sensor arm again, as it will come in the way climbing the mountian.
-        colorServo.setPosition(0); // Need to test multiple values to find the correct one.
+        //colorServo.setPosition(0); // Need to test multiple values to find the correct one.
 
         // Move forward ~ 36 inches
         drivesys.autoMecanum(90, 36, 12, 0);
@@ -125,11 +121,18 @@ public class AutonomousScorer {
      * @throws InterruptedException
      */
     public void driveUsingReplay(String filepath) throws InterruptedException {
-        FileRW fileRW = new FileRW(filepath);
+        String filePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
+        robot.driveSys.setFileHandle(filePath, true);
+
+        FileRW fileRW = new FileRW(filepath, false);
         String line = fileRW.getNextLine();
         while (line != null){
+            this.curOpMode.waitForNextHardwareCycle();
+            DbgLog.msg(String.format("line = %s", line));
             robot.driveSys.applyCmd(robot.drvrStation.getNextCommand(line));
             line = fileRW.getNextLine();
         }
+        robot.driveSys.stopDriveSystem();
+        this.curOpMode.waitForNextHardwareCycle();
     }
 }

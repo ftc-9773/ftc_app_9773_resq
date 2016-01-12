@@ -14,34 +14,28 @@ import com.qualcomm.robotcore.util.Range;
  *
  * Operates latches on robot that hold on to churros
  */
-public class Latch {
+public class RightClimber {
     FTCRobot robot;
     LinearOpMode curOpMode;
-    Servo leftLatch;
-    Servo rightLatch;
+    Servo rightClimber;
 
-    public Latch(FTCRobot robot, Servo leftLatch, Servo rightLatch, LinearOpMode curOpMode){
+    public RightClimber(FTCRobot robot, Servo rightClimber, LinearOpMode curOpMode){
         this.curOpMode = curOpMode;
-        this.leftLatch = leftLatch;
-        this.rightLatch = rightLatch;
+        this.rightClimber = rightClimber;
         this.robot = robot;
     }
 
     /**
-     * Moves latch servos based on {@code enum direction} value set in {@link DriverStation#getNextLatchCmd()}
+     * Moves right climber servo based on {@code enum rightClimberDirection} value set in {@link DriverStation#getNextClimberCmd()}
      * @param drvrcmd {@link DriverCommand} object with values.
      */
     public void applyDSCmd(DriverCommand drvrcmd){
-        double leftPosition = leftLatch.getPosition();
-        double rightPosition = rightLatch.getPosition();
-        switch (drvrcmd.latchCmd.direction){
+        switch (drvrcmd.rightClimberCmd.rightClimberDirection){
             case DOWN:
-                leftLatch.setPosition(0.1);
-                rightLatch.setPosition(1.0);
+                rightClimber.setPosition(0.5);
                 break;
             case UP:
-                leftLatch.setPosition(0.7);
-                rightLatch.setPosition(0.3);
+                rightClimber.setPosition(0);
                 break;
             case NONE:
                 break;

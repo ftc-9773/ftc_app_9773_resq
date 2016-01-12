@@ -1,6 +1,7 @@
 package org.robocracy.ftcrobot;
 
 import com.kauailabs.navx.ftc.AHRS;
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -19,15 +20,21 @@ import org.robocracy.ftcrobot.DriverStation.DriverStation;
  */
 public class FTCRobot {
     LinearOpMode curOpmode;
-    AWDMecanumDS driveSys;
+    public AWDMecanumDS driveSys;
     DeviceInterfaceModule dim;
-    //Harvester harvester;
+    Harvester harvester;
     LinearLift linearLift;
     DcMotor harvesterMotor;
     AutonomousScorer autoScorer;
     Servo rightLatch;
     Servo leftLatch;
+    //Servo bucketServo;
+    Servo rightClimberServo;
+    Servo leftClimberServo;
     Latch latch;
+    Bucket bucket;
+    LeftClimber leftClimber;
+    RightClimber rightClimber;
     // RobotLength = Distance in inches from the center of front left to the center of rear left wheel
     double RobotLength;
     // RobotWidth = Distance in inches from the center of front left to the center of front right wheel
@@ -44,8 +51,8 @@ public class FTCRobot {
         this.curOpmode = curOpmode;
         this.dim = curOpmode.hardwareMap.deviceInterfaceModule.get("dim");
         this.drvrStation = new DriverStation(curOpmode, this);
-        //this.harvesterMotor = curOpmode.hardwareMap.dcMotor.get("harvesterMotor");
-        //this.harvester = new Harvester(this, curOpmode, harvesterMotor);
+        this.harvesterMotor = curOpmode.hardwareMap.dcMotor.get("harvesterMotor");
+        this.harvester = new Harvester(this, curOpmode, harvesterMotor);
         this.linearLift = new LinearLift(this, curOpmode);
         this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
         this.navx_device = AHRS.getInstance(curOpmode.hardwareMap.deviceInterfaceModule.get("dim"),
@@ -54,7 +61,13 @@ public class FTCRobot {
         this.timestamp = System.nanoTime();
         this.leftLatch = curOpmode.hardwareMap.servo.get("leftLatch");
         this.rightLatch = curOpmode.hardwareMap.servo.get("rightLatch");
+        //this.bucketServo = curOpmode.hardwareMap.servo.get("bucketServo");
         this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
+        //this.bucket = new Bucket(this, curOpmode, bucketServo);
+        this.rightClimberServo = curOpmode.hardwareMap.servo.get("rightClimber");
+        this.leftClimberServo = curOpmode.hardwareMap.servo.get("leftClimber");
+        this.leftClimber = new LeftClimber(this, leftClimberServo, curOpmode);
+        this.rightClimber = new RightClimber(this, rightClimberServo, curOpmode);
     }
 
     public void runRobotAutonomous()  throws InterruptedException {
@@ -75,6 +88,7 @@ public class FTCRobot {
      * @throws InterruptedException
      */
     public void runRobotAutonomous(String filePath) throws InterruptedException {
+        DbgLog.msg(String.format("Filename = %s", filePath));
         autoScorer.driveUsingReplay(filePath);
     }
 
@@ -86,17 +100,19 @@ public class FTCRobot {
         DriverCommand driverCommand;
         while(curOpmode.opModeIsActive()){
             driverCommand = drvrStation.getNextCommand();
-            //DbgLog.msg(String.format("angle = %f, speedMult= %f, Omega = %f",
-            //        driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega));
             this.driveSys.applyCmd(driverCommand);
-//            this.driveSys.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega);
 
-            //this.harvester.applyDSCmd(driverCommand);
+            this.harvester.applyDSCmd(driverCommand);
             this.linearLift.applyCmd(driverCommand);
 
             this.latch.applyDSCmd(driverCommand);
+            //this.bucket.applyDSCmd(driverCommand);
+            this.leftClimber.applyDSCmd(driverCommand);
+            this.rightClimber.applyDSCmd(driverCommand);
+
             // Wait for one hardware cycle for the setPower(0) to take effect.
             this.curOpmode.waitForNextHardwareCycle();
+
         }
     }
 }

@@ -33,13 +33,31 @@ public class DriverCommand {
     }
     public LinearLiftCommand linliftcmd = new LinearLiftCommand();
 
-    /*public class HarvesterCommand {
+    public class HarvesterCommand {
         public HarvesterDirection direction;
     }
-    public HarvesterCommand harvestercmd = new HarvesterCommand();*/
+    public HarvesterCommand harvestercmd = new HarvesterCommand();
 
     public class LatchCommand{
         public LatchDirection direction;
     }
     public LatchCommand latchCmd = new LatchCommand();
+
+    public enum BucketDirection {LEFT, RIGHT, NONE}
+    public class BucketCommand{
+        public BucketDirection direction;
+    }
+    public BucketCommand bucketCmd = new BucketCommand();
+
+    public enum LeftClimberDirection {DOWN, UP, NONE}
+    public class LeftClimberCommand{
+        public LeftClimberDirection leftClimberDirection;
+    }
+    public LeftClimberCommand leftClimberCmd = new LeftClimberCommand();
+
+    public enum RightClimberDirection {DOWN, UP, NONE}
+    public class RightClimberCommand{
+        public RightClimberDirection rightClimberDirection;
+    }
+    public RightClimberCommand rightClimberCmd = new RightClimberCommand();
 }

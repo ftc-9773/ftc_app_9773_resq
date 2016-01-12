@@ -14,19 +14,27 @@ public class FileRW {
     FileWriter fileWriter;
     BufferedReader bufferedReader;
     BufferedWriter bufferedWriter;
-    public FileRW(String filePath){
+    public FileRW(String filePath, boolean isWrite){
         this.filePath = filePath;
         try {
             this.file = new File(filePath);
-            file.createNewFile();
-            this.fileReader = new FileReader(filePath);
-            this.fileWriter = new FileWriter(filePath);
+            if(isWrite) {
+                file.createNewFile();
+                this.fileWriter = new FileWriter(filePath);
+            }
+            else {
+                this.fileReader = new FileReader(filePath);
+            }
         }
         catch (IOException e){
             DbgLog.error(String.format("An IOException was caught : %s", e.getMessage()));
         }
-        this.bufferedReader = new BufferedReader(fileReader);
-        this.bufferedWriter = new BufferedWriter(fileWriter);
+        if(isWrite){
+            this.bufferedWriter = new BufferedWriter(fileWriter);
+        }
+        else {
+            this.bufferedReader = new BufferedReader(fileReader);
+        }
     }
 
     /**
@@ -49,7 +57,7 @@ public class FileRW {
      * @return data at line
      */
     public String fileRead(int lineNum){
-        String data = new String();
+        String data = null;
         try{
             for(int i=0;i<(lineNum-1);i++){
                 bufferedReader.readLine();
@@ -75,7 +83,7 @@ public class FileRW {
      * @return next line of data
      */
     public String getNextLine(){
-        String data = new String();
+        String data = null;
         try{
             data = bufferedReader.readLine();
         }

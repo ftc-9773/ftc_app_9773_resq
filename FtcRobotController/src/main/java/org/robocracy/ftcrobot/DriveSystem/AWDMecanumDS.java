@@ -17,6 +17,8 @@ import org.robocracy.ftcrobot.util.FileRW;
 import org.robocracy.ftcrobot.util.PIDController;
 import org.robocracy.ftcrobot.util.NavX;
 
+import java.io.File;
+
 /**
  * @author Team Robocracy
  *
@@ -39,8 +41,7 @@ public class AWDMecanumDS {
     double robotMaxSpeed;
     double robotLength, robotWidth;
     FTCRobot robot;
-    String filePath = "/sdcard/FIRST/autonomousLog/navxLog." + System.nanoTime() + ".csv";
-    FileRW fileRW = new FileRW(filePath);
+    FileRW fileRW;
     NavX navx_device;
 
     public AWDMecanumDS(LinearOpMode myOpmode, FTCRobot robot) {
@@ -90,11 +91,15 @@ public class AWDMecanumDS {
 
         this.powerTrain = new PowerTrain[4];
 
+        for(int i=0;i<4;i++){
+            this.powerTrain[i] = new PowerTrain(wheels[i], gearRatio[i], motors[i], motorEncoderCPR,
+                    motorSpeedMax, motorStallTorque, motorOutputPower, efficiency[i]);
+        }
+
 
         // Determine the maxSpeed for this robot in inches/sec
         this.robotMaxSpeed = 100.0;
         for (int i = 0; i < 4; i++) {
-            this.powerTrain[i] = new PowerTrain(wheels[i], 1, motors[i], motorEncoderCPR, motorSpeedMax, 350, motorOutputPower, efficiency[i]);
             this.robotMaxSpeed = Math.min(this.robotMaxSpeed, this.powerTrain[i].wheelSpeedMax);
         }
 
@@ -333,6 +338,10 @@ public class AWDMecanumDS {
         this.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega, true);
 
     }
+    public void setFileHandle(String filePath, boolean isWrite){
+        fileRW = new FileRW(filePath, isWrite);
+
+    }
 
     /**
      * Calculates and applies power to each motor to move robot in specified angle, at specified speed
@@ -430,5 +439,11 @@ public class AWDMecanumDS {
 
         // Wait for one hardware cycle for the setPower(0) to take effect.
         this.curOpmode.waitForNextHardwareCycle();
+    }
+
+    public void stopDriveSystem() {
+        for (int i = 0; i < 4; i++) {
+            this.powerTrain[i].motor.setPower(0);
+        }
     }
 }

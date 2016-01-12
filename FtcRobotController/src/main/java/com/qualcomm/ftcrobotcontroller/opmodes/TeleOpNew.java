@@ -17,11 +17,14 @@ public class TeleOpNew extends LinearOpMode {
         // This is used in the autonomous mode; it does not matter for the teleop mode,
         // but some value has to be passed, so pass the value "true".
         this.myRobot = new FTCRobot(this, true);
+        String filePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
 
 
         waitOneFullHardwareCycle();
 
         waitForStart();
+
+        this.myRobot.driveSys.setFileHandle(filePath, true);
 
         myRobot.runRobotTeleop();
     }

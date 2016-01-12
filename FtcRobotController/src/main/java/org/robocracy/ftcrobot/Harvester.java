@@ -29,7 +29,7 @@ public class Harvester {
      * @param drvrcmd {@link DriverCommand} object with values.
      */
     public void applyDSCmd(DriverCommand drvrcmd){
-        /*switch (drvrcmd.harvestercmd.direction){
+        switch (drvrcmd.harvestercmd.direction){
             case PULL:
                 harvesterMotor.setPower(1);
                 break;
@@ -42,6 +42,6 @@ public class Harvester {
             default:
                 harvesterMotor.setPower(0);
                 break;
-        }*/
+        }
     }
 }
