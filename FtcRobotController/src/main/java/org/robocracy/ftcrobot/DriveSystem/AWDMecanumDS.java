@@ -41,7 +41,6 @@ public class AWDMecanumDS {
     double robotMaxSpeed;
     double robotLength, robotWidth;
     FTCRobot robot;
-    FileRW fileRW;
     NavX navx_device;
 
     public AWDMecanumDS(LinearOpMode myOpmode, FTCRobot robot) {
@@ -108,8 +107,8 @@ public class AWDMecanumDS {
             // ToDo:  Determine the corect values for Kp, Ki, and Kd and pass them in the constructor below.
             this.motorPIDController[i] = new PIDController(0, 0, 0, 0, 0, 0);
         }
-        this.robotLength = 12; // in  inches
-        this.robotWidth = 10; // in  inches
+        this.robotLength = 10.5; // in  inches
+        this.robotWidth = 15; // in  inches
     }
 
     /**
@@ -335,11 +334,23 @@ public class AWDMecanumDS {
      * @throws InterruptedException
      */
     public void applyCmd(DriverCommand driverCommand) throws InterruptedException {
-        this.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega, true);
+        int angle;
+        double speedMultiplier, Omega, liftDirection, liftAngle;
 
-    }
-    public void setFileHandle(String filePath, boolean isWrite){
-        fileRW = new FileRW(filePath, isWrite);
+        angle = (int) driverCommand.drvsyscmd.angle;
+        speedMultiplier = driverCommand.drvsyscmd.speedMultiplier;
+        Omega = driverCommand.drvsyscmd.Omega;
+        liftDirection = driverCommand.linliftcmd.direction;
+        liftAngle = driverCommand.linliftcmd.angle;
+
+        //Logs values into file
+        if(true) {
+                float[] navx_data = navx_device.getNavxData();
+                String line = (System.nanoTime() - robot.timestamp) + "," + angle + "," + speedMultiplier + "," +
+                        Omega + "," + navx_data[0] + "," + liftDirection + "," + liftAngle;
+                this.robot.fileRW.fileWrite(line);
+        }
+        this.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega, true);
 
     }
 
@@ -370,14 +381,6 @@ public class AWDMecanumDS {
 
         double speed = speedMultiplier * this.robotMaxSpeed;
         this.angleToSpeedOfWheel(angle, speed, Omega, speedOfWheel);
-        //Logs values into file
-        if(logValues == true) {
-            if((angle != 0) || (speedMultiplier != 0.0) || (Omega != 0.0)){
-                float[] navx_data = navx_device.getNavxData();
-                String line = (System.nanoTime() - robot.timestamp) + "," + angle + "," + speedMultiplier + "," + Omega + "," + navx_data[0];
-                fileRW.fileWrite(line);
-            }
-        }
 
         // Determine the Power for each Motor/PowerTrain
         for (int i=0; i<4; i++) {

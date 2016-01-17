@@ -10,6 +10,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.robocracy.ftcrobot.DriveSystem.AWDMecanumDS;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import org.robocracy.ftcrobot.DriverStation.DriverStation;
+import org.robocracy.ftcrobot.util.FileRW;
+
+import java.io.IOException;
 
 
 /**
@@ -28,7 +31,7 @@ public class FTCRobot {
     AutonomousScorer autoScorer;
     Servo rightLatch;
     Servo leftLatch;
-    //Servo bucketServo;
+    Servo bucketServo;
     Servo rightClimberServo;
     Servo leftClimberServo;
     Latch latch;
@@ -39,6 +42,7 @@ public class FTCRobot {
     double RobotLength;
     // RobotWidth = Distance in inches from the center of front left to the center of front right wheel
     double RobotWidth;
+    public FileRW fileRW;
     public long timestamp;
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
 
@@ -49,26 +53,36 @@ public class FTCRobot {
 
     public FTCRobot(LinearOpMode curOpmode, boolean allianceIsBlue) {
         this.curOpmode = curOpmode;
-        this.dim = curOpmode.hardwareMap.deviceInterfaceModule.get("dim");
+        try{
+            this.dim = curOpmode.hardwareMap.deviceInterfaceModule.get("dim");
+            this.harvesterMotor = curOpmode.hardwareMap.dcMotor.get("harvesterMotor");
+            this.navx_device = AHRS.getInstance(curOpmode.hardwareMap.deviceInterfaceModule.get("dim"),
+                    NAVX_DIM_I2C_PORT, AHRS.DeviceDataType.kProcessedData, NAVX_DEVICE_UPDATE_RATE_HZ);
+            this.leftLatch = curOpmode.hardwareMap.servo.get("leftLatch");
+            this.rightLatch = curOpmode.hardwareMap.servo.get("rightLatch");
+            this.rightClimberServo = curOpmode.hardwareMap.servo.get("rightClimber");
+            this.leftClimberServo = curOpmode.hardwareMap.servo.get("leftClimber");
+        }
+        catch(Exception e){
+            DbgLog.error(String.format("%s . Device skipped", e.getMessage()));
+        }
         this.drvrStation = new DriverStation(curOpmode, this);
-        this.harvesterMotor = curOpmode.hardwareMap.dcMotor.get("harvesterMotor");
         this.harvester = new Harvester(this, curOpmode, harvesterMotor);
         this.linearLift = new LinearLift(this, curOpmode);
         this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
-        this.navx_device = AHRS.getInstance(curOpmode.hardwareMap.deviceInterfaceModule.get("dim"),
-                NAVX_DIM_I2C_PORT, AHRS.DeviceDataType.kProcessedData, NAVX_DEVICE_UPDATE_RATE_HZ);
         this.driveSys = new AWDMecanumDS(curOpmode, this);
         this.timestamp = System.nanoTime();
-        this.leftLatch = curOpmode.hardwareMap.servo.get("leftLatch");
-        this.rightLatch = curOpmode.hardwareMap.servo.get("rightLatch");
-        //this.bucketServo = curOpmode.hardwareMap.servo.get("bucketServo");
+        this.bucketServo = curOpmode.hardwareMap.servo.get("bucketServo");
         this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
-        //this.bucket = new Bucket(this, curOpmode, bucketServo);
-        this.rightClimberServo = curOpmode.hardwareMap.servo.get("rightClimber");
-        this.leftClimberServo = curOpmode.hardwareMap.servo.get("leftClimber");
+        this.bucket = new Bucket(this, curOpmode, bucketServo);
         this.leftClimber = new LeftClimber(this, leftClimberServo, curOpmode);
         this.rightClimber = new RightClimber(this, rightClimberServo, curOpmode);
     }
+
+    public void setFileHandle(String filePath, boolean isWrite){
+        fileRW = new FileRW(filePath, isWrite);
+    }
+
 
     public void runRobotAutonomous()  throws InterruptedException {
 
@@ -106,13 +120,18 @@ public class FTCRobot {
             this.linearLift.applyCmd(driverCommand);
 
             this.latch.applyDSCmd(driverCommand);
-            //this.bucket.applyDSCmd(driverCommand);
+            this.bucket.applyDSCmd(driverCommand);
             this.leftClimber.applyDSCmd(driverCommand);
             this.rightClimber.applyDSCmd(driverCommand);
 
             // Wait for one hardware cycle for the setPower(0) to take effect.
             this.curOpmode.waitForNextHardwareCycle();
 
+        }
+        try {
+            this.fileRW.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

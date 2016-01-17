@@ -22,6 +22,10 @@ public class RightClimber {
     public RightClimber(FTCRobot robot, Servo rightClimber, LinearOpMode curOpMode){
         this.curOpMode = curOpMode;
         this.rightClimber = rightClimber;
+        this.rightClimber.scaleRange(0.1, 0.5);
+        this.rightClimber.setPosition(1.0); // 1.0 == 0.5 because of scaleRange() call above
+        DbgLog.msg(String.format("RightClimber Position = %f", this.rightClimber.getPosition()));
+
         this.robot = robot;
     }
 
@@ -30,12 +34,14 @@ public class RightClimber {
      * @param drvrcmd {@link DriverCommand} object with values.
      */
     public void applyDSCmd(DriverCommand drvrcmd){
+        double rightClimberPosition = rightClimber.getPosition();
+        DbgLog.msg(String.format("RightClimber Position = %f", rightClimberPosition));
         switch (drvrcmd.rightClimberCmd.rightClimberDirection){
             case DOWN:
-                rightClimber.setPosition(0.5);
+                rightClimber.setPosition(Range.clip(rightClimberPosition+0.01, 0, 1));
                 break;
             case UP:
-                rightClimber.setPosition(0);
+                rightClimber.setPosition(Range.clip(rightClimberPosition-0.01, 0, 1));
                 break;
             case NONE:
                 break;

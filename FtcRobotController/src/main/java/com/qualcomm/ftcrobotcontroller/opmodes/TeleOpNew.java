@@ -24,7 +24,7 @@ public class TeleOpNew extends LinearOpMode {
 
         waitForStart();
 
-        this.myRobot.driveSys.setFileHandle(filePath, true);
+        this.myRobot.setFileHandle(filePath, true);
 
         myRobot.runRobotTeleop();
     }

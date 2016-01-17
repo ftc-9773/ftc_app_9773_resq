@@ -18,7 +18,7 @@ public class AutonomousBlueRecord extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException{
         this.robot = new FTCRobot(this, true);
-        this.robot.driveSys.setFileHandle(filePath, true);
+        this.robot.setFileHandle(filePath, true);
 
         waitOneFullHardwareCycle();
 

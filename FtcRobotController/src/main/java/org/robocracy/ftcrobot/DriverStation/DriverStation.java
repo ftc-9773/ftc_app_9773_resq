@@ -177,7 +177,7 @@ public class DriverStation {
         getNextHarvesterCmd();
         getNextLinearLiftCmd();
         getNextLatchCmd();
-        //getNextBucketCmd();
+        getNextBucketCmd();
         getNextClimberCmd();
 
         return (drvrCmd);
@@ -191,22 +191,31 @@ public class DriverStation {
      * @return {@link DriverCommand#drvsyscmd} object with values.
      */
     public DriverCommand getNextCommand(String line){
+        long timestamp = 0;
         String[] lineArray = line.split(",");
-        double angle, speedMultiplier, Omega;
-        if (lineArray.length >= 4) {
+        double angle, speedMultiplier, Omega, liftDirPower, liftAnglePower;
+        if (lineArray.length >= 7) {
+            timestamp = Long.parseLong(lineArray[0]);
             angle = Double.parseDouble(lineArray[1]);
             speedMultiplier = Double.parseDouble(lineArray[2]);
             Omega = Double.parseDouble(lineArray[3]);
+            liftDirPower = Double.parseDouble(lineArray[5]);
+            liftAnglePower = Double.parseDouble(lineArray[6]);
         }
         else {
             angle = 0.0;
             speedMultiplier = 0.0;
             Omega = 0.0;
+            liftDirPower = 0.0;
+            liftAnglePower = 0.0;
         }
 
+        drvrCmd.timeStamp = timestamp;
         drvrCmd.drvsyscmd.angle = angle;
         drvrCmd.drvsyscmd.Omega = Omega;
         drvrCmd.drvsyscmd.speedMultiplier = speedMultiplier;
+        drvrCmd.linliftcmd.angle = (float) liftAnglePower;
+        drvrCmd.linliftcmd.direction = (float) liftDirPower;
         return (drvrCmd);
     }
 

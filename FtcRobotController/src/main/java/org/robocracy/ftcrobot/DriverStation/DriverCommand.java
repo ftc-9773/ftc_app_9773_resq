@@ -14,8 +14,8 @@ import org.robocracy.ftcrobot.Latch;
  * @see {@link DriverStation}
  */
 public class DriverCommand {
-    public enum HarvesterDirection {PULL, PUSH, NONE}
-    public enum LatchDirection {DOWN, UP, NONE}
+    public enum HarvesterDirection {NONE, PULL, PUSH}
+    public enum LatchDirection {NONE, DOWN, UP}
     public class DriveSystemCommand {
         // angle = X-axis component of the desired Robot velocity.
         // speedMultiplier = Y-axis component of the desired Robot velocity
@@ -43,21 +43,23 @@ public class DriverCommand {
     }
     public LatchCommand latchCmd = new LatchCommand();
 
-    public enum BucketDirection {LEFT, RIGHT, NONE}
+    public enum BucketDirection {NONE, LEFT, RIGHT}
     public class BucketCommand{
         public BucketDirection direction;
     }
     public BucketCommand bucketCmd = new BucketCommand();
 
-    public enum LeftClimberDirection {DOWN, UP, NONE}
+    public enum LeftClimberDirection {NONE, DOWN, UP}
     public class LeftClimberCommand{
         public LeftClimberDirection leftClimberDirection;
     }
     public LeftClimberCommand leftClimberCmd = new LeftClimberCommand();
 
-    public enum RightClimberDirection {DOWN, UP, NONE}
+    public enum RightClimberDirection {NONE, DOWN, UP}
     public class RightClimberCommand{
         public RightClimberDirection rightClimberDirection;
     }
     public RightClimberCommand rightClimberCmd = new RightClimberCommand();
+
+    public long timeStamp; // timestamp of the driver command; this is used for autonomous reply
 }

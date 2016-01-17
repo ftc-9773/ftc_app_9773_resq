@@ -8,8 +8,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.robocracy.ftcrobot.DriveSystem.AWDMecanumDS;
+import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import org.robocracy.ftcrobot.util.FileRW;
 import org.robocracy.ftcrobot.util.PIDController;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Team Robocracy
@@ -121,15 +124,25 @@ public class AutonomousScorer {
      * @throws InterruptedException
      */
     public void driveUsingReplay(String filepath) throws InterruptedException {
+        DriverCommand drvrCmd;
+        long replayStartTime;
         String filePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
-        robot.driveSys.setFileHandle(filePath, true);
+        robot.setFileHandle(filePath, true);
 
         FileRW fileRW = new FileRW(filepath, false);
         String line = fileRW.getNextLine();
+        // Note the starting timestamp
+        replayStartTime = System.nanoTime();
         while (line != null){
             this.curOpMode.waitForNextHardwareCycle();
-            DbgLog.msg(String.format("line = %s", line));
-            robot.driveSys.applyCmd(robot.drvrStation.getNextCommand(line));
+            drvrCmd = robot.drvrStation.getNextCommand(line);
+//            DbgLog.msg(String.format("line = %s", line));
+            if ((System.nanoTime() - replayStartTime) < drvrCmd.timeStamp) {
+                // Wait for a few nano seconds
+                // This will not be precise but that should be okay
+                TimeUnit.NANOSECONDS.sleep(drvrCmd.timeStamp - ((System.nanoTime() - replayStartTime)));
+            }
+            robot.driveSys.applyCmd(drvrCmd);
             line = fileRW.getNextLine();
         }
         robot.driveSys.stopDriveSystem();
