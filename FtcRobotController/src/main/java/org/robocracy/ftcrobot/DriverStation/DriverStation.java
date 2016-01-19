@@ -95,9 +95,9 @@ public class DriverStation {
      */
     private void getNextLinearLiftCmd(){
         float angle = -curOpMode.gamepad2.left_stick_y;
-        float direction = curOpMode.gamepad2.right_stick_y;
+        float armLength = curOpMode.gamepad2.right_stick_y;
 
-        drvrCmd.linliftcmd.direction = Range.clip(direction, -1,1);
+        drvrCmd.linliftcmd.armLength = Range.clip(armLength, -1,1);
         drvrCmd.linliftcmd.angle = Range.clip(angle, -1, 1);
     }
 
@@ -194,20 +194,20 @@ public class DriverStation {
     public DriverCommand getNextCommand(String line){
         long timestamp = 0;
         String[] lineArray = line.split(",");
-        double angle, speedMultiplier, Omega, liftDirPower, liftAnglePower;
+        double angle, speedMultiplier, Omega, liftArmLengthPower, liftAnglePower;
         if (lineArray.length >= 7) {
             timestamp = Long.parseLong(lineArray[0]);
             angle = Double.parseDouble(lineArray[1]);
             speedMultiplier = Double.parseDouble(lineArray[2]);
             Omega = Double.parseDouble(lineArray[3]);
-            liftDirPower = Double.parseDouble(lineArray[5]);
+            liftArmLengthPower = Double.parseDouble(lineArray[5]);
             liftAnglePower = Double.parseDouble(lineArray[6]);
         }
         else {
             angle = 0.0;
             speedMultiplier = 0.0;
             Omega = 0.0;
-            liftDirPower = 0.0;
+            liftArmLengthPower = 0.0;
             liftAnglePower = 0.0;
         }
 
@@ -216,7 +216,7 @@ public class DriverStation {
         drvrCmd.drvsyscmd.Omega = Omega;
         drvrCmd.drvsyscmd.speedMultiplier = speedMultiplier;
         drvrCmd.linliftcmd.angle = (float) liftAnglePower;
-        drvrCmd.linliftcmd.direction = (float) liftDirPower;
+        drvrCmd.linliftcmd.armLength = (float) liftArmLengthPower;
         return (drvrCmd);
     }
 

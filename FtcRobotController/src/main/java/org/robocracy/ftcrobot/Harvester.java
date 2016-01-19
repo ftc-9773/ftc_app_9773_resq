@@ -15,12 +15,16 @@ public class Harvester {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor harvesterMotor;
+    boolean harvesterAvailable=false;
     double maxSpeed = 152;
 
     public Harvester(FTCRobot robot, LinearOpMode curOpMode, DcMotor harvesterMotor){
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.harvesterMotor = harvesterMotor;
+        if (harvesterMotor != null) {
+            harvesterAvailable = true;
+        }
     }
 
 
@@ -29,6 +33,9 @@ public class Harvester {
      * @param drvrcmd {@link DriverCommand} object with values.
      */
     public void applyDSCmd(DriverCommand drvrcmd){
+        if (!harvesterAvailable) {
+            return;
+        }
         switch (drvrcmd.harvestercmd.direction){
             case PULL:
                 harvesterMotor.setPower(1);

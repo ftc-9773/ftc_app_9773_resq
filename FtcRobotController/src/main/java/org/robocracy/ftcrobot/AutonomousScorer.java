@@ -30,8 +30,13 @@ public class AutonomousScorer {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.allianceIsBlue = allianceIsBlue;
-        this.colorSensor = curOpMode.hardwareMap.colorSensor.get("color_sensor1");
-        this.ods = curOpMode.hardwareMap.opticalDistanceSensor.get("ods_sensor1");
+        try {
+            this.colorSensor = curOpMode.hardwareMap.colorSensor.get("color_sensor1");
+            this.ods = curOpMode.hardwareMap.opticalDistanceSensor.get("ods_sensor1");
+        }
+        catch(Exception e){
+            DbgLog.error(String.format("%s . Device skipped", e.getMessage()));
+        }
     }
 
     public void step1_driveToRepairZone(AWDMecanumDS drivesys) throws InterruptedException{
@@ -125,7 +130,7 @@ public class AutonomousScorer {
     public void driveUsingReplay() throws InterruptedException {
         DriverCommand drvrCmd;
         long replayStartTime;
-        FileRW readFileRW, writeFileRW;
+        FileRW readFileRW;
         readFileRW = this.robot.readFileRW;
 
 //        String filePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
@@ -138,7 +143,7 @@ public class AutonomousScorer {
         while (line != null){
             this.curOpMode.waitForNextHardwareCycle();
             drvrCmd = robot.drvrStation.getNextCommand(line);
-//            DbgLog.msg(String.format("line = %s", line));
+            DbgLog.msg(String.format("line = %s", line));
             if ((System.nanoTime() - replayStartTime) < drvrCmd.timeStamp) {
                 // Wait for a few nano seconds
                 // This will not be precise but that should be okay

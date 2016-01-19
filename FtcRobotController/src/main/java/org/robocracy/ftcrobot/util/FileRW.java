@@ -101,7 +101,7 @@ public class FileRW {
     public void close() throws IOException {
         if (this.fileWriter != null) {
             this.fileWriter.flush(); // Write the contents in memory to the disk
-            this.fileWriter.close();
+//            this.fileWriter.close();
         }
 
         if (this.fileReader != null) {

@@ -11,7 +11,7 @@ public class NavXTest extends LinearOpMode{
 
     @Override
     public void runOpMode() throws InterruptedException{
-        this.robot = new FTCRobot(this, false);
+        this.robot = new FTCRobot(this, null, null, true);
 
         waitOneFullHardwareCycle();
 

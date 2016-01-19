@@ -18,14 +18,18 @@ public class LeftClimber {
     FTCRobot robot;
     LinearOpMode curOpMode;
     Servo leftClimber;
+    boolean leftClimberAvailable = false;
 
     public LeftClimber(FTCRobot robot, Servo leftClimber, LinearOpMode curOpMode){
-        this.curOpMode = curOpMode;
-        this.leftClimber = leftClimber;
-        this.leftClimber.setDirection(Servo.Direction.REVERSE);
-        DbgLog.msg(String.format("Left climber position = %f", this.leftClimber.getPosition()));
-        this.leftClimber.setPosition(1.0);
         this.robot = robot;
+        this.curOpMode = curOpMode;
+        if (leftClimber != null) {
+            leftClimberAvailable = true;
+            this.leftClimber = leftClimber;
+            this.leftClimber.setDirection(Servo.Direction.REVERSE);
+            DbgLog.msg(String.format("Left climber position = %f", this.leftClimber.getPosition()));
+            this.leftClimber.setPosition(1.0);
+        }
     }
 
     /**
@@ -33,6 +37,9 @@ public class LeftClimber {
      * @param drvrcmd {@link DriverCommand} object with values.
      */
     public void applyDSCmd(DriverCommand drvrcmd){
+        if (!leftClimberAvailable) {
+            return;
+        }
         double leftClimberPosition = leftClimber.getPosition();
         DbgLog.msg(String.format("Left climber position = %f", leftClimberPosition));
         switch (drvrcmd.leftClimberCmd.leftClimberDirection){

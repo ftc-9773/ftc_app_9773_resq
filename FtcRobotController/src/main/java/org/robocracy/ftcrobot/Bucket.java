@@ -18,6 +18,7 @@ public class Bucket {
     FTCRobot robot;
     LinearOpMode curOpMode;
     Servo bucketServo;
+    boolean bucketAvailable = false;
     final double right = 1;
     final double left = 0;
     final double none = 0.5;
@@ -26,6 +27,9 @@ public class Bucket {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.bucketServo = bucketServo;
+        if (bucketServo != null) {
+            bucketAvailable = true;
+        }
     }
 
 
@@ -34,6 +38,9 @@ public class Bucket {
      * @param drvrcmd {@link DriverCommand} object with values.
      */
     public void applyDSCmd(DriverCommand drvrcmd){
+        if (!bucketAvailable) {
+            return;
+        }
         DbgLog.msg(String.format("Bucket Position = %f", bucketServo.getPosition()));
         switch(drvrcmd.bucketCmd.direction){
             case RIGHT:

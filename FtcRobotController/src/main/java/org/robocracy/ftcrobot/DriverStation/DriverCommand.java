@@ -28,8 +28,8 @@ public class DriverCommand {
     public DriveSystemCommand drvsyscmd = new DriveSystemCommand();
     public class LinearLiftCommand {
         //angle = altitude component of Linear Lift
-        //direction = extending/collapsing component of Linear Lift
-        public float angle, direction;
+        //armLength = extending/collapsing component of Linear Lift
+        public float angle, armLength;
     }
     public LinearLiftCommand linliftcmd = new LinearLiftCommand();
 

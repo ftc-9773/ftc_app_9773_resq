@@ -8,17 +8,17 @@ import org.robocracy.ftcrobot.util.FileRW;
 /**
  * @author Team Robocracy
  *
- * OpMode that is activated by driver. On activation, runs {@link FTCRobot#runRobotAutonomous(String)}, passing {@code filePath}
+ * OpMode that is activated by driver. On activation, runs {@link FTCRobot#runRobotAutonomous()}, passing {@code filePath}
  * as the path to the Blue Alliance autonomous instruction file.
  */
 public class AutonomousRedRecord extends LinearOpMode {
     FTCRobot robot;
-    String filePath = "/sdcard/FIRST/autonomousCmds/red.csv";
+    String writeFilePath = "/sdcard/FIRST/autonomousCmds/red.csv";
+    String readFilePath = null;
 
     @Override
     public void runOpMode() throws InterruptedException{
-        this.robot = new FTCRobot(this, true);
-        this.robot.setFileHandle(filePath, true);
+        this.robot = new FTCRobot(this, readFilePath, writeFilePath, true);
 
         waitOneFullHardwareCycle();
 
