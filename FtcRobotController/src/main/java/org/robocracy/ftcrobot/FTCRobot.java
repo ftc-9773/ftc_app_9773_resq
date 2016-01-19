@@ -4,6 +4,7 @@ import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousBlue;
 import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousRed;
+import com.qualcomm.ftcrobotcontroller.opmodes.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -21,7 +22,7 @@ import java.io.IOException;
  * @author Team Robocracy
  * {@docRoot}
  *
- * Top level class in hierarchy. Represents an {@code FTCRobot} with main {@link FTCRobot#runRobotAutonomous(String)} and {@link FTCRobot#runRobotTeleop()} methods, which are used in {@link AutonomousRed}, {@link AutonomousBlue}, and {@link com.qualcomm.ftcrobotcontroller.opmodes.TeleOpNew} opmodes.
+ * Top level class in hierarchy. Represents an {@code FTCRobot} with main {@link FTCRobot#runRobotAutonomous(String)} and {@link FTCRobot#runRobotTeleop()} methods, which are used in {@link AutonomousRed}, {@link AutonomousBlue}, and {@link TeleOp} opmodes.
  */
 public class FTCRobot {
     LinearOpMode curOpmode;
