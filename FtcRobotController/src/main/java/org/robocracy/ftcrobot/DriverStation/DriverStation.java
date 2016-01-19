@@ -186,8 +186,9 @@ public class DriverStation {
     /**
      * Overrides {@link DriverStation#getNextCommand()}.
      *
-     * @see org.robocracy.ftcrobot.AutonomousScorer#driveUsingReplay(String filePath)
-     * @param line Line of comma-seperated values in csv file read in {@link org.robocracy.ftcrobot.AutonomousScorer#driveUsingReplay(String filePath)}
+     * @see org.robocracy.ftcrobot.AutonomousScorer#driveUsingReplay()
+     * @param line Line of comma-seperated values in csv file read in
+     * {@link org.robocracy.ftcrobot.AutonomousScorer#driveUsingReplay()}
      * @return {@link DriverCommand#drvsyscmd} object with values.
      */
     public DriverCommand getNextCommand(String line){

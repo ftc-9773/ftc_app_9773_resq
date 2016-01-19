@@ -120,17 +120,19 @@ public class AutonomousScorer {
 
     /**
      * Drives robot during Autonomous based on values recorded in .csv file at {@code filepath}.
-     * @param filepath file path to recorded values.
      * @throws InterruptedException
      */
-    public void driveUsingReplay(String filepath) throws InterruptedException {
+    public void driveUsingReplay() throws InterruptedException {
         DriverCommand drvrCmd;
         long replayStartTime;
-        String filePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
-        robot.setFileHandle(filePath, true);
+        FileRW readFileRW, writeFileRW;
+        readFileRW = this.robot.readFileRW;
 
-        FileRW fileRW = new FileRW(filepath, false);
-        String line = fileRW.getNextLine();
+//        String filePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
+//        robot.setFileHandle(filePath, true);
+//        FileRW fileRW = new FileRW(filepath, false);
+
+        String line = readFileRW.getNextLine();
         // Note the starting timestamp
         replayStartTime = System.nanoTime();
         while (line != null){
@@ -143,9 +145,21 @@ public class AutonomousScorer {
                 TimeUnit.NANOSECONDS.sleep(drvrCmd.timeStamp - ((System.nanoTime() - replayStartTime)));
             }
             robot.driveSys.applyCmd(drvrCmd);
-            line = fileRW.getNextLine();
+            line = readFileRW.getNextLine();
         }
         robot.driveSys.stopDriveSystem();
         this.curOpMode.waitForNextHardwareCycle();
+    }
+
+    public void strafeTheDistance(AWDMecanumDS drivesys, int distanceToStrafe) throws InterruptedException {
+        int angle, speed;
+        if (distanceToStrafe < 0) {
+            angle = 180;
+        }
+        else {
+            angle = 0;
+        }
+        speed = 12;
+        drivesys.autoMecanum(angle, distanceToStrafe, speed, 0);
     }
 }

@@ -22,7 +22,9 @@ import java.io.IOException;
  * @author Team Robocracy
  * {@docRoot}
  *
- * Top level class in hierarchy. Represents an {@code FTCRobot} with main {@link FTCRobot#runRobotAutonomous(String)} and {@link FTCRobot#runRobotTeleop()} methods, which are used in {@link AutonomousRed}, {@link AutonomousBlue}, and {@link TeleOp} opmodes.
+ * Top level class in hierarchy. Represents an {@code FTCRobot} with
+ *     main {@link FTCRobot#runRobotAutonomous()} and {@link FTCRobot#runRobotTeleop()} methods,
+ *     which are used in {@link AutonomousRed}, {@link AutonomousBlue}, and {@link TeleOp} opmodes.
  */
 public class FTCRobot {
     LinearOpMode curOpmode;
@@ -41,11 +43,7 @@ public class FTCRobot {
     Bucket bucket;
     LeftClimber leftClimber;
     RightClimber rightClimber;
-    // RobotLength = Distance in inches from the center of front left to the center of rear left wheel
-    double RobotLength;
-    // RobotWidth = Distance in inches from the center of front left to the center of front right wheel
-    double RobotWidth;
-    public FileRW fileRW;
+    public FileRW readFileRW, writeFileRW;
     public long timestamp;
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
 
@@ -54,7 +52,7 @@ public class FTCRobot {
     public final int NAVX_DIM_I2C_PORT = 5;
     public AHRS navxDevice;
 
-    public FTCRobot(LinearOpMode curOpmode, boolean allianceIsBlue) {
+    public FTCRobot(LinearOpMode curOpmode, String readFilePath, String writeFilePath, boolean allianceIsBlue) {
         this.curOpmode = curOpmode;
         try{
             this.dim = curOpmode.hardwareMap.deviceInterfaceModule.get("dim");
@@ -80,16 +78,27 @@ public class FTCRobot {
         this.bucket = new Bucket(this, curOpmode, bucketServo);
         this.leftClimber = new LeftClimber(this, leftClimberServo, curOpmode);
         this.rightClimber = new RightClimber(this, rightClimberServo, curOpmode);
+
+        if (readFilePath != null) {
+            this.readFileRW = new FileRW(readFilePath, false);
+        } else {
+            this.readFileRW = null;
+        }
+        if (writeFilePath != null) {
+            this.writeFileRW = new FileRW(writeFilePath, true);
+        } else {
+            this.writeFileRW = null;
+        }
     }
 
-    public void setFileHandle(String filePath, boolean isWrite){
-        fileRW = new FileRW(filePath, isWrite);
-    }
-
-
+    /**
+     * Runs Autonomous mode with values from file in {@code filePath}.
+     * @throws InterruptedException
+     */
     public void runRobotAutonomous()  throws InterruptedException {
 
-        this.autoScorer.step1_driveToRepairZone(this.driveSys);
+        autoScorer.driveUsingReplay();
+//        this.autoScorer.step1_driveToRepairZone(this.driveSys);
         //this.autoScorer.step2_alignWithWhiteLine(this.driveSys);
         //this.autoScorer.step3_moveToTheRescueBeacon(this.driveSys);
         //this.autoScorer.step4_moveBackToMountainBase(this.driveSys);
@@ -97,16 +106,20 @@ public class FTCRobot {
         this.driveSys.autoMecanum(250, 82, 12, 0);
         this.driveSys.autoMecanum(0, 0, 12, 70);
 */
+        try {
+            if (readFileRW != null){
+                readFileRW.close();
+            }
+            if (writeFileRW != null) {
+                writeFileRW.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Runs Autonomous mode with values from file in {@code filePath}.
-     * @param filePath file path of file with values to be read for robot to move
-     * @throws InterruptedException
-     */
-    public void runRobotAutonomous(String filePath) throws InterruptedException {
-        DbgLog.msg(String.format("Filename = %s", filePath));
-        autoScorer.driveUsingReplay(filePath);
+    public void runRobotAutonomous(int distanceToStrafe) throws InterruptedException {
+        this.autoScorer.strafeTheDistance(driveSys, distanceToStrafe);
     }
 
     /**
@@ -132,7 +145,12 @@ public class FTCRobot {
 
         }
         try {
-            this.fileRW.close();
+            if (readFileRW != null){
+                readFileRW.close();
+            }
+            if (writeFileRW != null) {
+                writeFileRW.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

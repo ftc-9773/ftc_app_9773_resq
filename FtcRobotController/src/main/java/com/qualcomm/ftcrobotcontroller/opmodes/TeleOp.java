@@ -16,15 +16,14 @@ public class TeleOp extends LinearOpMode {
         // The 2nd parameter indicates whether the robot is part of the blue alliance or not.
         // This is used in the autonomous mode; it does not matter for the teleop mode,
         // but some value has to be passed, so pass the value "true".
-        this.myRobot = new FTCRobot(this, true);
-        String filePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
+        String writeFilePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
+        String readFilePath = null;
+        this.myRobot = new FTCRobot(this, readFilePath, writeFilePath, true);
 
 
         waitOneFullHardwareCycle();
 
         waitForStart();
-
-        this.myRobot.setFileHandle(filePath, true);
 
         myRobot.runRobotTeleop();
     }
