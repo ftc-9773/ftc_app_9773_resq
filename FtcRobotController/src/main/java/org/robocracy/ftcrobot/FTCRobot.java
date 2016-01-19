@@ -2,6 +2,8 @@ package org.robocracy.ftcrobot;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousBlue;
+import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousRed;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -19,7 +21,7 @@ import java.io.IOException;
  * @author Team Robocracy
  * {@docRoot}
  *
- * Top level class in hierarchy. Represents an {@code FTCRobot} with main {@link FTCRobot#runRobotAutonomous(String)} and {@link FTCRobot#runRobotTeleop()} methods, which are used in {@link com.qualcomm.ftcrobotcontroller.opmodes.AutonomousRedNew}, {@link com.qualcomm.ftcrobotcontroller.opmodes.AutonomousBlueNew}, and {@link com.qualcomm.ftcrobotcontroller.opmodes.TeleOpNew} opmodes.
+ * Top level class in hierarchy. Represents an {@code FTCRobot} with main {@link FTCRobot#runRobotAutonomous(String)} and {@link FTCRobot#runRobotTeleop()} methods, which are used in {@link AutonomousRed}, {@link AutonomousBlue}, and {@link com.qualcomm.ftcrobotcontroller.opmodes.TeleOpNew} opmodes.
  */
 public class FTCRobot {
     LinearOpMode curOpmode;
@@ -49,14 +51,14 @@ public class FTCRobot {
     DriverStation drvrStation;
 
     public final int NAVX_DIM_I2C_PORT = 5;
-    public AHRS navx_device;
+    public AHRS navxDevice;
 
     public FTCRobot(LinearOpMode curOpmode, boolean allianceIsBlue) {
         this.curOpmode = curOpmode;
         try{
             this.dim = curOpmode.hardwareMap.deviceInterfaceModule.get("dim");
             this.harvesterMotor = curOpmode.hardwareMap.dcMotor.get("harvesterMotor");
-            this.navx_device = AHRS.getInstance(curOpmode.hardwareMap.deviceInterfaceModule.get("dim"),
+            this.navxDevice = AHRS.getInstance(curOpmode.hardwareMap.deviceInterfaceModule.get("dim"),
                     NAVX_DIM_I2C_PORT, AHRS.DeviceDataType.kProcessedData, NAVX_DEVICE_UPDATE_RATE_HZ);
             this.leftLatch = curOpmode.hardwareMap.servo.get("leftLatch");
             this.rightLatch = curOpmode.hardwareMap.servo.get("rightLatch");

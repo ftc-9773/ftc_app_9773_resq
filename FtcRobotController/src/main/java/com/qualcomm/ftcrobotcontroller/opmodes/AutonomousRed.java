@@ -4,24 +4,23 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.robocracy.ftcrobot.FTCRobot;
 
-/*import com.qualcomm.robotcore.eventloop.opmode.OpMode;*/
-
 /**
- * Created by pranavb on 11/11/15.
+ * @author Team Robocracy
+ *
+ * OpMode that is activated by driver. On activation, runs {@link FTCRobot#runRobotAutonomous(String)}, passing {@code filePath}
+ * as the path to the Red Alliance autonomous instruction file.
  */
 public class AutonomousRed extends LinearOpMode {
-    FTCRobot myRobot;
+    FTCRobot robot;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        this.myRobot = new FTCRobot(this, false);
-
+    public void runOpMode() throws InterruptedException{
+        this.robot = new FTCRobot(this, false);
 
         waitOneFullHardwareCycle();
 
         waitForStart();
 
-        myRobot.runRobotAutonomous();
-
+        robot.runRobotAutonomous("/sdcard/FIRST/autonomousCmds/red.csv");
     }
 }

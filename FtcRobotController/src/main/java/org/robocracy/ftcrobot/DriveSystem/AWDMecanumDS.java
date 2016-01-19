@@ -52,7 +52,7 @@ public class AWDMecanumDS {
 
         this.robot = robot;
 
-        this.navx_device = new NavX(robot, curOpmode, robot.navx_device);
+        this.navx_device = new NavX(robot, curOpmode, robot.navxDevice);
 
         DcMotor[] motors = new DcMotor[4];
         motors[0] = myOpmode.hardwareMap.dcMotor.get("fMotorL");

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+    <Robot>
+    <MotorController name="LeftMotors" serialNumber="AL00YCFW">
+        <Motor name="fMotorL" port="1"></Motor>
+        <Motor name="rMotorL" port="2"></Motor>
+    </MotorController>
+    <MotorController name="RightMotors" serialNumber="AL00VBJK">
+        <Motor name="fMotorR" port="1"></Motor>
+        <Motor name="rMotorR" port="2"></Motor>
+    </MotorController>
+    <DeviceInterfaceModule name="dim" serialNumber="AL00VBY8">
+        <I2cDevice name="navxDevice" port="1"></I2cDevice>
+    </DeviceInterfaceModule>
+</Robot>
