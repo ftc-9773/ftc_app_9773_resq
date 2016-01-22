@@ -150,6 +150,7 @@ public class AutonomousScorer {
                 TimeUnit.NANOSECONDS.sleep(drvrCmd.timeStamp - ((System.nanoTime() - replayStartTime)));
             }
             robot.driveSys.applyCmd(drvrCmd);
+            robot.linearLift.applyCmd(drvrCmd);
             line = readFileRW.getNextLine();
         }
         robot.driveSys.stopDriveSystem();
