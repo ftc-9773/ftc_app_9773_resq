@@ -31,8 +31,7 @@ public class AutonomousScorer {
         this.curOpMode = curOpMode;
         this.allianceIsBlue = allianceIsBlue;
         try {
-            this.colorSensor = curOpMode.hardwareMap.colorSensor.get("color_sensor1");
-            this.ods = curOpMode.hardwareMap.opticalDistanceSensor.get("ods_sensor1");
+
         }
         catch(Exception e){
             DbgLog.error(String.format("%s . Device skipped", e.getMessage()));
@@ -155,6 +154,36 @@ public class AutonomousScorer {
         }
         robot.driveSys.stopDriveSystem();
         this.curOpMode.waitForNextHardwareCycle();
+    }
+    public void driveUsingReplay(boolean isEndGame) throws InterruptedException{
+        if(isEndGame) {
+            DriverCommand drvrCmd;
+            long replayStartTime;
+            FileRW readFileRW;
+            readFileRW = this.robot.readFileRW;
+
+            String line = readFileRW.getNextLine();
+            // Note the starting timestamp
+            replayStartTime = System.nanoTime();
+            while (line != null) {
+                this.curOpMode.waitForNextHardwareCycle();
+                drvrCmd = robot.drvrStation.getNextCommand(line, true);
+                DbgLog.msg(String.format("line = %s", line));
+                if ((System.nanoTime() - replayStartTime) < drvrCmd.timeStamp) {
+                    // Wait for a few nano seconds
+                    // This will not be precise but that should be okay
+                    TimeUnit.NANOSECONDS.sleep(drvrCmd.timeStamp - ((System.nanoTime() - replayStartTime)));
+                }
+                robot.driveSys.applyCmd(drvrCmd);
+                robot.linearLift.applyCmd(drvrCmd);
+                robot.latch.applyDSCmd(drvrCmd);
+                robot.rightClimber.applyDSCmd(drvrCmd);
+                robot.leftClimber.applyDSCmd(drvrCmd);
+                line = readFileRW.getNextLine();
+            }
+            robot.driveSys.stopDriveSystem();
+            this.curOpMode.waitForNextHardwareCycle();
+        }
     }
 
     public void strafeTheDistance(AWDMecanumDS drivesys, int distanceToStrafe) throws InterruptedException {

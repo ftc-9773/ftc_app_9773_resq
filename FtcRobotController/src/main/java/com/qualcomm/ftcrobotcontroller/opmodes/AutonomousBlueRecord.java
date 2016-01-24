@@ -18,7 +18,7 @@ public class AutonomousBlueRecord extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
-        this.robot = new FTCRobot(this, readFilePath, writeFilePath, true);
+        this.robot = new FTCRobot(this, readFilePath, writeFilePath, true, FTCRobot.currentlyRecording.RECORDING_AUTONOMOUS);
 
         waitOneFullHardwareCycle();
 

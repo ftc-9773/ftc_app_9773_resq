@@ -18,7 +18,7 @@ public class TeleOp extends LinearOpMode {
         // but some value has to be passed, so pass the value "true".
         String writeFilePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
         String readFilePath = null;
-        this.myRobot = new FTCRobot(this, readFilePath, writeFilePath, true);
+        this.myRobot = new FTCRobot(this, readFilePath, writeFilePath, true, FTCRobot.currentlyRecording.NONE);
 
 
         waitOneFullHardwareCycle();

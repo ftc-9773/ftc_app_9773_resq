@@ -1,6 +1,7 @@
 package org.robocracy.ftcrobot.DriverStation;
 
 import org.robocracy.ftcrobot.FTCRobot;
+import org.robocracy.ftcrobot.util.NavX;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -126,13 +127,13 @@ public class DriverStation {
         boolean latchUp = curOpMode.gamepad1.y;
 
         if(latchDown == true){
-            drvrCmd.latchCmd.direction = DriverCommand.LatchDirection.DOWN;
+            drvrCmd.latchCmd.latchStatus = -1;
         }
         else if(latchUp == true){
-            drvrCmd.latchCmd.direction = DriverCommand.LatchDirection.UP;
+            drvrCmd.latchCmd.latchStatus = 1;
         }
         else{
-            drvrCmd.latchCmd.direction = DriverCommand.LatchDirection.NONE;
+            drvrCmd.latchCmd.latchStatus = 0;
         }
     }
 
@@ -146,23 +147,37 @@ public class DriverStation {
         boolean leftClimberUp = curOpMode.gamepad2.b;
 
         if(rightClimberDown){
-            drvrCmd.rightClimberCmd.rightClimberDirection = DriverCommand.RightClimberDirection.DOWN;
+            drvrCmd.rightClimberCmd.rightClimberStatus = -1;
         }
         else if(rightClimberUp){
-            drvrCmd.rightClimberCmd.rightClimberDirection = DriverCommand.RightClimberDirection.UP;
+            drvrCmd.rightClimberCmd.rightClimberStatus = 1;
         }
         else{
-            drvrCmd.rightClimberCmd.rightClimberDirection = DriverCommand.RightClimberDirection.NONE;
+            drvrCmd.rightClimberCmd.rightClimberStatus = 0;
         }
 
         if (leftClimberDown){
-            drvrCmd.leftClimberCmd.leftClimberDirection = DriverCommand.LeftClimberDirection.DOWN;
+            drvrCmd.leftClimberCmd.leftClimberStatus = -1;
         }
         else if(leftClimberUp){
-            drvrCmd.leftClimberCmd.leftClimberDirection = DriverCommand.LeftClimberDirection.UP;
+            drvrCmd.leftClimberCmd.leftClimberStatus = 1;
         }
         else {
-            drvrCmd.leftClimberCmd.leftClimberDirection = DriverCommand.LeftClimberDirection.NONE;
+            drvrCmd.leftClimberCmd.leftClimberStatus = 0;
+        }
+    }
+
+    /**
+     * Gets button value of gamepad 1 bumper, and, if pressed, starts end game.
+     */
+    private void getNextEndGameCmd(){
+        boolean startEndGame = curOpMode.gamepad1.right_bumper;
+
+        if(startEndGame){
+            drvrCmd.runEndGame.endGameStatus = DriverCommand.EndGameStatus.RUN;
+        }
+        else{
+            drvrCmd.runEndGame.endGameStatus = DriverCommand.EndGameStatus.STOP;
         }
     }
 
@@ -179,6 +194,54 @@ public class DriverStation {
         getNextLatchCmd();
         getNextBucketCmd();
         getNextClimberCmd();
+        getNextEndGameCmd();
+
+        if(robot.curStatus == FTCRobot.currentlyRecording.RECORDING_AUTONOMOUS){
+            int angle = (int) drvrCmd.drvsyscmd.angle;
+            double speedMultiplier = drvrCmd.drvsyscmd.speedMultiplier;
+            double Omega = drvrCmd.drvsyscmd.Omega;
+            double liftDirection = drvrCmd.linliftcmd.armLength;
+            double liftAngle = drvrCmd.linliftcmd.angle;
+
+            //Logs values into file
+            if(this.robot.writeFileRW != null) {
+                float[] navx_data;
+                if (robot.navxDevice != null) {
+                    navx_data = robot.navx_device.getNavxData();
+                } else {
+                    navx_data = new float[4];
+                    navx_data[0] = 0;
+                }
+                String line = (System.nanoTime() - robot.timestamp) + "," + angle + "," + speedMultiplier + "," +
+                        Omega + "," + navx_data[0] + "," + liftDirection + "," + liftAngle + "," + robot.ods.getLightDetected()
+                        + "," + robot.colorSensor.red() + "," + robot.colorSensor.green() + "," + robot.colorSensor.blue();
+                this.robot.writeFileRW.fileWrite(line);
+            }
+        }
+        else if(robot.curStatus == FTCRobot.currentlyRecording.RECORDING_ENDGAME){
+            int angle = (int) drvrCmd.drvsyscmd.angle;
+            double speedMultiplier = drvrCmd.drvsyscmd.speedMultiplier;
+            double Omega = drvrCmd.drvsyscmd.Omega;
+            double liftDirection = drvrCmd.linliftcmd.armLength;
+            double liftAngle = drvrCmd.linliftcmd.angle;
+            int latchStatus = drvrCmd.latchCmd.latchStatus;
+            int rightClimberStatus = drvrCmd.rightClimberCmd.rightClimberStatus;
+            int leftClimberStatus = drvrCmd.leftClimberCmd.leftClimberStatus;
+
+            //Logs values into file
+            if(this.robot.writeFileRW != null) {
+                float[] navx_data;
+                if (robot.navxDevice != null) {
+                    navx_data = robot.navx_device.getNavxData();
+                } else {
+                    navx_data = new float[4];
+                    navx_data[0] = 0;
+                }
+                String line = (System.nanoTime() - robot.timestamp) + "," + angle + "," + speedMultiplier + "," +
+                        Omega + "," + navx_data[0] + "," + navx_data[1] + "," + liftDirection + "," + liftAngle + "," + latchStatus + "," + rightClimberStatus + "," + leftClimberStatus;
+                this.robot.writeFileRW.fileWrite(line);
+            }
+        }
 
         return (drvrCmd);
     }
@@ -194,21 +257,31 @@ public class DriverStation {
     public DriverCommand getNextCommand(String line){
         long timestamp = 0;
         String[] lineArray = line.split(",");
-        double angle, speedMultiplier, Omega, liftArmLengthPower, liftAnglePower;
-        if (lineArray.length >= 7) {
+        double angle, speedMultiplier, Omega, yaw, liftArmLengthPower, liftAnglePower, odsVal, colorRed, colorGreen, colorBlue;
+        if (lineArray.length >= 11) {
             timestamp = Long.parseLong(lineArray[0]);
             angle = Double.parseDouble(lineArray[1]);
             speedMultiplier = Double.parseDouble(lineArray[2]);
             Omega = Double.parseDouble(lineArray[3]);
+            yaw = Double.parseDouble(lineArray[4]);
             liftArmLengthPower = Double.parseDouble(lineArray[5]);
             liftAnglePower = Double.parseDouble(lineArray[6]);
+            odsVal = Double.parseDouble(lineArray[7]);
+            colorRed = Double.parseDouble(lineArray[8]);
+            colorGreen = Double.parseDouble(lineArray[9]);
+            colorBlue = Double.parseDouble(lineArray[10]);
         }
         else {
             angle = 0.0;
             speedMultiplier = 0.0;
             Omega = 0.0;
+            yaw = 0.0;
             liftArmLengthPower = 0.0;
             liftAnglePower = 0.0;
+            odsVal = 0.0;
+            colorRed = 0.0;
+            colorGreen = 0.0;
+            colorBlue = 0.0;
         }
 
         drvrCmd.timeStamp = timestamp;
@@ -217,6 +290,79 @@ public class DriverStation {
         drvrCmd.drvsyscmd.speedMultiplier = speedMultiplier;
         drvrCmd.linliftcmd.angle = (float) liftAnglePower;
         drvrCmd.linliftcmd.armLength = (float) liftArmLengthPower;
+        drvrCmd.sensorValues.yaw = yaw;
+        drvrCmd.sensorValues.ods = odsVal;
+        drvrCmd.sensorValues.colorRed = colorRed;
+        drvrCmd.sensorValues.colorGreen = colorGreen;
+        drvrCmd.sensorValues.colorBlue = colorBlue;
+        return (drvrCmd);
+    }
+    /**
+     * Overrides {@link DriverStation#getNextCommand()}.
+     *
+     * @see org.robocracy.ftcrobot.EndGamePlayer#runEndGame(DriverCommand) ()
+     * @param line Line of comma-seperated values in csv file read in
+     * {@link org.robocracy.ftcrobot.AutonomousScorer#driveUsingReplay()}
+     * @return {@link DriverCommand#drvsyscmd} object with values.
+     */
+    public DriverCommand getNextCommand(String line, boolean isEndGame){
+        if(isEndGame) {
+            long timestamp = 0;
+            String[] lineArray = line.split(",");
+            double angle, speedMultiplier, Omega, yaw, pitch, liftArmLengthPower, liftAnglePower, odsVal, colorRed, colorGreen, colorBlue;
+            int latchStatus = 0;
+            int rightClimberStatus;
+            int leftClimberStatus;
+            if (lineArray.length >= 15) {
+                timestamp = Long.parseLong(lineArray[0]);
+                angle = Double.parseDouble(lineArray[1]);
+                speedMultiplier = Double.parseDouble(lineArray[2]);
+                Omega = Double.parseDouble(lineArray[3]);
+                yaw = Double.parseDouble(lineArray[4]);
+                pitch = Double.parseDouble(lineArray[5]);
+                liftArmLengthPower = Double.parseDouble(lineArray[6]);
+                liftAnglePower = Double.parseDouble(lineArray[7]);
+                odsVal = Double.parseDouble(lineArray[8]);
+                colorRed = Double.parseDouble(lineArray[9]);
+                colorGreen = Double.parseDouble(lineArray[10]);
+                colorBlue = Double.parseDouble(lineArray[11]);
+                latchStatus = Integer.parseInt(lineArray[12]);
+                rightClimberStatus = Integer.parseInt(lineArray[13]);
+                leftClimberStatus = Integer.parseInt(lineArray[14]);
+            } else {
+                angle = 0.0;
+                speedMultiplier = 0.0;
+                Omega = 0.0;
+                yaw = 0.0;
+                pitch = 0.0;
+                liftArmLengthPower = 0.0;
+                liftAnglePower = 0.0;
+                odsVal = 0.0;
+                colorRed = 0.0;
+                colorGreen = 0.0;
+                colorBlue = 0.0;
+                latchStatus = 0;
+                rightClimberStatus = 0;
+                leftClimberStatus = 0;
+            }
+
+            drvrCmd.timeStamp = timestamp;
+            drvrCmd.drvsyscmd.angle = angle;
+            drvrCmd.drvsyscmd.Omega = Omega;
+            drvrCmd.drvsyscmd.speedMultiplier = speedMultiplier;
+            drvrCmd.linliftcmd.angle = (float) liftAnglePower;
+            drvrCmd.linliftcmd.armLength = (float) liftArmLengthPower;
+            drvrCmd.sensorValues.yaw = yaw;
+            drvrCmd.sensorValues.pitch = pitch;
+            drvrCmd.sensorValues.ods = odsVal;
+            drvrCmd.sensorValues.colorRed = colorRed;
+            drvrCmd.sensorValues.colorGreen = colorGreen;
+            drvrCmd.sensorValues.colorBlue = colorBlue;
+            drvrCmd.latchCmd.latchStatus = latchStatus;
+            drvrCmd.rightClimberCmd.rightClimberStatus = rightClimberStatus;
+            drvrCmd.leftClimberCmd.leftClimberStatus = leftClimberStatus;
+
+        }
         return (drvrCmd);
     }
 

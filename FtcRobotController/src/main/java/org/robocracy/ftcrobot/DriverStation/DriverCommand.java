@@ -14,8 +14,6 @@ import org.robocracy.ftcrobot.Latch;
  * @see {@link DriverStation}
  */
 public class DriverCommand {
-    public enum HarvesterDirection {NONE, PULL, PUSH}
-    public enum LatchDirection {NONE, DOWN, UP}
     public class DriveSystemCommand {
         // angle = X-axis component of the desired Robot velocity.
         // speedMultiplier = Y-axis component of the desired Robot velocity
@@ -33,13 +31,15 @@ public class DriverCommand {
     }
     public LinearLiftCommand linliftcmd = new LinearLiftCommand();
 
+    public enum HarvesterDirection {NONE, PULL, PUSH}
     public class HarvesterCommand {
         public HarvesterDirection direction;
     }
     public HarvesterCommand harvestercmd = new HarvesterCommand();
 
     public class LatchCommand{
-        public LatchDirection direction;
+        //Convention: 0 = none, 1 = up, -1 = down
+        public int latchStatus;
     }
     public LatchCommand latchCmd = new LatchCommand();
 
@@ -49,17 +49,26 @@ public class DriverCommand {
     }
     public BucketCommand bucketCmd = new BucketCommand();
 
-    public enum LeftClimberDirection {NONE, DOWN, UP}
     public class LeftClimberCommand{
-        public LeftClimberDirection leftClimberDirection;
+        //Convention: 0 = none, 1 = up, -1 = down
+        public int leftClimberStatus;
     }
     public LeftClimberCommand leftClimberCmd = new LeftClimberCommand();
 
-    public enum RightClimberDirection {NONE, DOWN, UP}
     public class RightClimberCommand{
-        public RightClimberDirection rightClimberDirection;
+        //Convention: 0 = none, 1 = up, -1 = down
+        public int rightClimberStatus;
     }
     public RightClimberCommand rightClimberCmd = new RightClimberCommand();
 
     public long timeStamp; // timestamp of the driver command; this is used for autonomous reply
+    public class SensorValues{
+        double yaw, pitch, ods, colorRed, colorGreen, colorBlue;
+    }
+    public SensorValues sensorValues = new SensorValues();
+    public enum EndGameStatus{RUN, STOP}
+    public class RunEndGame{
+        public  EndGameStatus endGameStatus;
+    }
+    public RunEndGame runEndGame;
 }

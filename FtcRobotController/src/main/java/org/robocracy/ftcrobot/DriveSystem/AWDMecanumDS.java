@@ -44,7 +44,6 @@ public class AWDMecanumDS {
     // robotWidth = Distance in inches from the center of front left to the center of front right wheel
     double robotLength, robotWidth;
     FTCRobot robot;
-    NavX navx_device = null;
     LinearLift linearLift;
 
     public AWDMecanumDS(LinearOpMode myOpmode, FTCRobot robot) {
@@ -55,10 +54,6 @@ public class AWDMecanumDS {
         this.curOpmode = myOpmode;
 
         this.robot = robot;
-
-        if (robot.navxDevice != null) {
-            this.navx_device = new NavX(robot, curOpmode, robot.navxDevice);
-        }
 
         DcMotor[] motors = new DcMotor[4];
         motors[0] = myOpmode.hardwareMap.dcMotor.get("fMotorL");
@@ -341,28 +336,6 @@ public class AWDMecanumDS {
      * @throws InterruptedException
      */
     public void applyCmd(DriverCommand driverCommand) throws InterruptedException {
-        int angle;
-        double speedMultiplier, Omega, liftDirection, liftAngle;
-
-        angle = (int) driverCommand.drvsyscmd.angle;
-        speedMultiplier = driverCommand.drvsyscmd.speedMultiplier;
-        Omega = driverCommand.drvsyscmd.Omega;
-        liftDirection = driverCommand.linliftcmd.armLength;
-        liftAngle = driverCommand.linliftcmd.angle;
-
-        //Logs values into file
-        if(this.robot.writeFileRW != null) {
-            float[] navx_data;
-            if (navx_device != null) {
-                navx_data = navx_device.getNavxData();
-            } else {
-                navx_data = new float[4];
-                navx_data[0] = 0;
-            }
-            String line = (System.nanoTime() - robot.timestamp) + "," + angle + "," + speedMultiplier + "," +
-                    Omega + "," + navx_data[0] + "," + liftDirection + "," + liftAngle;
-            this.robot.writeFileRW.fileWrite(line);
-        }
         this.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega);
 
     }
