@@ -66,9 +66,15 @@ public class DriverCommand {
         double yaw, pitch, ods, colorRed, colorGreen, colorBlue;
     }
     public SensorValues sensorValues = new SensorValues();
-    public enum EndGameStatus{RUN, STOP}
+    public enum EndGameStatus{NONE, RUN, STOP}
     public class RunEndGame{
         public  EndGameStatus endGameStatus;
     }
-    public RunEndGame runEndGame;
+    public RunEndGame runEndGame = new RunEndGame();
+
+    public class ClimberDispenserCommand{
+        //Convention: 0 = none, 1 = up, -1 = down
+        public int climberDispenserStatus;
+    }
+    public ClimberDispenserCommand climberDispenserCommand = new ClimberDispenserCommand();
 }

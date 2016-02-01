@@ -15,9 +15,8 @@ import org.robocracy.ftcrobot.util.PIDController;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author Team Robocracy
- *
  * Runs robot during Autonomous mode.
+ * @author Team Robocracy
  */
 public class AutonomousScorer {
     FTCRobot robot;
@@ -150,6 +149,7 @@ public class AutonomousScorer {
             }
             robot.driveSys.applyCmd(drvrCmd);
             robot.linearLift.applyCmd(drvrCmd);
+            robot.climberDispenser.applyDSCmd(drvrCmd);
             line = readFileRW.getNextLine();
         }
         robot.driveSys.stopDriveSystem();

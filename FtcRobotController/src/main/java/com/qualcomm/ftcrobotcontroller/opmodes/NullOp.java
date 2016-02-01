@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * TeleOp Mode
+ * Teleop Mode
  * <p>
  *Enables control of the robot via the gamepad
  */

@@ -8,9 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 /**
- * @author Team Robocracy
- *
  * Operates Linear Lift on robot.
+ * @author Team Robocracy
  */
 public class LinearLift {
     FTCRobot robot;

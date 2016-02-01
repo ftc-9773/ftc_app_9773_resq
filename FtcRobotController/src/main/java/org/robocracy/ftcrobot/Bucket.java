@@ -10,9 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * @author Team Robocracy
- *
  * Operates bucket.
+ * @author Team Robocracy
  */
 public class Bucket {
     FTCRobot robot;

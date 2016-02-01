@@ -96,7 +96,7 @@ public class DriverStation {
      */
     private void getNextLinearLiftCmd(){
         float angle = -curOpMode.gamepad2.left_stick_y;
-        float armLength = curOpMode.gamepad2.right_stick_y;
+        float armLength = -curOpMode.gamepad2.right_stick_y;
 
         drvrCmd.linliftcmd.armLength = Range.clip(armLength, -1,1);
         drvrCmd.linliftcmd.angle = Range.clip(angle, -1, 1);
@@ -168,6 +168,25 @@ public class DriverStation {
     }
 
     /**
+     * Gets dPad values of gamepad 1, and writes {@code int climberDispenserStatus} into {@link org.robocracy.ftcrobot.DriverStation.DriverCommand#climberDispenserCommand}
+     */
+    private void getNextClimberDispenserCmd(){
+        boolean climberDispenserDown = curOpMode.gamepad1.dpad_down;
+        boolean climberDispenserUp = curOpMode.gamepad1.dpad_up;
+
+        if(climberDispenserUp){
+            drvrCmd.climberDispenserCommand.climberDispenserStatus = 1;
+        }
+        else if(climberDispenserDown){
+            drvrCmd.climberDispenserCommand.climberDispenserStatus = -1;
+        }
+        else{
+            drvrCmd.climberDispenserCommand.climberDispenserStatus = 0;
+        }
+        DbgLog.msg(String.format("climberDispenserStatus = %d", drvrCmd.climberDispenserCommand.climberDispenserStatus));
+    }
+
+    /**
      * Gets button value of gamepad 1 bumper, and, if pressed, starts end game.
      */
     private void getNextEndGameCmd(){
@@ -176,8 +195,11 @@ public class DriverStation {
         if(startEndGame){
             drvrCmd.runEndGame.endGameStatus = DriverCommand.EndGameStatus.RUN;
         }
-        else{
+        else if(!startEndGame){
             drvrCmd.runEndGame.endGameStatus = DriverCommand.EndGameStatus.STOP;
+        }
+        else {
+            drvrCmd.runEndGame.endGameStatus = DriverCommand.EndGameStatus.NONE;
         }
     }
 
@@ -194,10 +216,11 @@ public class DriverStation {
         getNextLatchCmd();
         getNextBucketCmd();
         getNextClimberCmd();
-        getNextEndGameCmd();
+        getNextClimberDispenserCmd();
 
         if(robot.curStatus == FTCRobot.currentlyRecording.RECORDING_AUTONOMOUS){
             int angle = (int) drvrCmd.drvsyscmd.angle;
+            int climberDispenserStatus = drvrCmd.climberDispenserCommand.climberDispenserStatus;
             double speedMultiplier = drvrCmd.drvsyscmd.speedMultiplier;
             double Omega = drvrCmd.drvsyscmd.Omega;
             double liftDirection = drvrCmd.linliftcmd.armLength;
@@ -214,7 +237,7 @@ public class DriverStation {
                 }
                 String line = (System.nanoTime() - robot.timestamp) + "," + angle + "," + speedMultiplier + "," +
                         Omega + "," + navx_data[0] + "," + liftDirection + "," + liftAngle + "," + robot.ods.getLightDetected()
-                        + "," + robot.colorSensor.red() + "," + robot.colorSensor.green() + "," + robot.colorSensor.blue();
+                        + "," + robot.colorSensor.red() + "," + robot.colorSensor.green() + "," + robot.colorSensor.blue() + "," + climberDispenserStatus;
                 this.robot.writeFileRW.fileWrite(line);
             }
         }
@@ -258,7 +281,8 @@ public class DriverStation {
         long timestamp = 0;
         String[] lineArray = line.split(",");
         double angle, speedMultiplier, Omega, yaw, liftArmLengthPower, liftAnglePower, odsVal, colorRed, colorGreen, colorBlue;
-        if (lineArray.length >= 11) {
+        int climberDispenserStatus;
+        if (lineArray.length >= 12) {
             timestamp = Long.parseLong(lineArray[0]);
             angle = Double.parseDouble(lineArray[1]);
             speedMultiplier = Double.parseDouble(lineArray[2]);
@@ -270,6 +294,7 @@ public class DriverStation {
             colorRed = Double.parseDouble(lineArray[8]);
             colorGreen = Double.parseDouble(lineArray[9]);
             colorBlue = Double.parseDouble(lineArray[10]);
+            climberDispenserStatus = Integer.parseInt(lineArray[11]);
         }
         else {
             angle = 0.0;
@@ -282,6 +307,7 @@ public class DriverStation {
             colorRed = 0.0;
             colorGreen = 0.0;
             colorBlue = 0.0;
+            climberDispenserStatus = 0;
         }
 
         drvrCmd.timeStamp = timestamp;
@@ -295,6 +321,7 @@ public class DriverStation {
         drvrCmd.sensorValues.colorRed = colorRed;
         drvrCmd.sensorValues.colorGreen = colorGreen;
         drvrCmd.sensorValues.colorBlue = colorBlue;
+        drvrCmd.climberDispenserCommand.climberDispenserStatus = climberDispenserStatus;
         return (drvrCmd);
     }
     /**

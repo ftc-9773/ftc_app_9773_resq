@@ -10,6 +10,11 @@ import java.io.IOException;
 /**
  * Created by pranavb on 1/24/16.
  */
+
+/**
+ * Replays pre-recoded end game
+ * @author Team Robocracy
+ */
 public class EndGamePlayer {
     FTCRobot robot;
     AutonomousScorer autoScorer;

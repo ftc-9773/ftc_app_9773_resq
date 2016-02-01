@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot>
+    <MotorController name="LeftMotors" serialNumber="AL00YCFW">
+        <Motor name="fMotorL" port="1"></Motor>
+        <Motor name="rMotorL" port="2"></Motor>
+    </MotorController>
+    <MotorController name="RightMotors" serialNumber="AL00VBJK">
+        <Motor name="fMotorR" port="1"></Motor>
+        <Motor name="rMotorR" port="2"></Motor>
+    </MotorController>
+    <DeviceInterfaceModule name="dim" serialNumber="AL00VBY8">
+        <I2cDevice name="navxDevice" port="1"></I2cDevice>
+        <ColorSensor name="color_sensor" port="5"></ColorSensor>
+        <OpticalDistanceSensor name="ods_sensor" port="0"></OpticalDistanceSensor>
+    </DeviceInterfaceModule>
+    <MotorController name="AttachmentMotors" serialNumber="AL00VBJK">
+        <Motor name="liftAngleMotor" port="1"></Motor>
+        <Motor name="liftDirectionMotor" port="2"></Motor>
+    </MotorController>
+    <MotorController name="Harvester" serialNumber="AL00YC4W">
+        <Motor name="harvesterMotor" port="1"></Motor>
+    </MotorController>
+    <ServoController name="RightServos" serialNumber="AL00VM8G">
+        <Servo name="rightLatch" port="1"></Servo>
+        <Servo name="rightClimber" port="4"></Servo>
+        <Servo name="leftClimber" port="5"></Servo>
+    </ServoController>
+    <ServoController name="LeftServos" serialNumber="AL00VDHH">
+        <Servo name="leftLatch" port="1"></Servo>
+        <Servo name="bucketServo" port="2"></Servo>
+        <Servo name="climberDispenserServo" port="3"></Servo>
+    </ServoController>
+</Robot>

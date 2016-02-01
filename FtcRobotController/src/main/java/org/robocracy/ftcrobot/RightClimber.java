@@ -10,9 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
 /**
+ * Operates Climber release servos on robot
  * @author Team Robocracy
- *
- * Operates latches on robot that hold on to churros
  */
 public class RightClimber {
     FTCRobot robot;
@@ -20,7 +19,7 @@ public class RightClimber {
     Servo rightClimber;
     boolean rightClimberAvailable = false;
 
-    public RightClimber(FTCRobot robot, Servo rightClimber, LinearOpMode curOpMode){
+    public RightClimber(FTCRobot robot, Servo rightClimber, LinearOpMode curOpMode, boolean allianceIsBlue){
         this.robot = robot;
         this.curOpMode = curOpMode;
         if (rightClimber != null) {
@@ -29,6 +28,9 @@ public class RightClimber {
             this.rightClimber.scaleRange(0.1, 0.47);
             this.rightClimber.setPosition(1.0); // 1.0 == 0.47 because of scaleRange() call above
             DbgLog.msg(String.format("RightClimber Position = %f", this.rightClimber.getPosition()));
+            if(allianceIsBlue){
+                this.rightClimber.close();
+            }
         }
     }
 
@@ -42,14 +44,14 @@ public class RightClimber {
         }
         double rightClimberPosition = rightClimber.getPosition();
         DbgLog.msg(String.format("RightClimber Position = %f", rightClimberPosition));
-        switch (drvrcmd.rightClimberCmd.rightClimberDirection){
-            case DOWN:
+        switch (drvrcmd.rightClimberCmd.rightClimberStatus){
+            case -1:
                 rightClimber.setPosition(Range.clip(0, 0, 1));
                 break;
-            case UP:
+            case 1:
                 rightClimber.setPosition(Range.clip(1, 0, 1));
                 break;
-            case NONE:
+            case 0:
                 break;
             default:
                 break;

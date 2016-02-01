@@ -10,9 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * @author Team Robocracy
- *
  * Operates latches on robot that hold on to churros
+ * @author Team Robocracy
  */
 public class Latch {
     FTCRobot robot;
@@ -51,16 +50,16 @@ public class Latch {
         double leftPosition = leftLatch.getPosition();
         double rightPosition = rightLatch.getPosition();
         DbgLog.msg(String.format("LeftLathPosition = %f, RightLatchPosition = %f", leftPosition, rightPosition));
-        switch (drvrcmd.latchCmd.direction){
-            case DOWN:
+        switch (drvrcmd.latchCmd.latchStatus){
+            case -1:
                 leftLatch.setPosition(Range.clip(0, 0, 1));
                 rightLatch.setPosition(Range.clip(0, 0, 1));
                 break;
-            case UP:
+            case 1:
                 leftLatch.setPosition(Range.clip(1, 0, 1));
                 rightLatch.setPosition(Range.clip(1, 0, 1));
                 break;
-            case NONE:
+            case 0:
                 break;
             default:
                 break;

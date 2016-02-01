@@ -1,14 +1,15 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.robocracy.ftcrobot.FTCRobot;
 
 /**
  * @author Team Robocracy
  *
- * OpMode that is activated by the driver to start TeleOp mode. On activation, runs {@link FTCRobot#runRobotTeleop()}.
+ * OpMode that is activated by the driver to start Teleop mode. On activation, runs {@link FTCRobot#runRobotTeleop()}.
  */
-public class TeleOp extends LinearOpMode {
+public class TeleOpRed extends LinearOpMode {
     FTCRobot myRobot;
 
     @Override
@@ -18,7 +19,7 @@ public class TeleOp extends LinearOpMode {
         // but some value has to be passed, so pass the value "true".
         String writeFilePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
         String readFilePath = null;
-        this.myRobot = new FTCRobot(this, readFilePath, writeFilePath, true, FTCRobot.currentlyRecording.NONE);
+        this.myRobot = new FTCRobot(this, readFilePath, writeFilePath, false, FTCRobot.currentlyRecording.NONE);
 
 
         waitOneFullHardwareCycle();

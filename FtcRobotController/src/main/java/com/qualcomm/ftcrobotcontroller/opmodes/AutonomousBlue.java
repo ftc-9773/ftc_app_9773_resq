@@ -27,7 +27,7 @@ public class AutonomousBlue extends LinearOpMode {
         String writeFilePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
         String autonomousConfigFile = "/sdcard/FIRST/autonomousCmds/config.txt";
 
-        this.robot = new FTCRobot(this, readFilePath, writeFilePath, true);
+        this.robot = new FTCRobot(this, readFilePath, writeFilePath, true, FTCRobot.currentlyRecording.NONE);
 
         waitOneFullHardwareCycle();
 

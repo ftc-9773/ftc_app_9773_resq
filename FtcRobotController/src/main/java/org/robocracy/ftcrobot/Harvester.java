@@ -7,9 +7,8 @@ import org.robocracy.ftcrobot.FTCRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
- * @author Team Robocracy
- *
  * Operates harvester.
+ * @author Team Robocracy
  */
 public class Harvester {
     FTCRobot robot;
