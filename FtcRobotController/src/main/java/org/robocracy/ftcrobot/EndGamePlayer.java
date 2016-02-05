@@ -26,10 +26,10 @@ public class EndGamePlayer {
         this.robot = robot;
         this.curOpMode = curOpMode;
         if(allianceIsBlue){
-            filePath = "/sdcard/FIRST/autonomousCmds/endGameBlue.csv";
+            this.filePath = "/sdcard/FIRST/autonomousCmds/endGameBlue.csv";
         }
         else{
-            filePath = "/sdcard/FIRST/autonomousCmds/endGameRed.csv";
+            this.filePath = "/sdcard/FIRST/autonomousCmds/endGameRed.csv";
         }
         this.fileRW = new FileRW(filePath, false);
         this.autoScorer = new AutonomousScorer(robot, curOpMode, allianceIsBlue);

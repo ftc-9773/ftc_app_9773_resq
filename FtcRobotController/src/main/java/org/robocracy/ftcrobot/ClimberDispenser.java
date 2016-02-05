@@ -25,7 +25,7 @@ public class ClimberDispenser {
         this.climberDispenserServo = climberDispenserServo;
         if (climberDispenserServo != null) {
             DbgLog.msg(String.format("Left climber position = %f", this.climberDispenserServo.getPosition()));
-            this.climberDispenserServo.scaleRange(0.156, 0.705);
+            this.climberDispenserServo.scaleRange(0.157, 0.784);
             this.climberDispenserServo.setDirection(Servo.Direction.REVERSE);
             this.climberDispenserServo.setPosition(0);
             this.climberDispenserServoAvailable = true;

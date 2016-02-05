@@ -217,6 +217,7 @@ public class DriverStation {
         getNextBucketCmd();
         getNextClimberCmd();
         getNextClimberDispenserCmd();
+        getNextEndGameCmd();
 
         if(robot.curStatus == FTCRobot.currentlyRecording.RECORDING_AUTONOMOUS){
             int angle = (int) drvrCmd.drvsyscmd.angle;
@@ -337,7 +338,7 @@ public class DriverStation {
             long timestamp = 0;
             String[] lineArray = line.split(",");
             double angle, speedMultiplier, Omega, yaw, pitch, liftArmLengthPower, liftAnglePower, odsVal, colorRed, colorGreen, colorBlue;
-            int latchStatus = 0;
+            int latchStatus;
             int rightClimberStatus;
             int leftClimberStatus;
             if (lineArray.length >= 15) {

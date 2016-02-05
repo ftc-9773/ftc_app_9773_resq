@@ -7,6 +7,11 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import com.kauailabs.navx.ftc.navXPIDController;
+
+import java.text.DecimalFormat;
 
 import org.robocracy.ftcrobot.AutonomousScorer;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
@@ -38,6 +43,11 @@ public class AWDMecanumDS {
     // 3: Rear Right
     PowerTrain[] powerTrain;
     PIDController[] motorPIDController;
+    navXPIDController yawPIDController;
+    private ElapsedTime runtime;
+    navXPIDController.PIDResult yawPIDResult;
+    private final double MIN_MOTOR_OUTPUT_VALUE;
+    private final double MAX_MOTOR_OUTPUT_VALUE;
     LinearOpMode curOpmode;
     double robotMaxSpeed;
     // robotLength = Distance in inches from the center of front left to the center of rear left wheel
@@ -111,6 +121,12 @@ public class AWDMecanumDS {
         this.robotLength = 10.5; // in  inches
         this.robotWidth = 15; // in  inches
         this.linearLift = new LinearLift(robot, curOpmode);
+        this.yawPIDController = new navXPIDController( robot.navxDevice,
+                navXPIDController.navXTimestampedDataSource.YAW);
+        this.MAX_MOTOR_OUTPUT_VALUE = 1;
+        this.MIN_MOTOR_OUTPUT_VALUE = -1;
+        this.runtime = new ElapsedTime();
+        this.yawPIDResult = new navXPIDController.PIDResult();
     }
 
     /**
@@ -427,6 +443,25 @@ public class AWDMecanumDS {
 
         // Wait for one hardware cycle for the setPower(0) to take effect.
         this.curOpmode.waitForNextHardwareCycle();
+    }
+
+    public void PIDmoveStraight(double YAW_PID_P, double YAW_PID_I, double YAW_PID_D) throws InterruptedException{
+        final double TARGET_ANGLE_DEGREES = 90.0;
+        final double TOLERANCE_DEGREES = 2.0;
+
+        yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
+        yawPIDController.setContinuous(true);
+        yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
+        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
+        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+        yawPIDController.enable(true);
+
+        if (yawPIDResult.isOnTarget()) {
+            robot.driveSys.driveMecanum(90, -6, 0);
+        } else {
+            double output = yawPIDResult.getOutput();
+            robot.driveSys.driveMecanum(90, -6, output);
+        }
     }
 
     public void stopDriveSystem() {

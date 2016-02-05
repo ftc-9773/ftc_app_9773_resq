@@ -184,7 +184,7 @@ public class FTCRobot {
             this.leftClimber.applyDSCmd(driverCommand);
             this.rightClimber.applyDSCmd(driverCommand);
             this.climberDispenser.applyDSCmd(driverCommand);
-//            this.endGamePlayer.runEndGame(driverCommand);
+            this.endGamePlayer.runEndGame(driverCommand);
 
             // Wait for one hardware cycle for the setPower(0) to take effect.
             this.curOpmode.waitForNextHardwareCycle();

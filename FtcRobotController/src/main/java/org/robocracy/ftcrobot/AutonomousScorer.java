@@ -22,9 +22,9 @@ public class AutonomousScorer {
     FTCRobot robot;
     LinearOpMode curOpMode;
     public ColorSensor colorSensor;
-    public OpticalDistanceSensor ods;
     boolean  allianceIsBlue;
 
+    public OpticalDistanceSensor ods;
     public AutonomousScorer(FTCRobot robot, LinearOpMode curOpMode, boolean allianceIsBlue) {
         this.robot = robot;
         this.curOpMode = curOpMode;
