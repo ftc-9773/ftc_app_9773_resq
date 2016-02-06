@@ -118,6 +118,10 @@ public class DriverStation {
         drvrCmd.linliftcmd.armLength = Range.clip(armLength, -1,1);
         drvrCmd.linliftcmd.angle = Range.clip(angle, -1, 1);
 
+        if(linLiftLock){
+            drvrCmd.linliftcmd.armLength = (float) -0.6;
+        }
+
         if (curOpMode.gamepad2.left_bumper){
             if(!linLiftLock){
                 linLiftLock = true;
@@ -127,10 +131,6 @@ public class DriverStation {
                 linLiftLock = false;
                 curOpMode.sleep(1000);
             }
-        }
-
-        if(linLiftLock){
-            drvrCmd.linliftcmd.armLength = (float) -0.6;
         }
     }
 

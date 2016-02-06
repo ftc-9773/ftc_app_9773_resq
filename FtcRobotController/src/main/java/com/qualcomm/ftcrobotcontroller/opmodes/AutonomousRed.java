@@ -33,6 +33,7 @@ public class AutonomousRed extends LinearOpMode {
 
         waitForStart();
 
+/*
         getAutonomousParameters(autonomousConfigFile);
         if (delayInSeconds > 0){
             TimeUnit.SECONDS.sleep(delayInSeconds);
@@ -40,6 +41,7 @@ public class AutonomousRed extends LinearOpMode {
         if (distanceFromWall != EXPECTED_DISTANCE) {
             this.robot.runRobotAutonomous((distanceFromWall - EXPECTED_DISTANCE));
         }
+*/
 
         robot.runRobotAutonomous();
     }
