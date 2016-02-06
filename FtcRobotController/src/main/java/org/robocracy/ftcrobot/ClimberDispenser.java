@@ -24,7 +24,7 @@ public class ClimberDispenser {
         this.curOpMode = curOpMode;
         this.climberDispenserServo = climberDispenserServo;
         if (climberDispenserServo != null) {
-            DbgLog.msg(String.format("Left climber position = %f", this.climberDispenserServo.getPosition()));
+            DbgLog.msg(String.format("climber dispensor position = %f", this.climberDispenserServo.getPosition()));
             this.climberDispenserServo.scaleRange(0.157, 0.784);
             this.climberDispenserServo.setDirection(Servo.Direction.REVERSE);
             this.climberDispenserServo.setPosition(0);
@@ -41,13 +41,13 @@ public class ClimberDispenser {
             return;
         }
         double climberDispenserServoPosition = climberDispenserServo.getPosition();
-        DbgLog.msg(String.format("climberDispenser Position = %f", climberDispenserServoPosition));
+//        DbgLog.msg(String.format("climberDispenser Position = %f", climberDispenserServoPosition));
         switch (drvrcmd.climberDispenserCommand.climberDispenserStatus){
             case -1:
-                climberDispenserServo.setPosition(1);
+                climberDispenserServo.setPosition(Range.clip(climberDispenserServoPosition+0.1, 0, 1));
                 break;
             case 1:
-                climberDispenserServo.setPosition(0);
+                climberDispenserServo.setPosition(Range.clip(climberDispenserServoPosition-0.1, 0, 1));
                 break;
             case 0:
                 break;

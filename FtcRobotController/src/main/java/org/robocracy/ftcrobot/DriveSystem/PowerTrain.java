@@ -15,7 +15,7 @@ public class PowerTrain {
     double motorSpeedMax; // = 160 rpm for AndyMark Neverest 40
     double motorStallTorque; // = 350 oz-in for AndyMark Neverest 40
     double motorOutputPower; // = 14 Watts for AndyMark Neverest 40
-    double efficiency; // = 0.95 for sprocket-chain and 100% for direct connected motors
+    public double efficiency; // = 0.95 for sprocket-chain and 100% for direct connected motors
     double wheelSpeedMax; // in inches/sec
     public double cpsMultiplier; // Motor Counts per second that is equivalent to 1 inch /second wheel speed.
     public double motorPowerMultiplier; // Motor power required to move the wheel at a speed of 1 in/sec
@@ -49,6 +49,11 @@ public class PowerTrain {
         // Calculate the multiplier to convert 1 inch / sec wheel speed
         // into motor power.
         this.motorPowerMultiplier = this.cpsMultiplier / (motorEncoderCPR * motorSpeedMax / 60);
+    }
+
+    public void changeEfficiency(double newEfficiency) {
+        this.cpsMultiplier = (this.cpsMultiplier * this.efficiency) / newEfficiency;
+        this.motorPowerMultiplier = this.cpsMultiplier / (this.motorEncoderCPR * this.motorSpeedMax / 60);
     }
 
     /**

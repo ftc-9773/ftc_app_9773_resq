@@ -41,7 +41,7 @@ public class AWDMecanumDS {
     // 1: Front Right
     // 2: Rear Left
     // 3: Rear Right
-    PowerTrain[] powerTrain;
+    public PowerTrain[] powerTrain;
     PIDController[] motorPIDController;
     navXPIDController yawPIDController;
     private ElapsedTime runtime;

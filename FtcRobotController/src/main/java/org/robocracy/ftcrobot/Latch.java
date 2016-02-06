@@ -26,7 +26,7 @@ public class Latch {
         if (leftLatch != null && rightLatch != null) {
             latchAvailable = true;
             this.leftLatch = leftLatch;
-            this.leftLatch.scaleRange(0.18, 0.5);
+            this.leftLatch.scaleRange(0.16, 0.5);
             this.leftLatch.setPosition(1.0); // 1.0 is actually 0.5 because of the above scaleRange call
             this.rightLatch = rightLatch;
 //        this.rightLatch.scaleRange(0.505, 0.9);

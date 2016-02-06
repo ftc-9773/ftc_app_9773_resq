@@ -25,6 +25,7 @@ public class LeftClimber {
         if (leftClimber != null) {
             leftClimberAvailable = true;
             this.leftClimber = leftClimber;
+            this.leftClimber.scaleRange(0.078, 0.502);
             this.leftClimber.setDirection(Servo.Direction.REVERSE);
             DbgLog.msg(String.format("Left climber position = %f", this.leftClimber.getPosition()));
             this.leftClimber.setPosition(1.0);
@@ -43,13 +44,13 @@ public class LeftClimber {
             return;
         }
         double leftClimberPosition = leftClimber.getPosition();
-        DbgLog.msg(String.format("Left climber position = %f", leftClimberPosition));
+//        DbgLog.msg(String.format("Left climber position = %f", leftClimberPosition));
         switch (drvrcmd.leftClimberCmd.leftClimberStatus){
             case -1:
-                leftClimber.setPosition(Range.clip(leftClimberPosition+0.01, 0, 1));
+                leftClimber.setPosition(Range.clip(0, 0, 1));
                 break;
             case 1:
-                leftClimber.setPosition(Range.clip(leftClimberPosition-0.01, 0, 1));
+                leftClimber.setPosition(Range.clip(1, 0, 1));
                 break;
             case 0:
                 break;

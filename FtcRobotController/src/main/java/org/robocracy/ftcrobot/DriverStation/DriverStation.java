@@ -7,6 +7,8 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
+import java.util.InputMismatchException;
+
 /**
  * @author Team Robocracy
  *
@@ -17,10 +19,12 @@ public class DriverStation {
 
     FTCRobot robot;
     LinearOpMode curOpMode;
+    public boolean linLiftLock;
 
     public DriverStation(LinearOpMode curOpMode, FTCRobot robot) {
         this.curOpMode = curOpMode;
         this.robot = robot;
+        this.linLiftLock = false;
     }
 
     /**
@@ -30,6 +34,19 @@ public class DriverStation {
         int moveAngle = 0;
         double x = curOpMode.gamepad1.left_stick_x;
         double y = -curOpMode.gamepad1.left_stick_y;
+
+        if(curOpMode.gamepad1.dpad_right){
+            double efficiencyFront = Range.clip(robot.driveSys.powerTrain[0].efficiency-0.005, 0.05, 1.0);
+            robot.driveSys.powerTrain[0].changeEfficiency(efficiencyFront);
+            robot.driveSys.powerTrain[1].changeEfficiency(efficiencyFront);
+            DbgLog.error(String.format("Front multiplier: %f", robot.driveSys.powerTrain[0].motorPowerMultiplier));
+        }
+        else if(curOpMode.gamepad1.dpad_left){
+            double efficiencyRear = Range.clip(robot.driveSys.powerTrain[2].efficiency-0.005, 0.05, 1.0);
+            robot.driveSys.powerTrain[2].changeEfficiency(efficiencyRear);
+            robot.driveSys.powerTrain[3].changeEfficiency(efficiencyRear);
+            DbgLog.error(String.format("Rear multiplier: %f", robot.driveSys.powerTrain[2].motorPowerMultiplier));
+        }
 
         //Calculate what angle robot must move in based on 8 zones of joystick
         if (x == 0 && y == 0) {
@@ -94,12 +111,27 @@ public class DriverStation {
     /**
      * Gets Y values of gamepad 2 (attachment gamepad) and writes values into {@link DriverCommand#linliftcmd} object.
      */
-    private void getNextLinearLiftCmd(){
+    private void getNextLinearLiftCmd() throws InterruptedException{
         float angle = -curOpMode.gamepad2.left_stick_y;
         float armLength = -curOpMode.gamepad2.right_stick_y;
 
         drvrCmd.linliftcmd.armLength = Range.clip(armLength, -1,1);
         drvrCmd.linliftcmd.angle = Range.clip(angle, -1, 1);
+
+        if (curOpMode.gamepad2.left_bumper){
+            if(!linLiftLock){
+                linLiftLock = true;
+                curOpMode.sleep(1000);
+            }
+            else if(linLiftLock){
+                linLiftLock = false;
+                curOpMode.sleep(1000);
+            }
+        }
+
+        if(linLiftLock){
+            drvrCmd.linliftcmd.armLength = (float) -0.6;
+        }
     }
 
     /**
@@ -208,7 +240,7 @@ public class DriverStation {
      *
      * @return {@link DriverCommand} object with all values
      */
-    public DriverCommand getNextCommand() {
+    public DriverCommand getNextCommand() throws InterruptedException{
 
         getNextDrivesysCmd();
         getNextHarvesterCmd();
