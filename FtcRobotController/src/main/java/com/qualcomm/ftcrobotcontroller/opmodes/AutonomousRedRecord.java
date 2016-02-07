@@ -3,7 +3,6 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.robocracy.ftcrobot.FTCRobot;
-import org.robocracy.ftcrobot.util.FileRW;
 
 /**
  * @author Team Robocracy
@@ -15,6 +14,7 @@ public class AutonomousRedRecord extends LinearOpMode {
     FTCRobot robot;
     String writeFilePath = "/sdcard/FIRST/autonomousCmds/red.csv";
     String readFilePath = null;
+    boolean startRecording = false;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -24,6 +24,12 @@ public class AutonomousRedRecord extends LinearOpMode {
 
         waitForStart();
 
-        robot.runRobotTeleop();
+        if(gamepad1.start){
+            startRecording = true;
+        }
+        if (startRecording) {
+            robot.timestamp = System.nanoTime();
+            robot.runRobotTeleop();
+        }
     }
 }
