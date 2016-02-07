@@ -11,6 +11,7 @@ public class EndGameBlueRecord extends LinearOpMode {
     FTCRobot robot;
     String writeFilePath = "/sdcard/FIRST/autonomousCmds/endGameBlue.csv";
     String readFilePath = null;
+    boolean startRecording = false;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -20,6 +21,12 @@ public class EndGameBlueRecord extends LinearOpMode {
 
         waitForStart();
 
-        robot.runRobotTeleop();
+        if(gamepad1.start){
+            startRecording = true;
+        }
+        if (startRecording) {
+            robot.timestamp = System.nanoTime();
+            robot.runRobotTeleop();
+        }
     }
 }
