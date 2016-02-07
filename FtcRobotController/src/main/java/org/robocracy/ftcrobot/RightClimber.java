@@ -25,7 +25,7 @@ public class RightClimber {
         if (rightClimber != null) {
             rightClimberAvailable = true;
             this.rightClimber = rightClimber;
-            this.rightClimber.scaleRange(0.353, 1);
+            this.rightClimber.scaleRange(0.4, 1);
             this.rightClimber.setPosition(1.0); // 1.0 == 0.47 because of scaleRange() call above
             DbgLog.msg(String.format("RightClimber Position = %f", this.rightClimber.getPosition()));
             if(allianceIsBlue){

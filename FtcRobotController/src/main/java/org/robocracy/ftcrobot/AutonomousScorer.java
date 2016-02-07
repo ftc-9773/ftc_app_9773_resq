@@ -141,7 +141,7 @@ public class AutonomousScorer {
         while (line != null){
             this.curOpMode.waitForNextHardwareCycle();
             drvrCmd = robot.drvrStation.getNextCommand(line);
-            DbgLog.msg(String.format("line = %s", line));
+//            DbgLog.msg(String.format("line = %s", line));
             if ((System.nanoTime() - replayStartTime) < drvrCmd.timeStamp) {
                 // Wait for a few nano seconds
                 // This will not be precise but that should be okay
@@ -149,6 +149,10 @@ public class AutonomousScorer {
             }
             robot.driveSys.applyCmd(drvrCmd);
             robot.linearLift.applyCmd(drvrCmd);
+            drvrCmd.harvestercmd.direction = DriverCommand.HarvesterDirection.PUSH;
+            robot.harvester.applyDSCmd(drvrCmd);
+            drvrCmd.latchCmd.latchStatus = -1;
+            robot.latch.applyDSCmd(drvrCmd);
             robot.climberDispenser.applyDSCmd(drvrCmd);
             line = readFileRW.getNextLine();
         }
