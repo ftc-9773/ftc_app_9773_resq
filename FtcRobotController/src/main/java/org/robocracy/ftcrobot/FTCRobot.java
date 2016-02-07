@@ -86,7 +86,6 @@ public class FTCRobot {
         this.linearLift = new LinearLift(this, curOpmode);
         this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
         this.driveSys = new AWDMecanumDS(curOpmode, this);
-        this.timestamp = System.nanoTime();
         this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
         this.bucket = new Bucket(this, curOpmode, bucketServo);
         this.leftClimber = new LeftClimber(this, leftClimberServo, curOpmode, allianceIsBlue);

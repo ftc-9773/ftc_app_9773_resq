@@ -1,29 +1,19 @@
 package org.robocracy.ftcrobot.DriveSystem;
 
+import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
-import com.kauailabs.navx.ftc.navXPIDController;
-
-import java.text.DecimalFormat;
-
-import org.robocracy.ftcrobot.AutonomousScorer;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import org.robocracy.ftcrobot.DriverStation.DriverStation;
 import org.robocracy.ftcrobot.FTCRobot;
 import org.robocracy.ftcrobot.LinearLift;
-import org.robocracy.ftcrobot.util.CircularQueue;
 import org.robocracy.ftcrobot.util.FileRW;
 import org.robocracy.ftcrobot.util.PIDController;
-import org.robocracy.ftcrobot.util.NavX;
-
-import java.io.File;
 
 /**
  * @author Team Robocracy
@@ -269,83 +259,6 @@ public class AWDMecanumDS {
         this.curOpmode.waitForNextHardwareCycle();
     }
 
-
-
-    public void autoMecanumUntil(int angle, double speed, int distance, int[] colorIDs,
-                                 double rli, AutonomousScorer autoScorer) throws InterruptedException {
-        double[] distanceTravelledByWheel = new double[4];
-        double[] motorPower = new double[4];
-        int[] motorPosition = new int[4];
-        int[] prevPosition = new int[4];
-        double Omega = 0.0;
-        double[] speedOfWheel = new double[4];
-        double correction = 0.0;
-
-        if ((angle <= -360) || (angle >= 360)) {
-            DbgLog.error(String.format("Invalid angle %d\n", angle));
-            return;
-        }
-
-        if (distance < 0 || distance > 144) {
-            DbgLog.error(String.format("Invalid distance %d\n", distance));
-            return;
-        }
-
-        if (speed <= 0 || speed >= this.robotMaxSpeed) {
-            DbgLog.error(String.format("Invalid speed %f\n", speed));
-            return;
-        }
-
-        this.angleToSpeedOfWheel(angle, speed, Omega, speedOfWheel);
-        // Determine the Power for each Motor/PowerTrain
-        for (int i=0; i<4; i++) {
-            motorPower[i] = speedOfWheel[i] * this.powerTrain[i].motorPowerMultiplier;
-            motorPower[i] = Range.clip(motorPower[i], -1, 1);
-        }
-
-            boolean exitLoop = false;
-        CircularQueue cirQ = new CircularQueue(4);
-        double avgRLI = cirQ.average();
-        long startTime = System.nanoTime();
-        long endTime = 0;
-        double elapsedTime = 0;
-        double distanceTravelled = 0.0;
-        int detectedColor = 1 ; //  TBD: autoScorer.colorSensor.blue()
-        exitLoop = (cirQ.average() >= rli) || (distanceTravelled >= distance);
-        while (curOpmode.opModeIsActive() && !exitLoop) {
-            // Wait for one hardware cycle
-            this.curOpmode.waitForNextHardwareCycle();
-
-            // Calculate elapsed time
-            endTime = System.nanoTime();
-            elapsedTime = (double) (endTime - startTime) / (10 ^ 9);
-            startTime = endTime;
-
-            // Read the current encoder values
-            for (int i = 0; i < 4; i++) {
-                motorPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
-                distanceTravelledByWheel[i] = this.powerTrain[i].countsToDistance((motorPosition[i] - prevPosition[i]));
-                correction = this.motorPIDController[i].getCorrection(distanceTravelledByWheel[i] / elapsedTime);
-                this.powerTrain[i].motor.setPower(Range.clip((motorPower[i] - correction), -1, 1));
-            }
-            System.arraycopy(motorPosition, 0, prevPosition, 0, 4);
-            distanceTravelled += (Math.abs(distanceTravelledByWheel[0]) +
-                    Math.abs(distanceTravelledByWheel[1]) +
-                    Math.abs(distanceTravelledByWheel[2]) +
-                    Math.abs(distanceTravelledByWheel[3])) / 4;
-            cirQ.add(autoScorer.ods.getLightDetected());
-            exitLoop = (cirQ.average() >= rli) || (distanceTravelled >= distance);
-        }
-
-        for (int i = 0; i < 4; i++) {
-            this.powerTrain[i].motor.setPower(0);
-        }
-
-        // Wait for one hardware cycle for the setPower(0) to take effect.
-        this.curOpmode.waitForNextHardwareCycle();
-    }
-
-
     /**
      * Applies {@link DriverCommand#drvsyscmd} values initialized in {@link DriverStation#getNextDrivesysCmd()} to {@link AWDMecanumDS#driveMecanum(int, double, double)}
      * @param driverCommand {@link DriverCommand} object with values
@@ -389,60 +302,6 @@ public class AWDMecanumDS {
             motorPower[i] = Range.clip(motorPower[i], -1, 1);
             this.powerTrain[i].motor.setPower(motorPower[i]);
         }
-    }
-
-    public void PIDLineFollow(PIDController pidController, double distance, double speed,
-                              OpticalDistanceSensor opd, TouchSensor touchSensor) throws InterruptedException{
-
-        int[] motorPosition = new int[4];
-        int[] prevPosition = new int[4];
-        double distanceTravelled = 0;
-        double rli, correction;
-        int angle;
-        double[] speedOfWheel = new double[4];
-        double motorPower;
-        boolean exitLoop = false;
-
-        for (int i = 0; i < 4; i++) {
-            prevPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
-        }
-
-        exitLoop = (distanceTravelled >= distance) || touchSensor.isPressed();
-        //Set the power for each motor
-        while (curOpmode.opModeIsActive() && !exitLoop) {
-
-            // Wait for one hardware cycle
-            this.curOpmode.waitForNextHardwareCycle();
-            rli = opd.getLightDetected();
-            correction = pidController.getCorrection(rli);
-
-            // 90 - (correction * 10) gives the anogle for the robot.
-            // if correction == 0, angle will be 90 degrees which is sttraight forward.
-            angle = (int) (correction * 10);
-            this.angleToSpeedOfWheel(angle, speed, 0, speedOfWheel);
-            // Determine the Power for each Motor/PowerTrain
-            for (int i = 0; i < 4; i++) {
-                motorPower = speedOfWheel[i] * this.powerTrain[i].motorPowerMultiplier;
-                motorPower = Range.clip(motorPower, -1, 1);
-                this.powerTrain[i].motor.setPower(motorPower);
-            }
-
-            // Read the current encoder values
-            distanceTravelled = 0.0;
-            for (int i = 0; i < 4; i++) {
-                motorPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
-                distanceTravelled += Math.abs(this.powerTrain[i].countsToDistance((motorPosition[i] - prevPosition[i])));
-            }
-            System.arraycopy(motorPosition, 0, prevPosition, 0, 4);
-
-            exitLoop = (distanceTravelled >= distance) || touchSensor.isPressed();
-        }
-        for (int i = 0; i < 4; i++) {
-            this.powerTrain[i].motor.setPower(0);
-        }
-
-        // Wait for one hardware cycle for the setPower(0) to take effect.
-        this.curOpmode.waitForNextHardwareCycle();
     }
 
     public void PIDmoveStraight(double YAW_PID_P, double YAW_PID_I, double YAW_PID_D) throws InterruptedException{

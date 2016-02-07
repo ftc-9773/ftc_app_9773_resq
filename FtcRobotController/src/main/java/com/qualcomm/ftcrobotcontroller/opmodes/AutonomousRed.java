@@ -6,7 +6,6 @@ import org.robocracy.ftcrobot.FTCRobot;
 import org.robocracy.ftcrobot.util.FileRW;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Team Robocracy
@@ -45,7 +44,7 @@ public class AutonomousRed extends LinearOpMode {
 
         robot.runRobotAutonomous();
     }
-    void getAutonomousParameters(String autonomousConfigFilePath) {
+    private void getAutonomousParameters(String autonomousConfigFilePath) {
         FileRW fileRW;
         String line;
         String[] lineArray;

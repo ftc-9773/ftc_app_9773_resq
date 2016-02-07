@@ -1,13 +1,12 @@
 package org.robocracy.ftcrobot;
 
 import com.qualcomm.ftccommon.DbgLog;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.robocracy.ftcrobot.DriverStation.DriverStation;
-import org.robocracy.ftcrobot.FTCRobot;
-import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+
+import org.robocracy.ftcrobot.DriverStation.DriverCommand;
+import org.robocracy.ftcrobot.DriverStation.DriverStation;
 
 /**
  * Operates Climber release servos on robot
@@ -44,7 +43,6 @@ public class LeftClimber {
             return;
         }
         double leftClimberPosition = leftClimber.getPosition();
-//        DbgLog.msg(String.format("Left climber position = %f", leftClimberPosition));
         switch (drvrcmd.leftClimberCmd.leftClimberStatus){
             case -1:
                 leftClimber.setPosition(Range.clip(0, 0, 1));

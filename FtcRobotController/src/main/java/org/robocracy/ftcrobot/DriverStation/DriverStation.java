@@ -1,13 +1,10 @@
 package org.robocracy.ftcrobot.DriverStation;
 
-import org.robocracy.ftcrobot.FTCRobot;
-import org.robocracy.ftcrobot.util.NavX;
-
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
-import java.util.InputMismatchException;
+import org.robocracy.ftcrobot.FTCRobot;
 
 /**
  * @author Team Robocracy
@@ -94,7 +91,6 @@ public class DriverStation {
     private void getNextHarvesterCmd(){
         boolean harvesterPull = curOpMode.gamepad2.right_bumper;
         float harvesterPushSlow = curOpMode.gamepad2.right_trigger;
-        boolean harvesterPush = false;
 
         if(harvesterPushSlow > 0.3){
             drvrCmd.harvestercmd.direction = DriverCommand.HarvesterDirection.PUSH;

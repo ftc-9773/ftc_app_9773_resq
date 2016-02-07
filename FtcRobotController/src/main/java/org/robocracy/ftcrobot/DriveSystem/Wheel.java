@@ -8,7 +8,6 @@ enum WheelType  {Mecanum, Omni, Tetrix};
 public abstract class Wheel {
     double frictionCoeffMatStraight;
     double frictionCoeffMatStrafe;
-//    double frictionCoefficientMountain;
     double diameter, circumference;
     WheelType wheelType;
 

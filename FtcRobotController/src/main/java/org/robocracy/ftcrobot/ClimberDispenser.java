@@ -1,13 +1,12 @@
 package org.robocracy.ftcrobot;
 
 import com.qualcomm.ftccommon.DbgLog;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.robocracy.ftcrobot.DriverStation.DriverStation;
-import org.robocracy.ftcrobot.FTCRobot;
-import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+
+import org.robocracy.ftcrobot.DriverStation.DriverCommand;
+import org.robocracy.ftcrobot.DriverStation.DriverStation;
 
 /**
  * Operates climber dispenser on robot
@@ -41,7 +40,7 @@ public class ClimberDispenser {
             return;
         }
         double climberDispenserServoPosition = climberDispenserServo.getPosition();
-//        DbgLog.msg(String.format("climberDispenser Position = %f", climberDispenserServoPosition));
+
         switch (drvrcmd.climberDispenserCommand.climberDispenserStatus){
             case -1:
                 climberDispenserServo.setPosition(Range.clip(climberDispenserServoPosition+0.1, 0, 1));

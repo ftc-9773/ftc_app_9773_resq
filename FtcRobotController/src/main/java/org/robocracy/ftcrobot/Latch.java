@@ -1,13 +1,12 @@
 package org.robocracy.ftcrobot;
 
 import com.qualcomm.ftccommon.DbgLog;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.robocracy.ftcrobot.DriverStation.DriverStation;
-import org.robocracy.ftcrobot.FTCRobot;
-import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+
+import org.robocracy.ftcrobot.DriverStation.DriverCommand;
+import org.robocracy.ftcrobot.DriverStation.DriverStation;
 
 /**
  * Operates latches on robot that hold on to churros
@@ -29,7 +28,6 @@ public class Latch {
             this.leftLatch.scaleRange(0.16, 0.5);
             this.leftLatch.setPosition(1.0); // 1.0 is actually 0.5 because of the above scaleRange call
             this.rightLatch = rightLatch;
-//        this.rightLatch.scaleRange(0.505, 0.9);
             this.rightLatch.scaleRange(0.34, 1);
             this.rightLatch.setDirection(Servo.Direction.REVERSE);
             this.rightLatch.setPosition(1.0); // 1.0 == 0.5 because of scaleRange call above
