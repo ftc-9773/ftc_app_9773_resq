@@ -1,11 +1,5 @@
 package org.robocracy.ftcrobot.DriverStation;
 
-import com.qualcomm.ftcrobotcontroller.opmodes.DriveSystem;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.robocracy.ftcrobot.util.FileRW;
-
-import org.robocracy.ftcrobot.Latch;
-
 /**
  * @author Team Robocracy
  *
