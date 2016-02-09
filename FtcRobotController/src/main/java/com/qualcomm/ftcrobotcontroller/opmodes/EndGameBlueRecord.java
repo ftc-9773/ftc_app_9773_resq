@@ -21,7 +21,7 @@ public class EndGameBlueRecord extends LinearOpMode {
 
         waitForStart();
 
-        if(gamepad1.start){
+        if(gamepad1.back){
             startRecording = true;
         }
         if (startRecording) {
