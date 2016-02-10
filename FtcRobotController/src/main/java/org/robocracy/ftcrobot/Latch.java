@@ -47,7 +47,7 @@ public class Latch {
         }
         double leftPosition = leftLatch.getPosition();
         double rightPosition = rightLatch.getPosition();
-        DbgLog.msg(String.format("LeftLathPosition = %f, RightLatchPosition = %f", leftPosition, rightPosition));
+//        DbgLog.msg(String.format("LeftLathPosition = %f, RightLatchPosition = %f", leftPosition, rightPosition));
         switch (drvrcmd.latchCmd.latchStatus){
             case -1:
                 leftLatch.setPosition(Range.clip(0, 0, 1));

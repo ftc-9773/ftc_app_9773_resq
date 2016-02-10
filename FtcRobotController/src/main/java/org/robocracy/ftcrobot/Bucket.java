@@ -40,7 +40,7 @@ public class Bucket {
         if (!bucketAvailable) {
             return;
         }
-        DbgLog.msg(String.format("Bucket Position = %f", bucketServo.getPosition()));
+//        DbgLog.msg(String.format("Bucket Position = %f", bucketServo.getPosition()));
         switch(drvrcmd.bucketCmd.direction){
             case RIGHT:
                 bucketServo.setPosition(right);

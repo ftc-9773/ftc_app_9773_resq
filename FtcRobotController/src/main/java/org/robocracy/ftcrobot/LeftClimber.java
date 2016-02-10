@@ -26,7 +26,7 @@ public class LeftClimber {
             this.leftClimber = leftClimber;
             this.leftClimber.scaleRange(0.078, 0.45);
             this.leftClimber.setDirection(Servo.Direction.REVERSE);
-            DbgLog.msg(String.format("Left climber position = %f", this.leftClimber.getPosition()));
+//            DbgLog.msg(String.format("Left climber position = %f", this.leftClimber.getPosition()));
             this.leftClimber.setPosition(1.0);
             if(!allianceIsBlue){
                 this.leftClimber.close();

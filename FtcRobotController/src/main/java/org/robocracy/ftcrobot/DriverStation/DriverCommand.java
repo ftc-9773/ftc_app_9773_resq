@@ -69,7 +69,8 @@ public class DriverCommand {
     public RunEndGame runEndGame = new RunEndGame();
 
     public class ClimberDispenserCommand{
-        //Convention: 0 = none, 1 = up, -1 = down
+        //Convention: 0 = none, 1 = up (position to dispense climbers),
+        // -1 = down (starting position)
         public int climberDispenserStatus;
     }
     public ClimberDispenserCommand climberDispenserCommand = new ClimberDispenserCommand();
