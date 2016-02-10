@@ -20,6 +20,7 @@ import org.robocracy.ftcrobot.util.FileRW;
 import org.robocracy.ftcrobot.util.NavX;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -64,7 +65,7 @@ public class FTCRobot {
     public final int NAVX_DIM_I2C_PORT = 5;
     public AHRS navxDevice = null;
 
-    public FTCRobot(LinearOpMode curOpmode, String readFilePath, String writeFilePath, boolean allianceIsBlue, currentlyRecording curStatus) {
+    public FTCRobot(LinearOpMode curOpmode, String readFilePath, String writeFilePath, boolean allianceIsBlue, currentlyRecording curStatus) throws InterruptedException {
         this.curOpmode = curOpmode;
         initDevice("dim");
         initDevice("ods");
@@ -86,7 +87,6 @@ public class FTCRobot {
         this.linearLift = new LinearLift(this, curOpmode);
         this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
         this.driveSys = new AWDMecanumDS(curOpmode, this);
-        this.timestamp = System.nanoTime();
         this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
         this.bucket = new Bucket(this, curOpmode, bucketServo);
         this.leftClimber = new LeftClimber(this, leftClimberServo, curOpmode, allianceIsBlue);
@@ -184,7 +184,7 @@ public class FTCRobot {
             this.leftClimber.applyDSCmd(driverCommand);
             this.rightClimber.applyDSCmd(driverCommand);
             this.climberDispenser.applyDSCmd(driverCommand);
-            this.endGamePlayer.runEndGame(driverCommand);
+//            this.endGamePlayer.runEndGame(driverCommand);
 
             // Wait for one hardware cycle for the setPower(0) to take effect.
             this.curOpmode.waitForNextHardwareCycle();

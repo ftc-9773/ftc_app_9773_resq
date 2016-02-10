@@ -3,7 +3,6 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.robocracy.ftcrobot.FTCRobot;
-import org.robocracy.ftcrobot.util.FileRW;
 
 /**
  * @author Team Robocracy
@@ -24,6 +23,11 @@ public class AutonomousRedRecord extends LinearOpMode {
 
         waitForStart();
 
+        while (!gamepad1.back){
+            waitForNextHardwareCycle();
+        }
+
+        robot.timestamp = System.nanoTime();
         robot.runRobotTeleop();
     }
 }

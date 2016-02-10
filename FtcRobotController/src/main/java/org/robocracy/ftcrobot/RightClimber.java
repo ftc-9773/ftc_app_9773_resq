@@ -1,13 +1,12 @@
 package org.robocracy.ftcrobot;
 
 import com.qualcomm.ftccommon.DbgLog;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.robocracy.ftcrobot.DriverStation.DriverStation;
-import org.robocracy.ftcrobot.FTCRobot;
-import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+
+import org.robocracy.ftcrobot.DriverStation.DriverCommand;
+import org.robocracy.ftcrobot.DriverStation.DriverStation;
 
 /**
  * Operates Climber release servos on robot
@@ -27,7 +26,7 @@ public class RightClimber {
             this.rightClimber = rightClimber;
             this.rightClimber.scaleRange(0.4, 1);
             this.rightClimber.setPosition(1.0); // 1.0 == 0.47 because of scaleRange() call above
-            DbgLog.msg(String.format("RightClimber Position = %f", this.rightClimber.getPosition()));
+//            DbgLog.msg(String.format("RightClimber Position = %f", this.rightClimber.getPosition()));
             if(allianceIsBlue){
                 this.rightClimber.close();
             }
@@ -43,7 +42,6 @@ public class RightClimber {
             return;
         }
         double rightClimberPosition = rightClimber.getPosition();
-//        DbgLog.msg(String.format("RightClimber Position = %f", rightClimberPosition));
         switch (drvrcmd.rightClimberCmd.rightClimberStatus){
             case -1:
                 rightClimber.setPosition(Range.clip(0, 0, 1));
