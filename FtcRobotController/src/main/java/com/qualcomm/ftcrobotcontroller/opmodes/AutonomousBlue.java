@@ -1,11 +1,13 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.robocracy.ftcrobot.FTCRobot;
 import org.robocracy.ftcrobot.util.FileRW;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Team Robocracy
@@ -15,9 +17,9 @@ import java.io.IOException;
  */
 public class AutonomousBlue extends LinearOpMode {
     FTCRobot robot;
-    final int EXPECTED_DISTANCE=72; // inches
+    final int STRAFE_DISTANCE=72; // inches
     int delayInSeconds=0;
-    int distanceFromWall=EXPECTED_DISTANCE; // inches from the parimeter wall on the left side
+    int distanceToStrafe=STRAFE_DISTANCE; // inches from the parimeter wall on the left side
                                             // to the left edge of the robot
 
     @Override
@@ -32,15 +34,13 @@ public class AutonomousBlue extends LinearOpMode {
 
         waitForStart();
 
-/*
         getAutonomousParameters(autonomousConfigFile);
         if (delayInSeconds > 0){
             TimeUnit.SECONDS.sleep(delayInSeconds);
         }
-        if (distanceFromWall != EXPECTED_DISTANCE) {
-            this.robot.runRobotAutonomous((distanceFromWall - EXPECTED_DISTANCE));
+        if (distanceToStrafe != STRAFE_DISTANCE) {
+            this.robot.runRobotAutonomous((distanceToStrafe - STRAFE_DISTANCE));
         }
-*/
 
         robot.runRobotAutonomous();
     }
@@ -59,7 +59,7 @@ public class AutonomousBlue extends LinearOpMode {
                     delayInSeconds = Integer.parseInt(lineArray[1]);
                 }
                 if (lineArray[0].matches("distanceFromWall")) {
-                    distanceFromWall = Integer.parseInt(lineArray[1]);
+                    distanceToStrafe = Integer.parseInt(lineArray[1]);
                 }
                 line = fileRW.getNextLine();
             }
@@ -69,6 +69,7 @@ public class AutonomousBlue extends LinearOpMode {
             catch (IOException e) {
                 e.printStackTrace();
             }
+            DbgLog.msg(String.format("delay=%d, strafeDistance=%d", delayInSeconds, distanceToStrafe));
         }
     }
 }

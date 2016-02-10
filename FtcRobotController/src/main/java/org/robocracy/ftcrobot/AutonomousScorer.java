@@ -80,7 +80,7 @@ public class AutonomousScorer {
             while (line != null) {
                 this.curOpMode.waitForNextHardwareCycle();
                 drvrCmd = robot.drvrStation.getNextCommand(line, true);
-                DbgLog.msg(String.format("line = %s", line));
+//                DbgLog.msg(String.format("line = %s", line));
                 if ((System.nanoTime() - replayStartTime) < drvrCmd.timeStamp) {
                     // Wait for a few nano seconds
                     // This will not be precise but that should be okay

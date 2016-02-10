@@ -14,7 +14,6 @@ public class AutonomousRedRecord extends LinearOpMode {
     FTCRobot robot;
     String writeFilePath = "/sdcard/FIRST/autonomousCmds/red.csv";
     String readFilePath = null;
-    boolean startRecording = false;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -24,12 +23,11 @@ public class AutonomousRedRecord extends LinearOpMode {
 
         waitForStart();
 
-        if(gamepad1.back){
-            startRecording = true;
+        while (!gamepad1.back){
+            waitForNextHardwareCycle();
         }
-        if (startRecording) {
-            robot.timestamp = System.nanoTime();
-            robot.runRobotTeleop();
-        }
+
+        robot.timestamp = System.nanoTime();
+        robot.runRobotTeleop();
     }
 }
