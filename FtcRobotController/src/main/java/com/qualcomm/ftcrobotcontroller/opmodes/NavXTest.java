@@ -1,7 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.robocracy.ftcrobot.FTCRobot;
-import org.robocracy.ftcrobot.util.NavX;
 
 /**
  * Created by pranavb on 12/24/15.

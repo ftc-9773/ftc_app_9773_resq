@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 public class AutonomousScorer {
     FTCRobot robot;
     LinearOpMode curOpMode;
-    public ColorSensor colorSensor;
     boolean  allianceIsBlue;
 
     public OpticalDistanceSensor ods;

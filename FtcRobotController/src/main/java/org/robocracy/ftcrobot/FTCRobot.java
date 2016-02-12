@@ -17,10 +17,9 @@ import org.robocracy.ftcrobot.DriveSystem.AWDMecanumDS;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import org.robocracy.ftcrobot.DriverStation.DriverStation;
 import org.robocracy.ftcrobot.util.FileRW;
-import org.robocracy.ftcrobot.util.NavX;
+import org.robocracy.ftcrobot.RobotPosition.NavX;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 
 /**

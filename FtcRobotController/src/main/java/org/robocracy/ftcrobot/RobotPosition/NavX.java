@@ -1,4 +1,4 @@
-package org.robocracy.ftcrobot.util;
+package org.robocracy.ftcrobot.RobotPosition;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.util.ElapsedTime;
