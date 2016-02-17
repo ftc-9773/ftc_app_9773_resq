@@ -111,7 +111,7 @@ public class AWDMecanumDS {
         this.robotLength = 10.5; // in  inches
         this.robotWidth = 15; // in  inches
         this.linearLift = new LinearLift(robot, curOpmode);
-        this.yawPIDController = new navXPIDController( robot.navxDevice,
+        this.yawPIDController = new navXPIDController(robot.navxDevice,
                 navXPIDController.navXTimestampedDataSource.YAW);
         this.MAX_MOTOR_OUTPUT_VALUE = 1;
         this.MIN_MOTOR_OUTPUT_VALUE = -1;
@@ -320,6 +320,24 @@ public class AWDMecanumDS {
         } else {
             double output = yawPIDResult.getOutput();
             robot.driveSys.driveMecanum(90, -6, output);
+        }
+    }
+
+    public void PIDmoveStraight(double YAW_PID_P, double YAW_PID_I, double YAW_PID_D, int strafeAngle) throws InterruptedException{
+        final double TOLERANCE_DEGREES = 2.0;
+
+        yawPIDController.setSetpoint(strafeAngle);
+        yawPIDController.setContinuous(true);
+        yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
+        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
+        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+        yawPIDController.enable(true);
+
+        if (yawPIDResult.isOnTarget()) {
+            robot.driveSys.driveMecanum(strafeAngle, -6, 0);
+        } else {
+            double output = yawPIDResult.getOutput();
+            robot.driveSys.driveMecanum(strafeAngle, -6, output);
         }
     }
 
