@@ -29,5 +29,6 @@ public class AutonomousRedRecord extends LinearOpMode {
 
         robot.timestamp = System.nanoTime();
         robot.runRobotTeleop();
+        robot.close();
     }
 }

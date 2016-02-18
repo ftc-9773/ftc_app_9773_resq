@@ -309,7 +309,8 @@ public class DriverStation {
     public DriverCommand getNextCommand(String line){
         long timestamp = 0;
         String[] lineArray = line.split(",");
-        double angle, speedMultiplier, Omega, yaw, liftArmLengthPower, liftAnglePower, odsVal, colorRed, colorGreen, colorBlue;
+        double angle, speedMultiplier, Omega, yaw, liftArmLengthPower, liftAnglePower, odsVal;
+        int colorRed, colorGreen, colorBlue;
         int climberDispenserStatus;
         if (lineArray.length >= 12) {
             timestamp = Long.parseLong(lineArray[0]);
@@ -320,9 +321,9 @@ public class DriverStation {
             liftArmLengthPower = Double.parseDouble(lineArray[5]);
             liftAnglePower = Double.parseDouble(lineArray[6]);
             odsVal = Double.parseDouble(lineArray[7]);
-            colorRed = Double.parseDouble(lineArray[8]);
-            colorGreen = Double.parseDouble(lineArray[9]);
-            colorBlue = Double.parseDouble(lineArray[10]);
+            colorRed = Integer.parseInt(lineArray[8]);
+            colorGreen = Integer.parseInt(lineArray[9]);
+            colorBlue = Integer.parseInt(lineArray[10]);
             climberDispenserStatus = Integer.parseInt(lineArray[11]);
         }
         else {
@@ -333,9 +334,9 @@ public class DriverStation {
             liftArmLengthPower = 0.0;
             liftAnglePower = 0.0;
             odsVal = 0.0;
-            colorRed = 0.0;
-            colorGreen = 0.0;
-            colorBlue = 0.0;
+            colorRed = 0;
+            colorGreen = 0;
+            colorBlue = 0;
             climberDispenserStatus = 0;
         }
 
@@ -345,8 +346,8 @@ public class DriverStation {
         drvrCmd.drvsyscmd.speedMultiplier = speedMultiplier;
         drvrCmd.linliftcmd.angle = (float) liftAnglePower;
         drvrCmd.linliftcmd.armLength = (float) liftArmLengthPower;
-        drvrCmd.sensorValues.yaw = yaw;
-        drvrCmd.sensorValues.ods = odsVal;
+        drvrCmd.sensorValues.yaw = (double)yaw;
+        drvrCmd.sensorValues.lightDetected = odsVal;
         drvrCmd.sensorValues.colorRed = colorRed;
         drvrCmd.sensorValues.colorGreen = colorGreen;
         drvrCmd.sensorValues.colorBlue = colorBlue;
@@ -365,7 +366,8 @@ public class DriverStation {
         if(isEndGame) {
             long timestamp = 0;
             String[] lineArray = line.split(",");
-            double angle, speedMultiplier, Omega, yaw, pitch, liftArmLengthPower, liftAnglePower, odsVal, colorRed, colorGreen, colorBlue;
+            double angle, speedMultiplier, Omega, yaw, pitch, liftArmLengthPower, liftAnglePower, odsVal;
+            int colorRed, colorGreen, colorBlue;
             int latchStatus;
             int rightClimberStatus;
             int leftClimberStatus;
@@ -379,9 +381,9 @@ public class DriverStation {
                 liftArmLengthPower = Double.parseDouble(lineArray[6]);
                 liftAnglePower = Double.parseDouble(lineArray[7]);
                 odsVal = Double.parseDouble(lineArray[8]);
-                colorRed = Double.parseDouble(lineArray[9]);
-                colorGreen = Double.parseDouble(lineArray[10]);
-                colorBlue = Double.parseDouble(lineArray[11]);
+                colorRed = Integer.parseInt(lineArray[9]);
+                colorGreen = Integer.parseInt(lineArray[10]);
+                colorBlue = Integer.parseInt(lineArray[11]);
                 latchStatus = Integer.parseInt(lineArray[12]);
                 rightClimberStatus = Integer.parseInt(lineArray[13]);
                 leftClimberStatus = Integer.parseInt(lineArray[14]);
@@ -394,9 +396,9 @@ public class DriverStation {
                 liftArmLengthPower = 0.0;
                 liftAnglePower = 0.0;
                 odsVal = 0.0;
-                colorRed = 0.0;
-                colorGreen = 0.0;
-                colorBlue = 0.0;
+                colorRed = 0;
+                colorGreen = 0;
+                colorBlue = 0;
                 latchStatus = 0;
                 rightClimberStatus = 0;
                 leftClimberStatus = 0;
@@ -410,7 +412,7 @@ public class DriverStation {
             drvrCmd.linliftcmd.armLength = (float) liftArmLengthPower;
             drvrCmd.sensorValues.yaw = yaw;
             drvrCmd.sensorValues.pitch = pitch;
-            drvrCmd.sensorValues.ods = odsVal;
+            drvrCmd.sensorValues.lightDetected = odsVal;
             drvrCmd.sensorValues.colorRed = colorRed;
             drvrCmd.sensorValues.colorGreen = colorGreen;
             drvrCmd.sensorValues.colorBlue = colorBlue;
