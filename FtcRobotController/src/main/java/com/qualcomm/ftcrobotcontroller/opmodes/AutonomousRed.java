@@ -43,6 +43,7 @@ public class AutonomousRed extends LinearOpMode {
         }
 
         robot.runRobotAutonomous();
+        robot.close();
     }
     private void getAutonomousParameters(String autonomousConfigFilePath) {
         FileRW fileRW;

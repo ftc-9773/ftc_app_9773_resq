@@ -28,5 +28,6 @@ public class AutonomousBlueRecord extends LinearOpMode {
         }
         robot.timestamp = System.nanoTime();
         robot.runRobotTeleop();
+        robot.close();
     }
 }

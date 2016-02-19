@@ -1,6 +1,7 @@
 package org.robocracy.ftcrobot.util;
 
 import com.kauailabs.navx.ftc.AHRS;
+import com.kauailabs.navx.ftc.IDataArrivalSubscriber;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.robocracy.ftcrobot.FTCRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -18,6 +19,66 @@ public class NavX {
     float[] navx_data;
     public float[] initial_navx_data;
     boolean navxIsAvailable = false;
+
+    static public class CollisionDetector implements IDataArrivalSubscriber {
+        /* ToDo: Tune this threshold to adjust the sensitivy of the */
+        /* Collision detection.                               */
+        private final double COLLISION_THRESHOLD_DELTA_G = 0.5;
+
+        double last_world_linear_accel_x;
+        double last_world_linear_accel_y;
+        private ElapsedTime runtime = new ElapsedTime();
+        private AHRS navx_device;
+        private boolean collision_state;
+        private long last_system_timestamp = 0;
+        private long last_sensor_timestamp = 0;
+
+        private long sensor_timestamp_delta = 0;
+        private long system_timestamp_delta = 0;
+
+        public CollisionDetector(AHRS navx_device) {
+            this.navx_device = navx_device;
+            last_world_linear_accel_x = 0.0;
+            last_world_linear_accel_y = 0.0;
+            setCollisionState(false);
+            navx_device.registerCallback(this);
+        }
+
+        private void setCollisionState( boolean newValue ) {
+            this.collision_state = newValue;
+        }
+
+        @Override
+        public void timestampedDataReceived(long cur_system_timestamp, long cur_sensor_timestamp, Object kind) {
+            boolean collisionDetected = false;
+
+            sensor_timestamp_delta = cur_sensor_timestamp - last_sensor_timestamp;
+            system_timestamp_delta = cur_system_timestamp - last_system_timestamp;
+            double curr_world_linear_accel_x = navx_device.getWorldLinearAccelX();
+            double currentJerkX = curr_world_linear_accel_x - last_world_linear_accel_x;
+            last_world_linear_accel_x = curr_world_linear_accel_x;
+            double curr_world_linear_accel_y = navx_device.getWorldLinearAccelY();
+            double currentJerkY = curr_world_linear_accel_y - last_world_linear_accel_y;
+            last_world_linear_accel_y = curr_world_linear_accel_y;
+
+            if ( ( Math.abs(currentJerkX) > COLLISION_THRESHOLD_DELTA_G ) ||
+                    ( Math.abs(currentJerkY) > COLLISION_THRESHOLD_DELTA_G) ) {
+                collisionDetected = true;
+            }
+
+            setCollisionState( collisionDetected );
+
+        }
+
+        @Override
+        public void untimestampedDataReceived(long cur_system_timestamp, Object kind) {
+
+        }
+
+        public void close() {
+            this.navx_device.deregisterCallback(this);
+        }
+    }
 
     public NavX(FTCRobot robot, LinearOpMode curOpMode, AHRS navx) throws InterruptedException {
         this.robot = robot;

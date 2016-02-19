@@ -56,12 +56,6 @@ public class DriverCommand {
     }
     public RightClimberCommand rightClimberCmd = new RightClimberCommand();
 
-    public long timeStamp; // timestamp of the driver command; this is used for autonomous reply
-    public class SensorValues{
-        double yaw, pitch, ods, colorRed, colorGreen, colorBlue;
-    }
-    public SensorValues sensorValues = new SensorValues();
-
     public enum EndGameStatus{NONE, RUN, STOP}
     public class RunEndGame{
         public  EndGameStatus endGameStatus;
@@ -74,4 +68,13 @@ public class DriverCommand {
         public int climberDispenserStatus;
     }
     public ClimberDispenserCommand climberDispenserCommand = new ClimberDispenserCommand();
+
+    public long timeStamp; // timestamp of the driver command; this is used for autonomous reply
+    public class SensorValues{
+        double yaw, pitch, roll;
+        double lightDetected;
+        int colorRed, colorGreen, colorBlue;
+        int[] motorPosition = new int[4];
+    }
+    public SensorValues sensorValues = new SensorValues();
 }

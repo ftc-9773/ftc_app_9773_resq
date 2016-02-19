@@ -56,9 +56,14 @@ public class FTCRobot {
     public enum currentlyRecording{NONE, RECORDING_AUTONOMOUS, RECORDING_ENDGAME}
     public currentlyRecording curStatus = currentlyRecording.NONE;
     public long timestamp;
+    // ToDo: NAVX_DEVICE_UPDATE_RATE_HZ may have to  be increased to 100
+    //  Value of 50 implies a 20 milli second hardwsre cycle (50 * 20 = 1000)
+    //  A value of 100 implies 10 millisecond hardware cycle, which is closer to the
+    //  hardware cycle value we observed.
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
 
     public NavX navx_device = null;
+    public NavX.CollisionDetector collisionDetector = null;
 
     DriverStation drvrStation;
 
@@ -81,6 +86,7 @@ public class FTCRobot {
 
         if (this.navxDevice != null) {
             this.navx_device = new NavX(this, curOpmode, this.navxDevice);
+            this.collisionDetector = new NavX.CollisionDetector(this.navxDevice);
         }
         this.drvrStation = new DriverStation(curOpmode, this);
         this.harvester = new Harvester(this, curOpmode, harvesterMotor);
@@ -190,5 +196,11 @@ public class FTCRobot {
             this.curOpmode.waitForNextHardwareCycle();
 
         }
+    }
+
+    public void close() {
+        this.driveSys.close();
+        this.collisionDetector.close();
+        this.navxDevice.close();
     }
 }

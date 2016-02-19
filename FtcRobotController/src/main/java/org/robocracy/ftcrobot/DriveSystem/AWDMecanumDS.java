@@ -111,12 +111,16 @@ public class AWDMecanumDS {
         this.robotLength = 10.5; // in  inches
         this.robotWidth = 15; // in  inches
         this.linearLift = new LinearLift(robot, curOpmode);
-        this.yawPIDController = new navXPIDController( robot.navxDevice,
+        this.yawPIDController = new navXPIDController(robot.navxDevice,
                 navXPIDController.navXTimestampedDataSource.YAW);
         this.MAX_MOTOR_OUTPUT_VALUE = 1;
         this.MIN_MOTOR_OUTPUT_VALUE = -1;
         this.runtime = new ElapsedTime();
         this.yawPIDResult = new navXPIDController.PIDResult();
+    }
+
+    public void close() {
+        this.yawPIDController.close();
     }
 
     /**
@@ -304,6 +308,13 @@ public class AWDMecanumDS {
         }
     }
 
+    /**
+     * PID controller that uses the yaw value from the navX sensor to move straight
+     * @param YAW_PID_P Proportional multiplier constant
+     * @param YAW_PID_I Integral multiplier constant
+     * @param YAW_PID_D Derivative multiplier constant
+     * @throws InterruptedException
+     */
     public void PIDmoveStraight(double YAW_PID_P, double YAW_PID_I, double YAW_PID_D) throws InterruptedException{
         final double TARGET_ANGLE_DEGREES = 90.0;
         final double TOLERANCE_DEGREES = 2.0;
@@ -321,6 +332,63 @@ public class AWDMecanumDS {
             double output = yawPIDResult.getOutput();
             robot.driveSys.driveMecanum(90, -6, output);
         }
+    }
+
+    /**
+     * PID controller that overrules {@link AWDMecanumDS#PIDmoveStraight(double, double, double)}. Uses the yaw value of the
+     * navX sensor to move straight in all directions.
+     * @param YAW_PID_P Proportional multiplier constant
+     * @param YAW_PID_I Integral multiplier constant
+     * @param YAW_PID_D Derivative multiplier constant
+     * @param strafeAngle Angle at which to strafe
+     * @throws InterruptedException
+     */
+    public void PIDmoveStraight(double YAW_PID_P, double YAW_PID_I, double YAW_PID_D, int strafeAngle, double distance) throws InterruptedException{
+        final double TOLERANCE_DEGREES = 2.0;
+        final int DEVICE_TIMEOUT_MS=100; // timeout in milli seconds
+        double distTraveled = 0.0;
+        double[] distanceTravelledByWheel = new double[4];
+        int[] motorPosition = new int[4];
+        int[] prevPosition = new int[4];
+
+
+        yawPIDController.reset();
+        yawPIDController.setSetpoint(strafeAngle);
+        yawPIDController.setContinuous(true);
+        yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
+        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
+        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+        yawPIDController.enable(true);
+
+        for (int i = 0; i < 4; i++) {
+            prevPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
+        }
+
+        while (curOpmode.opModeIsActive() && (Math.abs(distTraveled) < distance)) {
+            if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
+
+                if (yawPIDResult.isOnTarget()) {
+                    robot.driveSys.driveMecanum(strafeAngle, -6, 0);
+                } else {
+                    double output = yawPIDResult.getOutput();
+                    robot.driveSys.driveMecanum(strafeAngle, -6, output);
+                    DbgLog.msg(String.format("PIDoutput: %f", output));
+                }
+
+                for (int i = 0; i < 4; i++) {
+                    motorPosition[i] = this.powerTrain[i].motor.getCurrentPosition();
+                    distanceTravelledByWheel[i] = this.powerTrain[i].countsToDistance((motorPosition[i] - prevPosition[i]));
+                }
+                System.arraycopy(motorPosition, 0, prevPosition, 0, 4);
+                distTraveled += (Math.abs(distanceTravelledByWheel[0]) +
+                        Math.abs(distanceTravelledByWheel[1]) +
+                        Math.abs(distanceTravelledByWheel[2]) +
+                        Math.abs(distanceTravelledByWheel[3])) / 4;
+
+                curOpmode.waitForNextHardwareCycle();
+            }
+        }
+        yawPIDController.enable(false);
     }
 
     public void stopDriveSystem() {

@@ -43,6 +43,7 @@ public class AutonomousBlue extends LinearOpMode {
         }
 
         robot.runRobotAutonomous();
+        robot.close();
     }
 
     private void getAutonomousParameters(String autonomousConfigFilePath) {
