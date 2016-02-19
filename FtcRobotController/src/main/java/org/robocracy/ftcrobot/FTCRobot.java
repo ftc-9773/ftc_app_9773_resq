@@ -35,7 +35,7 @@ public class FTCRobot {
     public AWDMecanumDS driveSys;
     DeviceInterfaceModule dim = null;
     Harvester harvester = null;
-    LinearLift linearLift = null;
+    public LinearLift linearLift = null;
     DcMotor harvesterMotor = null;
     AutonomousScorer autoScorer;
     Servo rightLatch = null;
@@ -53,7 +53,7 @@ public class FTCRobot {
     public OpticalDistanceSensor ods = null;
     public ColorSensor colorSensor = null;
     public FileRW readFileRW, writeFileRW;
-    public enum currentlyRecording{NONE, RECORDING_AUTONOMOUS, RECORDING_ENDGAME}
+    public enum currentlyRecording{NONE, RECORDING_AUTONOMOUS, RECORDING_ENDGAME, RECORDING_ENCODER_VALUES}
     public currentlyRecording curStatus = currentlyRecording.NONE;
     public long timestamp;
     // ToDo: NAVX_DEVICE_UPDATE_RATE_HZ may have to  be increased to 100

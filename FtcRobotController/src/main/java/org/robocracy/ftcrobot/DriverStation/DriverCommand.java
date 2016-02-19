@@ -19,10 +19,12 @@ public class DriverCommand {
 
     public DriveSystemCommand drvsyscmd = new DriveSystemCommand();
 
+    public enum LinLiftGoToPosition{NONE, STARTING, MEDIUM_GOAL, HIGH_GOAL, END_GAME, MAX, MIN}
     public class LinearLiftCommand {
         //angle = altitude component of Linear Lift
         //armLength = extending/collapsing component of Linear Lift
         public float angle, armLength;
+        public LinLiftGoToPosition linLiftGoToPosition;
     }
     public LinearLiftCommand linliftcmd = new LinearLiftCommand();
 

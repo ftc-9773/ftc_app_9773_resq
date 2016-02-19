@@ -17,6 +17,8 @@ public class DriverStation {
     FTCRobot robot;
     LinearOpMode curOpMode;
     public boolean linLiftLock;
+    public enum LiftMinMaxState{NONE, MIN, MAX}
+    public LiftMinMaxState liftMinMaxState;
 
     public DriverStation(LinearOpMode curOpMode, FTCRobot robot) {
         this.curOpMode = curOpMode;
@@ -120,14 +122,41 @@ public class DriverStation {
             drvrCmd.linliftcmd.armLength = (float) -0.6;
         }
 
+        if(curOpMode.gamepad2.dpad_up){
+            drvrCmd.linliftcmd.linLiftGoToPosition = DriverCommand.LinLiftGoToPosition.STARTING;
+            liftMinMaxState = LiftMinMaxState.NONE;
+        }
+        else if(curOpMode.gamepad2.dpad_down){
+            if(liftMinMaxState == LiftMinMaxState.MIN || liftMinMaxState == LiftMinMaxState.NONE){
+                drvrCmd.linliftcmd.linLiftGoToPosition = DriverCommand.LinLiftGoToPosition.MAX;
+                liftMinMaxState = LiftMinMaxState.MAX;
+            }
+            else if(liftMinMaxState == LiftMinMaxState.MAX || liftMinMaxState == LiftMinMaxState.NONE){
+                drvrCmd.linliftcmd.linLiftGoToPosition = DriverCommand.LinLiftGoToPosition.MIN;
+                liftMinMaxState = LiftMinMaxState.MIN;
+            }
+        }
+        else if(curOpMode.gamepad2.x){
+            drvrCmd.linliftcmd.linLiftGoToPosition = DriverCommand.LinLiftGoToPosition.MEDIUM_GOAL;
+            liftMinMaxState = LiftMinMaxState.NONE;
+        }
+        else if (curOpMode.gamepad2.b){
+            drvrCmd.linliftcmd.linLiftGoToPosition = DriverCommand.LinLiftGoToPosition.HIGH_GOAL;
+            liftMinMaxState = LiftMinMaxState.NONE;
+        }
+        else if(curOpMode.gamepad2.right_stick_button){
+            drvrCmd.linliftcmd.linLiftGoToPosition = DriverCommand.LinLiftGoToPosition.END_GAME;
+            liftMinMaxState = LiftMinMaxState.NONE;
+        }
+
         if (curOpMode.gamepad2.left_bumper){
             if(!linLiftLock){
                 linLiftLock = true;
-                curOpMode.sleep(1000);
+                curOpMode.sleep(500);
             }
             else if(linLiftLock){
                 linLiftLock = false;
-                curOpMode.sleep(1000);
+                curOpMode.sleep(500);
             }
         }
     }
@@ -294,6 +323,15 @@ public class DriverStation {
                 String line = (System.nanoTime() - robot.timestamp) + "," + angle + "," + speedMultiplier + "," +
                         Omega + "," + navx_data[0] + "," + navx_data[1] + "," + liftDirection + "," + liftAngle + "," + latchStatus + "," + rightClimberStatus + "," + leftClimberStatus;
                 this.robot.writeFileRW.fileWrite(line);
+            }
+        }
+        else if(robot.curStatus == FTCRobot.currentlyRecording.RECORDING_ENCODER_VALUES){
+            if(this.robot.writeFileRW != null){
+                if(curOpMode.gamepad2.back){
+                    String line = robot.linearLift.liftArmLengthMotor.getCurrentPosition() + "," + robot.linearLift.liftAngleMotor.getCurrentPosition();
+                    this.robot.writeFileRW.fileWrite(line);
+                    curOpMode.sleep(1000);
+                }
             }
         }
 
