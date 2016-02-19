@@ -25,10 +25,11 @@ public class Latch {
         if (leftLatch != null && rightLatch != null) {
             latchAvailable = true;
             this.leftLatch = leftLatch;
-            this.leftLatch.scaleRange(0.16, 0.5);
-            this.leftLatch.setPosition(1.0); // 1.0 is actually 0.5 because of the above scaleRange call
+            this.leftLatch.scaleRange(0, 0.35294);
+            this.leftLatch.setPosition(1.0); // 1.0 is actually 0.35294 because of the above scaleRange call
             this.rightLatch = rightLatch;
-            this.rightLatch.scaleRange(0.34, 1);
+            this.rightLatch.scaleRange(0.4705
+                    , 1);
             this.rightLatch.setDirection(Servo.Direction.REVERSE);
             this.rightLatch.setPosition(1.0); // 1.0 == 0.5 because of scaleRange call above
             double leftPosition = leftLatch.getPosition();
