@@ -32,6 +32,7 @@ public class DriverStation {
         double x = curOpMode.gamepad1.left_stick_x;
         double y = -curOpMode.gamepad1.left_stick_y;
 
+/*
         if(curOpMode.gamepad1.dpad_right){
             double efficiencyFront = Range.clip(robot.driveSys.powerTrain[0].efficiency-0.005, 0.05, 1.0);
             robot.driveSys.powerTrain[0].changeEfficiency(efficiencyFront);
@@ -44,6 +45,7 @@ public class DriverStation {
             robot.driveSys.powerTrain[3].changeEfficiency(efficiencyRear);
             DbgLog.error(String.format("Rear multiplier: %f", robot.driveSys.powerTrain[2].motorPowerMultiplier));
         }
+*/
 
         //Calculate what angle robot must move in based on 8 zones of joystick
         if (x == 0 && y == 0) {
