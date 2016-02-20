@@ -65,15 +65,15 @@ public class AutonomousScorer {
 
     public boolean findTheWhiteLine() throws InterruptedException {
         boolean whiteLineFound = false;
-        boolean spinned45degrees = false;
-        boolean spinned90degrees = false;
+        boolean spun45degrees = false;
+        boolean spun90degrees = false;
         DriverCommand tmpDrvrCmd = new DriverCommand();
         float initialYaw = robot.navxDevice.getYaw();
 
         if (robot.ods.getLightDetected() > 0.1) {
             whiteLineFound = true;
         }
-        while (!whiteLineFound && !spinned45degrees){
+        while (!whiteLineFound && !spun45degrees){
 
             DbgLog.error(String.format("First Loop: rotation = %f", robot.navxDevice.getYaw() - initialYaw));
             tmpDrvrCmd.drvsyscmd.angle = 0;
@@ -84,13 +84,13 @@ public class AutonomousScorer {
                 whiteLineFound = true;
             }
             if (Math.abs(robot.navxDevice.getYaw() - initialYaw) >= 45) {
-                spinned45degrees = true;
+                spun45degrees = true;
             }
             this.curOpMode.waitForNextHardwareCycle();
         }
         // Now spin in the opposite direction
         initialYaw = robot.navxDevice.getYaw();
-        while (!whiteLineFound && !spinned90degrees){
+        while (!whiteLineFound && !spun90degrees){
             DbgLog.error(String.format("Second Loop: rotation = %f", robot.navxDevice.getYaw() - initialYaw));
 
             tmpDrvrCmd.drvsyscmd.angle = 0;
@@ -101,7 +101,7 @@ public class AutonomousScorer {
                 whiteLineFound = true;
             }
             if (Math.abs(robot.navxDevice.getYaw() - initialYaw) >= 90) {
-                spinned90degrees = true;
+                spun90degrees = true;
             }
             this.curOpMode.waitForNextHardwareCycle();
         }

@@ -269,6 +269,9 @@ public class AWDMecanumDS {
      * @throws InterruptedException
      */
     public void applyCmd(DriverCommand driverCommand) throws InterruptedException {
+        if(driverCommand.drvsyscmd.angle == 0 || driverCommand.drvsyscmd.angle == 270){
+            driverCommand.drvsyscmd.speedMultiplier *= 0.5;
+        }
         this.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega);
 
     }
