@@ -18,9 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class AutonomousScorer {
     FTCRobot robot;
     LinearOpMode curOpMode;
-    public ColorSensor colorSensor;
     boolean  allianceIsBlue;
-    public OpticalDistanceSensor ods;
 
     public AutonomousScorer(FTCRobot robot, LinearOpMode curOpMode, boolean allianceIsBlue) {
         this.robot = robot;
@@ -33,7 +31,7 @@ public class AutonomousScorer {
      * @throws InterruptedException
      */
     public void driveUsingReplay() throws InterruptedException {
-        DriverCommand drvrCmd;
+        DriverCommand drvrCmd, tmpDrvrCmd;
         long replayStartTime;
         FileRW readFileRW;
         readFileRW = this.robot.readFileRW;
@@ -50,15 +48,98 @@ public class AutonomousScorer {
                 TimeUnit.NANOSECONDS.sleep(drvrCmd.timeStamp - ((System.nanoTime() - replayStartTime)));
             }
             robot.driveSys.applyCmd(drvrCmd);
-            robot.linearLift.applyCmd(drvrCmd);
+//            robot.linearLift.applyCmd(drvrCmd);
             drvrCmd.harvestercmd.direction = DriverCommand.HarvesterDirection.PUSH;
             robot.harvester.applyDSCmd(drvrCmd);
-            drvrCmd.latchCmd.latchStatus = -1;
+            drvrCmd.latchCmd.latchStatus = -2;
             robot.latch.applyDSCmd(drvrCmd);
             robot.climberDispenser.applyDSCmd(drvrCmd);
             line = readFileRW.getNextLine();
         }
         robot.driveSys.stopDriveSystem();
+        tmpDrvrCmd = new DriverCommand();
+        tmpDrvrCmd.harvestercmd.direction = DriverCommand.HarvesterDirection.NONE;
+        robot.harvester.applyDSCmd(tmpDrvrCmd);
+        this.curOpMode.waitForNextHardwareCycle();
+    }
+
+    public boolean findTheWhiteLine() throws InterruptedException {
+        boolean whiteLineFound = false;
+        boolean spinned45degrees = false;
+        boolean spinned90degrees = false;
+        DriverCommand tmpDrvrCmd = new DriverCommand();
+        float initialYaw = robot.navxDevice.getYaw();
+
+        if (robot.ods.getLightDetected() > 0.1) {
+            whiteLineFound = true;
+        }
+        while (!whiteLineFound && !spinned45degrees){
+
+            DbgLog.error(String.format("First Loop: rotation = %f", robot.navxDevice.getYaw() - initialYaw));
+            tmpDrvrCmd.drvsyscmd.angle = 0;
+            tmpDrvrCmd.drvsyscmd.speedMultiplier = 0;
+            tmpDrvrCmd.drvsyscmd.Omega = 0.5;
+            robot.driveSys.applyCmd(tmpDrvrCmd);
+            if (robot.ods.getLightDetected() > 0.1) {
+                whiteLineFound = true;
+            }
+            if (Math.abs(robot.navxDevice.getYaw() - initialYaw) >= 45) {
+                spinned45degrees = true;
+            }
+            this.curOpMode.waitForNextHardwareCycle();
+        }
+        // Now spin in the opposite direction
+        initialYaw = robot.navxDevice.getYaw();
+        while (!whiteLineFound && !spinned90degrees){
+            DbgLog.error(String.format("Second Loop: rotation = %f", robot.navxDevice.getYaw() - initialYaw));
+
+            tmpDrvrCmd.drvsyscmd.angle = 0;
+            tmpDrvrCmd.drvsyscmd.speedMultiplier = 0;
+            tmpDrvrCmd.drvsyscmd.Omega = -0.5;
+            robot.driveSys.applyCmd(tmpDrvrCmd);
+            if (robot.ods.getLightDetected() > 0.1) {
+                whiteLineFound = true;
+            }
+            if (Math.abs(robot.navxDevice.getYaw() - initialYaw) >= 90) {
+                spinned90degrees = true;
+            }
+            this.curOpMode.waitForNextHardwareCycle();
+        }
+        // Now stop the robot
+        tmpDrvrCmd.drvsyscmd.angle = 0;
+        tmpDrvrCmd.drvsyscmd.speedMultiplier = 0;
+        tmpDrvrCmd.drvsyscmd.Omega = 0;
+        robot.driveSys.applyCmd(tmpDrvrCmd);
+        this.curOpMode.waitForNextHardwareCycle();
+
+        return (whiteLineFound);
+    }
+
+    public void rotateToAngle(float targetYaw) throws InterruptedException {
+        DriverCommand tmpDrvrCmd = new DriverCommand();
+        float initialYaw = robot.navxDevice.getYaw();
+        float angleToSpin = Math.abs(initialYaw - targetYaw);
+        int directionIndicator;
+        boolean reachedTargetYaw = false;
+
+        DbgLog.msg(String.format("TargetYaw=%f, initialYaw=%f", targetYaw, initialYaw));
+
+        directionIndicator = (targetYaw > robot.navxDevice.getYaw() ? -1 : 1);
+        while (!reachedTargetYaw) {
+            tmpDrvrCmd.drvsyscmd.angle = 0;
+            tmpDrvrCmd.drvsyscmd.speedMultiplier = 0;
+            tmpDrvrCmd.drvsyscmd.Omega = directionIndicator * 0.5;
+            robot.driveSys.applyCmd(tmpDrvrCmd);
+            if (Math.abs(robot.navxDevice.getYaw() - initialYaw) >= angleToSpin) {
+                reachedTargetYaw = true;
+            }
+            this.curOpMode.waitForNextHardwareCycle();
+        }
+        // Now stop the robot
+        tmpDrvrCmd.drvsyscmd.angle = 0;
+        tmpDrvrCmd.drvsyscmd.speedMultiplier = 0;
+        tmpDrvrCmd.drvsyscmd.Omega = 0;
+        robot.driveSys.applyCmd(tmpDrvrCmd);
         this.curOpMode.waitForNextHardwareCycle();
     }
 

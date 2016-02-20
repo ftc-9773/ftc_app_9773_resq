@@ -33,7 +33,7 @@ public class DriverCommand {
     public HarvesterCommand harvestercmd = new HarvesterCommand();
 
     public class LatchCommand{
-        //Convention: 0 = none, 1 = up, -1 = down
+        //Convention: 0 = none, 1 = up, -1 = down, -2 = 80% down
         public int latchStatus;
     }
     public LatchCommand latchCmd = new LatchCommand();

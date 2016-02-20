@@ -213,7 +213,7 @@ public class DriverStation {
         else{
             drvrCmd.climberDispenserCommand.climberDispenserStatus = 0;
         }
-        DbgLog.msg(String.format("climberDispenserStatus = %d", drvrCmd.climberDispenserCommand.climberDispenserStatus));
+//        DbgLog.msg(String.format("climberDispenserStatus = %d", drvrCmd.climberDispenserCommand.climberDispenserStatus));
     }
 
     /**
@@ -267,7 +267,7 @@ public class DriverStation {
                     navx_data[0] = 0;
                 }
                 String line = (System.nanoTime() - robot.timestamp) + "," + angle + "," + speedMultiplier + "," +
-                        Omega + "," + navx_data[0] + "," + liftDirection + "," + liftAngle + "," + robot.ods.getLightDetected()
+                        Omega + "," + navx_data[0] + "," + robot.ods.getLightDetected()
                         + "," + robot.colorSensor.red() + "," + robot.colorSensor.green() + "," + robot.colorSensor.blue() + "," + climberDispenserStatus;
                 this.robot.writeFileRW.fileWrite(line);
             }
@@ -314,19 +314,19 @@ public class DriverStation {
         double angle, speedMultiplier, Omega, yaw, liftArmLengthPower, liftAnglePower, odsVal;
         int colorRed, colorGreen, colorBlue;
         int climberDispenserStatus;
-        if (lineArray.length >= 12) {
+        if (lineArray.length >= 10) {
             timestamp = Long.parseLong(lineArray[0]);
             angle = Double.parseDouble(lineArray[1]);
             speedMultiplier = Double.parseDouble(lineArray[2]);
             Omega = Double.parseDouble(lineArray[3]);
             yaw = Double.parseDouble(lineArray[4]);
-            liftArmLengthPower = Double.parseDouble(lineArray[5]);
-            liftAnglePower = Double.parseDouble(lineArray[6]);
-            odsVal = Double.parseDouble(lineArray[7]);
-            colorRed = Integer.parseInt(lineArray[8]);
-            colorGreen = Integer.parseInt(lineArray[9]);
-            colorBlue = Integer.parseInt(lineArray[10]);
-            climberDispenserStatus = Integer.parseInt(lineArray[11]);
+//            liftArmLengthPower = Double.parseDouble(lineArray[5]);
+//            liftAnglePower = Double.parseDouble(lineArray[6]);
+            odsVal = Double.parseDouble(lineArray[5]);
+            colorRed = Integer.parseInt(lineArray[6]);
+            colorGreen = Integer.parseInt(lineArray[7]);
+            colorBlue = Integer.parseInt(lineArray[8]);
+            climberDispenserStatus = Integer.parseInt(lineArray[9]);
         }
         else {
             angle = 0.0;
@@ -346,8 +346,8 @@ public class DriverStation {
         drvrCmd.drvsyscmd.angle = angle;
         drvrCmd.drvsyscmd.Omega = Omega;
         drvrCmd.drvsyscmd.speedMultiplier = speedMultiplier;
-        drvrCmd.linliftcmd.angle = (float) liftAnglePower;
-        drvrCmd.linliftcmd.armLength = (float) liftArmLengthPower;
+//        drvrCmd.linliftcmd.angle = (float) liftAnglePower;
+//        drvrCmd.linliftcmd.armLength = (float) liftArmLengthPower;
         drvrCmd.sensorValues.yaw = (double)yaw;
         drvrCmd.sensorValues.lightDetected = odsVal;
         drvrCmd.sensorValues.colorRed = colorRed;

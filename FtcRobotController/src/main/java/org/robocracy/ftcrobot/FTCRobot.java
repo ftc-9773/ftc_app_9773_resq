@@ -154,8 +154,19 @@ public class FTCRobot {
      * @throws InterruptedException
      */
     public void runRobotAutonomous()  throws InterruptedException {
+        float targetYaw;
 
         autoScorer.driveUsingReplay();
+        if (autoScorer.findTheWhiteLine()) {
+            DbgLog.msg(String.format("Yay! Found the white tape!"));
+            if (autoScorer.allianceIsBlue) {
+                targetYaw = navx_device.initial_navx_data[0] - 90;
+            } else {
+                targetYaw = navx_device.initial_navx_data[0] + 90;
+            }
+            autoScorer.rotateToAngle(targetYaw);
+            DbgLog.msg("Now going Straight");
+        }
         try {
             if (readFileRW != null){
                 readFileRW.close();

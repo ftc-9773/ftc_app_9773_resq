@@ -28,10 +28,9 @@ public class Latch {
             this.leftLatch.scaleRange(0, 0.35294);
             this.leftLatch.setPosition(1.0); // 1.0 is actually 0.35294 because of the above scaleRange call
             this.rightLatch = rightLatch;
-            this.rightLatch.scaleRange(0.4705
-                    , 1);
+            this.rightLatch.scaleRange(0.4705, 1);
             this.rightLatch.setDirection(Servo.Direction.REVERSE);
-            this.rightLatch.setPosition(1.0); // 1.0 == 0.5 because of scaleRange call above
+            this.rightLatch.setPosition(1.0); // 1.0 == 0.4705 because of scaleRange call  & REVERSE setting above
             double leftPosition = leftLatch.getPosition();
             double rightPosition = rightLatch.getPosition();
             DbgLog.msg(String.format("LeftLathPosition = %f, RightLatchPosition = %f", leftPosition, rightPosition));
@@ -50,6 +49,10 @@ public class Latch {
         double rightPosition = rightLatch.getPosition();
 //        DbgLog.msg(String.format("LeftLathPosition = %f, RightLatchPosition = %f", leftPosition, rightPosition));
         switch (drvrcmd.latchCmd.latchStatus){
+            case -2:
+                leftLatch.setPosition(Range.clip(0.2, 0, 1));
+                rightLatch.setPosition(Range.clip(0.2, 0, 1));
+                break;
             case -1:
                 leftLatch.setPosition(Range.clip(0, 0, 1));
                 rightLatch.setPosition(Range.clip(0, 0, 1));

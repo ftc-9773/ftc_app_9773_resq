@@ -2,6 +2,7 @@ package org.robocracy.ftcrobot.util;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.IDataArrivalSubscriber;
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.robocracy.ftcrobot.FTCRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -103,6 +104,9 @@ public class NavX {
         initial_navx_data[2] = navx.getRoll();
         initial_navx_data[3] = navx.getCompassHeading();
         initial_navx_data[4] = navx.getAltitude();
+
+        DbgLog.msg(String.format("initial_navx_data:yaw=%f,pitch=%f, roll=%f",
+                initial_navx_data[0], initial_navx_data[1], initial_navx_data[2]));
 
     }
 

@@ -41,8 +41,8 @@ public class ClimberDispenser {
         if (!climberDispenserServoAvailable) {
             return;
         }
-        DbgLog.msg(String.format("applyDSCmd: climberDispenserServoPosition variable = %f", climberDispenserServoPosition));
-        DbgLog.msg(String.format("applyDSCmd: ClimberDispenser.sevo.getPosition = %f", climberDispenserServo.getPosition()));
+//        DbgLog.msg(String.format("applyDSCmd: climberDispenserServoPosition variable = %f", climberDispenserServoPosition));
+//        DbgLog.msg(String.format("applyDSCmd: ClimberDispenser.sevo.getPosition = %f", climberDispenserServo.getPosition()));
 
         switch (drvrcmd.climberDispenserCommand.climberDispenserStatus){
             case -1:
@@ -51,7 +51,6 @@ public class ClimberDispenser {
                 break;
             case 1:
                 climberDispenserServoPosition = Range.clip(climberDispenserServoPosition-0.02, 0, 1);
-                DbgLog.msg(String.format("Setting climberDispenserposition to %f", Range.clip(climberDispenserServoPosition-0.1, 0, 1)));
                 climberDispenserServo.setPosition(climberDispenserServoPosition);
                 break;
             case 0:
