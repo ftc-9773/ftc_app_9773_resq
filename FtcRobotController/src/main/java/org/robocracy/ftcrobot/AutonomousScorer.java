@@ -166,6 +166,6 @@ public class AutonomousScorer {
             angle = 0;
         }
         speed = 12;
-        drivesys.autoMecanum(angle, distanceToStrafe, speed, 0);
+        drivesys.autoMecanum(angle, Math.abs(distanceToStrafe), speed, 0);
     }
 }

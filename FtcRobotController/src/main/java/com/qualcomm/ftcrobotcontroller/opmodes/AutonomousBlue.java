@@ -17,10 +17,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class AutonomousBlue extends LinearOpMode {
     FTCRobot robot;
-    final int STRAFE_DISTANCE=72; // inches
     int delayInSeconds=0;
-    int distanceToStrafe=STRAFE_DISTANCE; // inches from the parimeter wall on the left side
-                                            // to the left edge of the robot
+    int distanceToStrafe=0; // inches
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -38,8 +36,8 @@ public class AutonomousBlue extends LinearOpMode {
         if (delayInSeconds > 0){
             TimeUnit.SECONDS.sleep(delayInSeconds);
         }
-        if (distanceToStrafe != STRAFE_DISTANCE) {
-            this.robot.runRobotAutonomous((distanceToStrafe - STRAFE_DISTANCE));
+        if (distanceToStrafe != 0) {
+            this.robot.runRobotAutonomous((distanceToStrafe));
         }
 
         robot.runRobotAutonomous();
