@@ -64,7 +64,7 @@ public class DriverCommand {
 
     public class ClimberDispenserCommand{
         //Convention: 0 = none, 1 = up (position to dispense climbers),
-        // -1 = down (starting position)
+        // -1 = down (starting position), -2 = 50% down (midway position)
         public int climberDispenserStatus;
     }
     public ClimberDispenserCommand climberDispenserCommand = new ClimberDispenserCommand();
@@ -77,4 +77,10 @@ public class DriverCommand {
         int[] motorPosition = new int[4];
     }
     public SensorValues sensorValues = new SensorValues();
+
+    public enum SignalReleaseStatus{DOWN, UP, NONE}
+    public class SignalReleaseCommand{
+        public SignalReleaseStatus signalReleaseStatus;
+    }
+    public SignalReleaseCommand signalReleaseCommand = new SignalReleaseCommand();
 }
