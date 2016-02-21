@@ -269,6 +269,9 @@ public class AWDMecanumDS {
      * @throws InterruptedException
      */
     public void applyCmd(DriverCommand driverCommand) throws InterruptedException {
+        if(driverCommand.drvsyscmd.angle == 0 || driverCommand.drvsyscmd.angle == 180){
+            driverCommand.drvsyscmd.speedMultiplier *= 0.5;
+        }
         this.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega);
 
     }
@@ -316,10 +319,9 @@ public class AWDMecanumDS {
      * @throws InterruptedException
      */
     public void PIDmoveStraight(double YAW_PID_P, double YAW_PID_I, double YAW_PID_D) throws InterruptedException{
-        final double TARGET_ANGLE_DEGREES = 90.0;
         final double TOLERANCE_DEGREES = 2.0;
 
-        yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
+        yawPIDController.setSetpoint(robot.navxDevice.getYaw());
         yawPIDController.setContinuous(true);
         yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
@@ -353,7 +355,7 @@ public class AWDMecanumDS {
 
 
         yawPIDController.reset();
-        yawPIDController.setSetpoint(strafeAngle);
+        yawPIDController.setSetpoint(robot.navxDevice.getYaw());
         yawPIDController.setContinuous(true);
         yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
@@ -368,10 +370,10 @@ public class AWDMecanumDS {
             if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
 
                 if (yawPIDResult.isOnTarget()) {
-                    robot.driveSys.driveMecanum(strafeAngle, -6, 0);
+                    robot.driveSys.driveMecanum(strafeAngle, 6, 0);
                 } else {
                     double output = yawPIDResult.getOutput();
-                    robot.driveSys.driveMecanum(strafeAngle, -6, output);
+                    robot.driveSys.driveMecanum(strafeAngle, 6, output);
                     DbgLog.msg(String.format("PIDoutput: %f", output));
                 }
 
@@ -389,6 +391,34 @@ public class AWDMecanumDS {
             }
         }
         yawPIDController.enable(false);
+    }
+
+    public void rotateToAngle(float targetYaw) throws InterruptedException {
+        DriverCommand tmpDrvrCmd = new DriverCommand();
+        float initialYaw = robot.navxDevice.getYaw();
+        float angleToSpin = Math.abs(initialYaw - targetYaw);
+        int directionIndicator;
+        boolean reachedTargetYaw = false;
+
+        DbgLog.msg(String.format("TargetYaw=%f, initialYaw=%f", targetYaw, initialYaw));
+
+        directionIndicator = (targetYaw > robot.navxDevice.getYaw() ? -1 : 1);
+        while (!reachedTargetYaw) {
+            tmpDrvrCmd.drvsyscmd.angle = 0;
+            tmpDrvrCmd.drvsyscmd.speedMultiplier = 0;
+            tmpDrvrCmd.drvsyscmd.Omega = directionIndicator * 0.5;
+            this.applyCmd(tmpDrvrCmd);
+            if (Math.abs(robot.navxDevice.getYaw() - initialYaw) >= angleToSpin) {
+                reachedTargetYaw = true;
+            }
+            this.curOpmode.waitForNextHardwareCycle();
+        }
+        // Now stop the robot
+        tmpDrvrCmd.drvsyscmd.angle = 0;
+        tmpDrvrCmd.drvsyscmd.speedMultiplier = 0;
+        tmpDrvrCmd.drvsyscmd.Omega = 0;
+        this.applyCmd(tmpDrvrCmd);
+        this.curOpmode.waitForNextHardwareCycle();
     }
 
     public void stopDriveSystem() {

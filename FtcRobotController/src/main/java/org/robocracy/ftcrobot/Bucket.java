@@ -18,8 +18,8 @@ public class Bucket {
     LinearOpMode curOpMode;
     Servo bucketServo;
     boolean bucketAvailable = false;
-    final double right = 1;
-    final double left = 0;
+    final double right = 0;
+    final double left = 1;
     final double none = 0.5;
 
     public Bucket(FTCRobot robot, LinearOpMode curOpMode, Servo bucketServo){
@@ -28,6 +28,9 @@ public class Bucket {
         this.bucketServo = bucketServo;
         if (bucketServo != null) {
             bucketAvailable = true;
+        }
+        if(bucketAvailable){
+            this.bucketServo.setPosition(this.none);
         }
     }
 

@@ -233,6 +233,18 @@ public class DriverStation {
         }
     }
 
+    private void getNextSignalReleaseCmd(){
+        if(curOpMode.gamepad1.x){
+            drvrCmd.signalReleaseCommand.signalReleaseStatus = DriverCommand.SignalReleaseStatus.DOWN;
+        }
+        else if(curOpMode.gamepad1.b){
+            drvrCmd.signalReleaseCommand.signalReleaseStatus = DriverCommand.SignalReleaseStatus.UP;
+        }
+        else{
+            drvrCmd.signalReleaseCommand.signalReleaseStatus = DriverCommand.SignalReleaseStatus.NONE;
+        }
+    }
+
     /**
      * Calls {@link DriverStation#getNextDrivesysCmd()}, {@link DriverStation#getNextLinearLiftCmd()}, and {@link DriverStation#getNextLatchCmd()}.
      *
@@ -248,6 +260,7 @@ public class DriverStation {
         getNextClimberCmd();
         getNextClimberDispenserCmd();
         getNextEndGameCmd();
+        getNextSignalReleaseCmd();
 
         if(robot.curStatus == FTCRobot.currentlyRecording.RECORDING_AUTONOMOUS){
             int angle = (int) drvrCmd.drvsyscmd.angle;

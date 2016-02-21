@@ -33,7 +33,7 @@ public class Latch {
             this.rightLatch.setPosition(1.0); // 1.0 == 0.4705 because of scaleRange call  & REVERSE setting above
             double leftPosition = leftLatch.getPosition();
             double rightPosition = rightLatch.getPosition();
-            DbgLog.msg(String.format("LeftLathPosition = %f, RightLatchPosition = %f", leftPosition, rightPosition));
+            DbgLog.msg(String.format("LeftLatchPosition = %f, RightLatchPosition = %f", leftPosition, rightPosition));
         }
     }
 

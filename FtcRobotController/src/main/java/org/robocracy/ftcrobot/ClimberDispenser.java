@@ -25,10 +25,10 @@ public class ClimberDispenser {
         this.climberDispenserServo = climberDispenserServo;
         if (climberDispenserServo != null) {
             DbgLog.msg(String.format("climber dispenser position = %f", this.climberDispenserServo.getPosition()));
-            this.climberDispenserServo.scaleRange(0.157, 0.784);
+            this.climberDispenserServo.scaleRange(0.118, 0.706);
             this.climberDispenserServo.setDirection(Servo.Direction.REVERSE);
-            this.climberDispenserServo.setPosition(0);
-            climberDispenserServoPosition = 0.0;
+            this.climberDispenserServo.setPosition(1);
+            climberDispenserServoPosition = 1;
             this.climberDispenserServoAvailable = true;
         }
     }
@@ -54,6 +54,10 @@ public class ClimberDispenser {
                 climberDispenserServo.setPosition(climberDispenserServoPosition);
                 break;
             case 0:
+                break;
+            case -2:
+                climberDispenserServoPosition = 0.5;
+                climberDispenserServo.setPosition(climberDispenserServoPosition);
                 break;
             default:
                 break;

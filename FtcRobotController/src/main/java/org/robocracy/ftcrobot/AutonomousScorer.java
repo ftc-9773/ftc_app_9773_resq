@@ -35,6 +35,7 @@ public class AutonomousScorer {
         long replayStartTime;
         FileRW readFileRW;
         readFileRW = this.robot.readFileRW;
+        boolean whiteTapeFound = false;
 
         String line = readFileRW.getNextLine();
         // Note the starting timestamp
@@ -48,12 +49,17 @@ public class AutonomousScorer {
                 TimeUnit.NANOSECONDS.sleep(drvrCmd.timeStamp - ((System.nanoTime() - replayStartTime)));
             }
             robot.driveSys.applyCmd(drvrCmd);
+            if(robot.ods.getLightDetected() >= 0.1){
+                whiteTapeFound = true;
+            }
 //            robot.linearLift.applyCmd(drvrCmd);
             drvrCmd.harvestercmd.direction = DriverCommand.HarvesterDirection.PUSH;
             robot.harvester.applyDSCmd(drvrCmd);
-            drvrCmd.latchCmd.latchStatus = -2;
+            drvrCmd.latchCmd.latchStatus = -1;
             robot.latch.applyDSCmd(drvrCmd);
-            robot.climberDispenser.applyDSCmd(drvrCmd);
+            if(whiteTapeFound) {
+                robot.climberDispenser.applyDSCmd(drvrCmd);
+            }
             line = readFileRW.getNextLine();
         }
         robot.driveSys.stopDriveSystem();
@@ -65,15 +71,15 @@ public class AutonomousScorer {
 
     public boolean findTheWhiteLine() throws InterruptedException {
         boolean whiteLineFound = false;
-        boolean spinned45degrees = false;
-        boolean spinned90degrees = false;
+        boolean spun45degrees = false;
+        boolean spun90degrees = false;
         DriverCommand tmpDrvrCmd = new DriverCommand();
         float initialYaw = robot.navxDevice.getYaw();
 
         if (robot.ods.getLightDetected() > 0.1) {
             whiteLineFound = true;
         }
-        while (!whiteLineFound && !spinned45degrees){
+        while (!whiteLineFound && !spun45degrees){
 
             DbgLog.error(String.format("First Loop: rotation = %f", robot.navxDevice.getYaw() - initialYaw));
             tmpDrvrCmd.drvsyscmd.angle = 0;
@@ -84,13 +90,13 @@ public class AutonomousScorer {
                 whiteLineFound = true;
             }
             if (Math.abs(robot.navxDevice.getYaw() - initialYaw) >= 45) {
-                spinned45degrees = true;
+                spun45degrees = true;
             }
             this.curOpMode.waitForNextHardwareCycle();
         }
         // Now spin in the opposite direction
         initialYaw = robot.navxDevice.getYaw();
-        while (!whiteLineFound && !spinned90degrees){
+        while (!whiteLineFound && !spun90degrees){
             DbgLog.error(String.format("Second Loop: rotation = %f", robot.navxDevice.getYaw() - initialYaw));
 
             tmpDrvrCmd.drvsyscmd.angle = 0;
@@ -101,7 +107,7 @@ public class AutonomousScorer {
                 whiteLineFound = true;
             }
             if (Math.abs(robot.navxDevice.getYaw() - initialYaw) >= 90) {
-                spinned90degrees = true;
+                spun90degrees = true;
             }
             this.curOpMode.waitForNextHardwareCycle();
         }
@@ -113,34 +119,6 @@ public class AutonomousScorer {
         this.curOpMode.waitForNextHardwareCycle();
 
         return (whiteLineFound);
-    }
-
-    public void rotateToAngle(float targetYaw) throws InterruptedException {
-        DriverCommand tmpDrvrCmd = new DriverCommand();
-        float initialYaw = robot.navxDevice.getYaw();
-        float angleToSpin = Math.abs(initialYaw - targetYaw);
-        int directionIndicator;
-        boolean reachedTargetYaw = false;
-
-        DbgLog.msg(String.format("TargetYaw=%f, initialYaw=%f", targetYaw, initialYaw));
-
-        directionIndicator = (targetYaw > robot.navxDevice.getYaw() ? -1 : 1);
-        while (!reachedTargetYaw) {
-            tmpDrvrCmd.drvsyscmd.angle = 0;
-            tmpDrvrCmd.drvsyscmd.speedMultiplier = 0;
-            tmpDrvrCmd.drvsyscmd.Omega = directionIndicator * 0.5;
-            robot.driveSys.applyCmd(tmpDrvrCmd);
-            if (Math.abs(robot.navxDevice.getYaw() - initialYaw) >= angleToSpin) {
-                reachedTargetYaw = true;
-            }
-            this.curOpMode.waitForNextHardwareCycle();
-        }
-        // Now stop the robot
-        tmpDrvrCmd.drvsyscmd.angle = 0;
-        tmpDrvrCmd.drvsyscmd.speedMultiplier = 0;
-        tmpDrvrCmd.drvsyscmd.Omega = 0;
-        robot.driveSys.applyCmd(tmpDrvrCmd);
-        this.curOpMode.waitForNextHardwareCycle();
     }
 
     /**
@@ -188,6 +166,6 @@ public class AutonomousScorer {
             angle = 0;
         }
         speed = 12;
-        drivesys.autoMecanum(angle, distanceToStrafe, speed, 0);
+        drivesys.autoMecanum(angle, Math.abs(distanceToStrafe), speed, 0);
     }
 }

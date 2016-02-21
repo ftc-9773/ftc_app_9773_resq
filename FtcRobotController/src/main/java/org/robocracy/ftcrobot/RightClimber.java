@@ -24,6 +24,7 @@ public class RightClimber {
         if (rightClimber != null) {
             rightClimberAvailable = true;
             this.rightClimber = rightClimber;
+            this.rightClimber.scaleRange(0.1, 0.8);
 //            this.rightClimber.scaleRange(0.4, 1);
             this.rightClimber.setPosition(1.0);
 //            DbgLog.msg(String.format("RightClimber Position = %f", this.rightClimber.getPosition()));
@@ -44,10 +45,10 @@ public class RightClimber {
         double rightClimberPosition = rightClimber.getPosition();
         switch (drvrcmd.rightClimberCmd.rightClimberStatus){
             case -1:
-                rightClimber.setPosition(Range.clip(0, 0, 1));
+                rightClimber.setPosition(0);
                 break;
             case 1:
-                rightClimber.setPosition(Range.clip(1, 0, 1));
+                rightClimber.setPosition(1);
                 break;
             case 0:
                 break;

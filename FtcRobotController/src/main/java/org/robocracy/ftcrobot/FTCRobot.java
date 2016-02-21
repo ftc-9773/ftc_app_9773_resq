@@ -44,12 +44,14 @@ public class FTCRobot {
     Servo rightClimberServo = null;
     Servo leftClimberServo = null;
     Servo climberDispenserServo = null;
+    Servo signalReleaseServo = null;
     Latch latch = null;
     Bucket bucket = null;
     LeftClimber leftClimber = null;
     RightClimber rightClimber = null;
     EndGamePlayer endGamePlayer = null;
     ClimberDispenser climberDispenser = null;
+    SignalReleaser signalReleaser = null;
     public OpticalDistanceSensor ods = null;
     public ColorSensor colorSensor = null;
     public FileRW readFileRW, writeFileRW;
@@ -83,6 +85,7 @@ public class FTCRobot {
         initDevice("rightClimber");
         initDevice("bucketServo");
         initDevice("climberDispenserServo");
+        initDevice("signalReleaseServo");
 
         if (this.navxDevice != null) {
             this.navx_device = new NavX(this, curOpmode, this.navxDevice);
@@ -99,6 +102,7 @@ public class FTCRobot {
         this.rightClimber = new RightClimber(this, rightClimberServo, curOpmode, allianceIsBlue);
         this.endGamePlayer = new EndGamePlayer(this, curOpmode, allianceIsBlue);
         this.climberDispenser = new ClimberDispenser(this, climberDispenserServo, curOpmode);
+        this.signalReleaser = new SignalReleaser(this, signalReleaseServo, curOpmode);
         this.curStatus = curStatus;
 
         if (readFilePath != null) {
@@ -142,6 +146,8 @@ public class FTCRobot {
                 this.bucketServo = curOpmode.hardwareMap.servo.get("bucketServo");
             } else if (deviceName.matches("climberDispenserServo")){
                 this.climberDispenserServo = curOpmode.hardwareMap.servo.get("climberDispenserServo");
+            } else if(deviceName.matches("signalReleaseServo")){
+                this.signalReleaseServo = curOpmode.hardwareMap.servo.get("signalReleaseServo");
             }
         }
         catch(Exception e){
@@ -155,18 +161,26 @@ public class FTCRobot {
      */
     public void runRobotAutonomous()  throws InterruptedException {
         float targetYaw;
+        DriverCommand tmpDrvrCmd = new DriverCommand();
 
         autoScorer.driveUsingReplay();
-        if (autoScorer.findTheWhiteLine()) {
+        /*if (autoScorer.findTheWhiteLine()) {
             DbgLog.msg(String.format("Yay! Found the white tape!"));
             if (autoScorer.allianceIsBlue) {
                 targetYaw = navx_device.initial_navx_data[0] - 90;
             } else {
                 targetYaw = navx_device.initial_navx_data[0] + 90;
             }
-            autoScorer.rotateToAngle(targetYaw);
+            driveSys.rotateToAngle(targetYaw);
             DbgLog.msg("Now going Straight");
-        }
+            driveSys.PIDmoveStraight(0.05, 0, 0, 270, 12);
+            tmpDrvrCmd.climberDispenserCommand.climberDispenserStatus = -1;
+            climberDispenser.applyDSCmd(tmpDrvrCmd);
+            curOpmode.waitOneFullHardwareCycle();
+            tmpDrvrCmd.climberDispenserCommand.climberDispenserStatus = -2;
+            climberDispenser.applyDSCmd(tmpDrvrCmd);
+            curOpmode.waitOneFullHardwareCycle();
+        }*/
         try {
             if (readFileRW != null){
                 readFileRW.close();
@@ -201,6 +215,7 @@ public class FTCRobot {
             this.leftClimber.applyDSCmd(driverCommand);
             this.rightClimber.applyDSCmd(driverCommand);
             this.climberDispenser.applyDSCmd(driverCommand);
+            this.signalReleaser.applyDSCmd(driverCommand);
 //            this.endGamePlayer.runEndGame(driverCommand);
 
             // Wait for one hardware cycle for the setPower(0) to take effect.
