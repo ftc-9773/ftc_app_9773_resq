@@ -18,9 +18,14 @@ import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import org.robocracy.ftcrobot.DriverStation.DriverStation;
 import org.robocracy.ftcrobot.util.FileRW;
 import org.robocracy.ftcrobot.util.NavX;
+import org.robocracy.ftcrobot.util.UserHandler;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.helpers.DefaultHandler;
 
 
 /**
@@ -55,6 +60,11 @@ public class FTCRobot {
     public OpticalDistanceSensor ods = null;
     public ColorSensor colorSensor = null;
     public FileRW readFileRW, writeFileRW;
+    File initFile;
+    SAXParserFactory factory;
+    SAXParser saxParser;
+    UserHandler userHandler;
+
     public enum currentlyRecording{NONE, RECORDING_AUTONOMOUS, RECORDING_ENDGAME}
     public currentlyRecording curStatus = currentlyRecording.NONE;
     public long timestamp;
@@ -74,7 +84,7 @@ public class FTCRobot {
 
     public FTCRobot(LinearOpMode curOpmode, String readFilePath, String writeFilePath, boolean allianceIsBlue, currentlyRecording curStatus) throws InterruptedException {
         this.curOpmode = curOpmode;
-        initDevice("dim");
+        /*initDevice("dim");
         initDevice("ods");
         initDevice("colorSensor");
         initDevice("navx");
@@ -102,7 +112,17 @@ public class FTCRobot {
         this.rightClimber = new RightClimber(this, rightClimberServo, curOpmode, allianceIsBlue);
         this.endGamePlayer = new EndGamePlayer(this, curOpmode, allianceIsBlue);
         this.climberDispenser = new ClimberDispenser(this, climberDispenserServo, curOpmode);
-        this.signalReleaser = new SignalReleaser(this, signalReleaseServo, curOpmode);
+        this.signalReleaser = new SignalReleaser(this, signalReleaseServo, curOpmode);*/
+        this.initFile = new File("/sdcard/FIRST/init.xml");
+        this.factory = SAXParserFactory.newInstance();
+        try {
+            this.saxParser = this.factory.newSAXParser();
+        }
+        catch (Exception e){
+
+        }
+        this.userHandler = new UserHandler();
+        saxParser.parse();
         this.curStatus = curStatus;
 
         if (readFilePath != null) {
