@@ -18,14 +18,13 @@ import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import org.robocracy.ftcrobot.DriverStation.DriverStation;
 import org.robocracy.ftcrobot.util.FileRW;
 import org.robocracy.ftcrobot.util.NavX;
-import org.robocracy.ftcrobot.util.UserHandler;
+import org.robocracy.ftcrobot.util.ConfigParser;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.xml.sax.helpers.DefaultHandler;
 
 
 /**
@@ -63,7 +62,7 @@ public class FTCRobot {
     File initFile;
     SAXParserFactory factory;
     SAXParser saxParser;
-    UserHandler userHandler;
+    ConfigParser userHandler;
 
     public enum currentlyRecording{NONE, RECORDING_AUTONOMOUS, RECORDING_ENDGAME}
     public currentlyRecording curStatus = currentlyRecording.NONE;
@@ -121,7 +120,7 @@ public class FTCRobot {
         catch (Exception e){
 
         }
-        this.userHandler = new UserHandler();
+        this.userHandler = new ConfigParser();
         saxParser.parse();
         this.curStatus = curStatus;
 
