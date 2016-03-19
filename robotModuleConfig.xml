@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot drive-system="mecanum">
+    <Part name="leftLatch" motor-type="servo" low-position="0" high-position="1" reverse="false" gamepad-buttons="a,b"></Part>
+    <Part name="rightLatch" motor-type="servo" low-position="0" high-position="1" reverse="true" gamepad-buttons="a,b"></Part>
+    <Part name="liftAngle" motor-type="dcmotor" motor-min="0" motor-max="1" encoders="false" gamepad-buttons="left_stick_y"></Part>
+    <Part name="liftDirection" motor-type="dcmotor" motor-min="0" motor-max="1" encoders="false" gamepad-buttons="right_stick_x"></Part>
+</Robot>

@@ -22,7 +22,6 @@ public class AutonomousBlueRecord extends LinearOpMode {
         waitOneFullHardwareCycle();
 
         waitForStart();
-
         while (!gamepad1.back){
             waitForNextHardwareCycle();
         }
