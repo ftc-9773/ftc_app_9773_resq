@@ -39,7 +39,7 @@ public class Latch {
 
     /**
      * Moves latch servos based on {@code enum direction} value set in {@link DriverStation#getNextLatchCmd()}
-     * @param drvrcmd {@link DriverCommand} object with values.
+     * @param drvrcmd {@link DriverCommand} object with values
      */
     public void applyDSCmd(DriverCommand drvrcmd){
         if (!latchAvailable) {
