@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.robocracy.ftcrobot.DriveSystem.AWDMecanumDS;
+import org.robocracy.ftcrobot.DriveSystem.TwoWheelDS;
 import org.robocracy.ftcrobot.DriverStation.DriverCommand;
 import org.robocracy.ftcrobot.DriverStation.DriverStation;
 import org.robocracy.ftcrobot.util.FileRW;
@@ -32,7 +33,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class FTCRobot {
     LinearOpMode curOpmode;
-    public AWDMecanumDS driveSys;
+    //public AWDMecanumDS driveSys;
+    public TwoWheelDS twoWheelDS;
     DeviceInterfaceModule dim = null;
     Harvester harvester = null;
     LinearLift linearLift = null;
@@ -95,7 +97,8 @@ public class FTCRobot {
         this.harvester = new Harvester(this, curOpmode, harvesterMotor);
         this.linearLift = new LinearLift(this, curOpmode);
         this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
-        this.driveSys = new AWDMecanumDS(curOpmode, this);
+        //this.driveSys = new AWDMecanumDS(curOpmode, this);
+        this.twoWheelDS = new TwoWheelDS(curOpmode, this);
         this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
         this.bucket = new Bucket(this, curOpmode, bucketServo);
         this.leftClimber = new LeftClimber(this, leftClimberServo, curOpmode, allianceIsBlue);
@@ -194,7 +197,7 @@ public class FTCRobot {
     }
 
     public void runRobotAutonomous(int distanceToStrafe) throws InterruptedException {
-        this.autoScorer.strafeTheDistance(driveSys, distanceToStrafe);
+        //this.autoScorer.strafeTheDistance(driveSys, distanceToStrafe);
     }
 
     /**
@@ -205,7 +208,7 @@ public class FTCRobot {
         DriverCommand driverCommand;
         while(curOpmode.opModeIsActive()){
             driverCommand = drvrStation.getNextCommand();
-            this.driveSys.applyCmd(driverCommand);
+            //this.driveSys.applyCmd(driverCommand);
 
             this.harvester.applyDSCmd(driverCommand);
             this.linearLift.applyCmd(driverCommand);
@@ -225,7 +228,7 @@ public class FTCRobot {
     }
 
     public void close() {
-        this.driveSys.close();
+        //this.driveSys.close();
         this.collisionDetector.close();
         this.navxDevice.close();
     }
