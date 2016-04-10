@@ -26,7 +26,7 @@ import org.robocracy.ftcrobot.util.PIDController;
  * 5) Front wheels are connected to their motors via chain and sprocket.
  */
 public class AWDMecanumDS {
-    // Index convention for motors, wheels, and other variables:
+    // Index convention for motors, wheels, and other variables
     // 0: Front Left
     // 1: Front Right
     // 2: Rear Left
