@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.util.TypeConversion;
 import java.util.concurrent.locks.Lock;
 
 /**
- * A simple example of a linear op mode that shows how to change the I2C address.
+ * A simple example  of a linear op mode that shows how to change the I2C address.
  */
 public class LinearI2cAddressChange extends LinearOpMode {
 
