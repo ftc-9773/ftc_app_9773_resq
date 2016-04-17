@@ -47,7 +47,8 @@ public class FTCRobot {
     Servo leftClimberServo = null;
     Servo climberDispenserServo = null;
     Servo signalReleaseServo = null;
-    Latch latch = null;
+    Latch latch
+ = null;
     Bucket bucket = null;
     LeftClimber leftClimber = null;
     RightClimber rightClimber = null;
