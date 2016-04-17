@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Team Robocracy
  *
- * OpMode that is activated by driver. On activation, runs {@link FTCRobot#runRobotAutonomous()},
+ * OpMode that is activated by driver. On activation runs {@link FTCRobot#runRobotAutonomous()},
  *   passing {@code filePath} as the path to the Blue Alliance autonomous instruction file.
  */
 public class AutonomousBlue extends LinearOpMode {
