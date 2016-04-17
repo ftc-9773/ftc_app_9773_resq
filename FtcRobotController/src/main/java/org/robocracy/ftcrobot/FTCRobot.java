@@ -76,7 +76,7 @@ public class FTCRobot {
 
     public FTCRobot(LinearOpMode curOpmode, String readFilePath, String writeFilePath, boolean allianceIsBlue, currentlyRecording curStatus) throws InterruptedException {
         this.curOpmode = curOpmode;
-        initDevice("dim");
+        /*initDevice("dim");
         initDevice("ods");
         initDevice("colorSensor");
         initDevice("navx");
@@ -87,25 +87,25 @@ public class FTCRobot {
         initDevice("rightClimber");
         initDevice("bucketServo");
         initDevice("climberDispenserServo");
-        initDevice("signalReleaseServo");
+        initDevice("signalReleaseServo");*/
 
-        if (this.navxDevice != null) {
+        /*if (this.navxDevice != null) {
             this.navx_device = new NavX(this, curOpmode, this.navxDevice);
             this.collisionDetector = new NavX.CollisionDetector(this.navxDevice);
-        }
+        }*/
         this.drvrStation = new DriverStation(curOpmode, this);
-        this.harvester = new Harvester(this, curOpmode, harvesterMotor);
+        /*this.harvester = new Harvester(this, curOpmode, harvesterMotor);
         this.linearLift = new LinearLift(this, curOpmode);
-        this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);
+        this.autoScorer = new AutonomousScorer(this, curOpmode, allianceIsBlue);*/
         //this.driveSys = new AWDMecanumDS(curOpmode, this);
         this.twoWheelDS = new TwoWheelDS(curOpmode, this);
-        this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
+        /*this.latch = new Latch(this, leftLatch, rightLatch, curOpmode);
         this.bucket = new Bucket(this, curOpmode, bucketServo);
         this.leftClimber = new LeftClimber(this, leftClimberServo, curOpmode, allianceIsBlue);
         this.rightClimber = new RightClimber(this, rightClimberServo, curOpmode, allianceIsBlue);
         this.endGamePlayer = new EndGamePlayer(this, curOpmode, allianceIsBlue);
         this.climberDispenser = new ClimberDispenser(this, climberDispenserServo, curOpmode);
-        this.signalReleaser = new SignalReleaser(this, signalReleaseServo, curOpmode);
+        this.signalReleaser = new SignalReleaser(this, signalReleaseServo, curOpmode);*/
         this.curStatus = curStatus;
 
         if (readFilePath != null) {
