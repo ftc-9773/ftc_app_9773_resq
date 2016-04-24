@@ -68,8 +68,6 @@ public class K9TeleOp extends OpMode {
 
 	DcMotor motorRight;
 	DcMotor motorLeft;
-	Servo claw;
-	Servo arm;
 
 	/**
 	 * Constructor
@@ -107,8 +105,6 @@ public class K9TeleOp extends OpMode {
 		motorLeft = hardwareMap.dcMotor.get("motor_1");
 		motorLeft.setDirection(DcMotor.Direction.REVERSE);
 
-		arm = hardwareMap.servo.get("servo_1");
-		claw = hardwareMap.servo.get("servo_6");
 
 		// assign the starting position of the wrist and claw
 		armPosition = 0.2;
@@ -179,8 +175,6 @@ public class K9TeleOp extends OpMode {
         clawPosition = Range.clip(clawPosition, CLAW_MIN_RANGE, CLAW_MAX_RANGE);
 
 		// write position values to the wrist and claw servo
-		arm.setPosition(armPosition);
-		claw.setPosition(clawPosition);
 
 
 
