@@ -9,7 +9,7 @@ import org.robocracy.ftcrobot.FTCRobot;
  *
  * OpMode that is activated by the driver to start Teleop mode. On activation, runs {@link FTCRobot#runRobotTeleop()}.
  */
-public class TeleOpRed extends LinearOpMode {
+public class TeleOpMecanum extends LinearOpMode {
     FTCRobot myRobot;
 
     @Override

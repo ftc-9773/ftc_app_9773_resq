@@ -9,7 +9,7 @@ import org.robocracy.ftcrobot.FTCRobot;
  *
  * OpMode that is activated by the driver to start Teleop mode. On activation, runs {@link FTCRobot#runRobotTeleop()}.
  */
-public class TeleOpRed extends LinearOpMode {
+public class TeleOpOmni extends LinearOpMode {
     FTCRobot myRobot;
 
     @Override
@@ -19,7 +19,7 @@ public class TeleOpRed extends LinearOpMode {
         // but some value has to be passed, so pass the value "true".
         String writeFilePath = "/sdcard/FIRST/autonomousLog/" + System.nanoTime() + ".csv";
         String readFilePath = null;
-        this.myRobot = new FTCRobot(this, "MecanumDS");
+        this.myRobot = new FTCRobot(this, "OmniDS");
 
 
         waitOneFullHardwareCycle();

@@ -17,11 +17,13 @@ public class DriverStation {
     FTCRobot robot;
     LinearOpMode curOpMode;
     public boolean linLiftLock;
+    public int numSectors;
 
-    public DriverStation(LinearOpMode curOpMode, FTCRobot robot) {
+    public DriverStation(LinearOpMode curOpMode, FTCRobot robot, int numSectors) {
         this.curOpMode = curOpMode;
         this.robot = robot;
         this.linLiftLock = false;
+        this.numSectors = numSectors;
     }
 
     /**
@@ -31,6 +33,7 @@ public class DriverStation {
         int moveAngle = 0;
         double x = curOpMode.gamepad1.left_stick_x;
         double y = -curOpMode.gamepad1.left_stick_y;
+        double sectorSize = 360 / (double)this.numSectors;
 
 /*
         if(curOpMode.gamepad1.dpad_right){
@@ -73,10 +76,10 @@ public class DriverStation {
                 moveAngleRaw += 270;
             }
 
-            moveAngleRaw += 22.5;
+            moveAngleRaw += (sectorSize / 2);
             moveAngleRaw %= 360;
-            int sector = moveAngleRaw / 45;
-            moveAngle = sector * 45;
+            int sector = moveAngleRaw / (int)sectorSize;
+            moveAngle = sector * (int)sectorSize;
         }
         double speed = Math.sqrt((x * x) + (y * y)) / Math.sqrt(2);
 
@@ -262,6 +265,7 @@ public class DriverStation {
         getNextEndGameCmd();
         getNextSignalReleaseCmd();
 
+/*
         if(robot.curStatus == FTCRobot.currentlyRecording.RECORDING_AUTONOMOUS){
             int angle = (int) drvrCmd.drvsyscmd.angle;
             int climberDispenserStatus = drvrCmd.climberDispenserCommand.climberDispenserStatus;
@@ -309,6 +313,7 @@ public class DriverStation {
                 this.robot.writeFileRW.fileWrite(line);
             }
         }
+*/
 
         return (drvrCmd);
     }

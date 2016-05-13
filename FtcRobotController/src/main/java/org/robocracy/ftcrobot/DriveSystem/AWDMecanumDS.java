@@ -111,8 +111,10 @@ public class AWDMecanumDS {
         this.robotLength = 10.5; // in  inches
         this.robotWidth = 15; // in  inches
         this.linearLift = new LinearLift(robot, curOpmode);
+/*
         this.yawPIDController = new navXPIDController(robot.navxDevice,
                 navXPIDController.navXTimestampedDataSource.YAW);
+*/
         this.MAX_MOTOR_OUTPUT_VALUE = 1;
         this.MIN_MOTOR_OUTPUT_VALUE = -1;
         this.runtime = new ElapsedTime();
@@ -269,9 +271,11 @@ public class AWDMecanumDS {
      * @throws InterruptedException
      */
     public void applyCmd(DriverCommand driverCommand) throws InterruptedException {
+/*
         if(driverCommand.drvsyscmd.angle == 0 || driverCommand.drvsyscmd.angle == 180){
             driverCommand.drvsyscmd.speedMultiplier *= 0.5;
         }
+*/
         this.driveMecanum((int) driverCommand.drvsyscmd.angle, driverCommand.drvsyscmd.speedMultiplier, driverCommand.drvsyscmd.Omega);
 
     }
@@ -318,6 +322,7 @@ public class AWDMecanumDS {
      * @param YAW_PID_D Derivative multiplier constant
      * @throws InterruptedException
      */
+/*
     public void PIDmoveStraight(double YAW_PID_P, double YAW_PID_I, double YAW_PID_D) throws InterruptedException{
         final double TOLERANCE_DEGREES = 2.0;
 
@@ -329,12 +334,13 @@ public class AWDMecanumDS {
         yawPIDController.enable(true);
 
         if (yawPIDResult.isOnTarget()) {
-            robot.driveSys.driveMecanum(90, -6, 0);
+            robot.mecanumDriveSys.driveMecanum(90, -6, 0);
         } else {
             double output = yawPIDResult.getOutput();
-            robot.driveSys.driveMecanum(90, -6, output);
+            robot.mecanumDriveSys.driveMecanum(90, -6, output);
         }
     }
+*/
 
     /**
      * PID controller that overrules {@link AWDMecanumDS#PIDmoveStraight(double, double, double)}. Uses the yaw value of the
@@ -345,6 +351,7 @@ public class AWDMecanumDS {
      * @param strafeAngle Angle at which to strafe
      * @throws InterruptedException
      */
+/*
     public void PIDmoveStraight(double YAW_PID_P, double YAW_PID_I, double YAW_PID_D, int strafeAngle, double distance) throws InterruptedException{
         final double TOLERANCE_DEGREES = 2.0;
         final int DEVICE_TIMEOUT_MS=100; // timeout in milli seconds
@@ -420,6 +427,7 @@ public class AWDMecanumDS {
         this.applyCmd(tmpDrvrCmd);
         this.curOpmode.waitForNextHardwareCycle();
     }
+*/
 
     public void stopDriveSystem() {
         for (int i = 0; i < 4; i++) {

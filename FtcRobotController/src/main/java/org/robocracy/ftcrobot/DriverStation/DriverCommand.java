@@ -9,8 +9,8 @@ package org.robocracy.ftcrobot.DriverStation;
  */
 public class DriverCommand {
     public class DriveSystemCommand {
-        // angle = X-axis component of the desired Robot velocity.
-        // speedMultiplier = Y-axis component of the desired Robot velocity
+        // angle = Represents Direction of the robot.
+        // speedMultiplier = Represents desired Robot velocity
         // Omega = Desired angular velocity of the Robot
         // -1 <= angle, speedMultiplier, Omega <= +1
         //  These values will be scaled to fit them into one of the 8 zones of the drive area
