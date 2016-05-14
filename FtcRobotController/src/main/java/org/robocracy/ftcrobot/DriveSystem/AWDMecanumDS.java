@@ -1,6 +1,5 @@
 package org.robocracy.ftcrobot.DriveSystem;
 
-import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -33,9 +32,7 @@ public class AWDMecanumDS {
     // 3: Rear Right
     public PowerTrain[] powerTrain;
     PIDController[] motorPIDController;
-    navXPIDController yawPIDController;
     private ElapsedTime runtime;
-    navXPIDController.PIDResult yawPIDResult;
     private final double MIN_MOTOR_OUTPUT_VALUE;
     private final double MAX_MOTOR_OUTPUT_VALUE;
     LinearOpMode curOpmode;
@@ -118,11 +115,11 @@ public class AWDMecanumDS {
         this.MAX_MOTOR_OUTPUT_VALUE = 1;
         this.MIN_MOTOR_OUTPUT_VALUE = -1;
         this.runtime = new ElapsedTime();
-        this.yawPIDResult = new navXPIDController.PIDResult();
+//        this.yawPIDResult = new navXPIDController.PIDResult();
     }
 
     public void close() {
-        this.yawPIDController.close();
+        ;
     }
 
     /**

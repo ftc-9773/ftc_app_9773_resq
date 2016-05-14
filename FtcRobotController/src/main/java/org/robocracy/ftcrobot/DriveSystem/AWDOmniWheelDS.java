@@ -1,6 +1,5 @@
 package org.robocracy.ftcrobot.DriveSystem;
 
-import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -57,12 +56,12 @@ public class AWDOmniWheelDS {
         this.robot = robot;
 
         DcMotor[] motors = new DcMotor[4];
-        motors[0] = myOpmode.hardwareMap.dcMotor.get("leftMotor");
-        motors[1] = myOpmode.hardwareMap.dcMotor.get("rightMotor");
-        motors[2] = myOpmode.hardwareMap.dcMotor.get("frontMotor");
-        motors[3] = myOpmode.hardwareMap.dcMotor.get("rearMotor");
-        motors[1].setDirection(DcMotor.Direction.REVERSE); //Front Right
-        motors[3].setDirection(DcMotor.Direction.REVERSE); // Rear Right
+        motors[LEFT] = myOpmode.hardwareMap.dcMotor.get("leftMotor");
+        motors[RIGHT] = myOpmode.hardwareMap.dcMotor.get("rightMotor");
+        motors[FRONT] = myOpmode.hardwareMap.dcMotor.get("frontMotor");
+        motors[REAR] = myOpmode.hardwareMap.dcMotor.get("rearMotor");
+        motors[LEFT].setDirection(DcMotor.Direction.REVERSE); //Front Right
+        motors[REAR].setDirection(DcMotor.Direction.REVERSE); // Rear Right
 /*
         for (int i = 0; i < 4; i++) {
             motors[i].setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
@@ -145,8 +144,8 @@ public class AWDOmniWheelDS {
             }
         } else {
             if (Omega != 0) {
-                speedOfWheel[LEFT] = speedOfWheel[RIGHT] =
-                        speedOfWheel[FRONT] = speedOfWheel[REAR] = this.robotMaxSpeed * Omega;
+                speedOfWheel[RIGHT] = speedOfWheel[FRONT] = this.robotMaxSpeed * Omega;
+                speedOfWheel[LEFT] = speedOfWheel[REAR] = -1 * this.robotMaxSpeed * Omega;
             }
         }
     }
