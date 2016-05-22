@@ -110,7 +110,7 @@ public class DriverStation {
     }
 
     /**
-     * Gets Y values of gamepad 2 (attachment gamepad) and writes values into {@link DriverCommand#linliftcmd} object.
+     * Gets Y values of gamepad 2 (attachment gamepad) and  writes values into {@link DriverCommand#linliftcmd} object.
      */
     private void getNextLinearLiftCmd() throws InterruptedException{
         float angle = -curOpMode.gamepad2.left_stick_y;
