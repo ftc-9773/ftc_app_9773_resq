@@ -29,7 +29,7 @@ public class NavX {
         double last_world_linear_accel_x;
         double last_world_linear_accel_y;
         private ElapsedTime runtime = new ElapsedTime();
-        private AHRS navx_device;
+        private AHRS navx_device;//navigation sensor
         private boolean collision_state;
         private long last_system_timestamp = 0;
         private long last_sensor_timestamp = 0;

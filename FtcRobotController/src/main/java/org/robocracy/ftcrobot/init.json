@@ -1,0 +1,24 @@
+[
+  {
+    "motorId": "leftMotor",
+    "motorType": "Neverest40",
+    "motorMaxRPM": 1230
+  },
+  {
+    "motorId": "rightMotor",
+    "MotorType": "Tetrix",
+    "motorMaxRPM": 1120
+  },
+
+  {
+    "name": "driveSystem",
+    "type": "2wd",
+    "wheelType": "Tetrix",
+    "motors": ["leftMotor", "rightMotor"],
+    "powerRange": [-1, 1],
+    "controlType": "tank",
+    "gamepadButtons": ["left_stick_y", "right_stick_y"]
+  }
+
+
+]

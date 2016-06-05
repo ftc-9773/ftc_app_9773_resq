@@ -66,6 +66,7 @@ public class AWDMecanumDS {
             motors[i].setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         }
 
+        //wheel attributes
         wheelDiameter = 4.0;
         forwardFrictionCoeff = 0.5;
         sidewaysFrictionCoeff = 0.6;
@@ -74,6 +75,7 @@ public class AWDMecanumDS {
             wheels[i] = new MecanumWheel(wheelDiameter, forwardFrictionCoeff, sidewaysFrictionCoeff);
         }
 
+        //motor attributes - neverest 40
         double motorEncoderCPR = 1120; // for AndyMark Neverest 40
         double motorSpeedMax = 160; // rpm for AndyMark Neverest 40
         double motorStallTorque = 350; // oz-in for AndyMark Neverest 40
